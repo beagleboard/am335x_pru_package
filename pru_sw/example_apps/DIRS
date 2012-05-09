@@ -1,0 +1,22 @@
+APP_DIRS :=
+
+APP_DIRS += PRU_memAccess_DDR_PRUsharedRAM
+APP_DIRS += PRU_memAccessPRUDataRam
+APP_DIRS += PRU_PRUtoPRU_Interrupt
+
+
+ASSEM_FILES :=
+
+ASSEM_FILES += PRU_memAccess_DDR_PRUsharedRAM/PRU_memAccess_DDR_PRUsharedRAM.p
+ASSEM_FILES += PRU_memAccessPRUDataRam/PRU_memAccessPRUDataRam.p
+ASSEM_FILES += PRU_PRUtoPRU_Interrupt/PRU_PRU0toPRU1_Interrupt.p
+ASSEM_FILES += PRU_PRUtoPRU_Interrupt/PRU_PRU1toPRU0_Interrupt.p
+
+
+BIN_FILES :=
+
+BIN_FILES += PRU_memAccess_DDR_PRUsharedRAM.bin
+BIN_FILES += PRU_memAccessPRUDataRam.bin
+BIN_FILES += PRU_PRU0toPRU1_Interrupt.bin
+BIN_FILES += PRU_PRU1toPRU0_Interrupt.bin
+

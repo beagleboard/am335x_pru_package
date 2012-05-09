@@ -1,0 +1,62 @@
+//----------------------
+// GEL file for AM335x EVM -- PRU-ICSS
+// rev 1.1
+//
+
+//********************************************************************
+// The hardware modules and descriptions referred to in this document 
+// are *NOT SUPPORTED* by Texas Instruments (www.ti.com / e2e.ti.com). 
+// 
+// These materials are intended for do-it-yourself (DIY) users who want 
+// to use the PRU at their own risk without TI support. "Community" 
+// support is offered at BeagleBoard.org/discuss.
+//********************************************************************
+
+menuitem "PRU_ICSS"
+
+hotmenu PRU_ICSS_Init()
+{
+	PRU_ICSS_PRCM_Enable_Step1();
+	PRU_ICSS_PRCM_Reset();
+	GEL_MemoryFill(0x4a300000, 0, 16*1024, 0x0, 0xC);
+	GEL_MemoryFill(0x4a310000, 0, 12*1024, 0x0, 0xC);
+
+}
+
+hotmenu PRU_ICSS_PRCM_Enable_Step1()
+{
+	GEL_TextOut("\t**** PRU-ICSS PRCM Enable Step 1 is in progress **** \n","Output",1,1,1);	 									
+	*((unsigned int*) 0x44E00C00)      |= 0x2; 
+	*((unsigned int*) 0x44E00C00)      &= 0xFFFFFFFD; 
+	GEL_TextOut("\t**** PRU-ICSS PRCM Enable Step 1 is Done **** \n","Output",1,1,1);
+	
+	GEL_TextOut("\t**** PRU-ICSS PRCM Enable Step 2 is in progress **** \n","Output",1,1,1);	 									
+	*((unsigned int*) 0x44E000E8)      |= 0x2; 
+	
+	GEL_TextOut("\t**** PRU-ICSS PRCM Enable Step 2 is Done **** \n","Output",1,1,1);
+}
+
+hotmenu PRU_ICSS_PRCM_Reset()
+{
+	/*Incase Memory Map was not defined*/ 
+        
+	GEL_TextOut("\t**** PRU-ICSS PRCM Reset is in progress **** \n","Output",1,1,1);	 									
+	*((unsigned int*) 0x44E00C00)      |= 0x2; 
+	*((unsigned int*) 0x44E00C00)      &= 0xFFFFFFFD; 
+	GEL_TextOut("\t**** PRU-ICSS PRCM Reset is Done **** \n","Output",1,1,1);
+	
+}
+
+hotmenu PRU_ICSS_PRUcore0_and_1_Start()
+{
+	GEL_TextOut("\t**** PRU-ICSS PRU0&1 is being started **** \n","Output",1,1,1);
+	*((unsigned int*) 0x4A324000)      = 0xB;
+	*((unsigned int*) 0x4A322000)      = 0xB;
+}
+
+hotmenu PRU_ICSS_PRUcore0_and_1_Halt()
+{
+	GEL_TextOut("\t**** PRU-ICSS PRU0&1 is being Halted **** \n","Output",1,1,1);
+	*((unsigned int*) 0x4A324000)      =  0;
+	*((unsigned int*) 0x4A322000)      =  0;
+}

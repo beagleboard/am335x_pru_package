@@ -1,0 +1,8 @@
+INFO: Starting PRU_memAccess_DDR_PRUsharedRAM example.
+AM33XX
+        INFO: Initializing example.
+        INFO: Executing example.
+File ./PRU_memAccess_DDR_PRUsharedRAM.bin open passed
+        INFO: Waiting for HALT command.
+        INFO: PRU completed transfer.
+Example executed succesfully.

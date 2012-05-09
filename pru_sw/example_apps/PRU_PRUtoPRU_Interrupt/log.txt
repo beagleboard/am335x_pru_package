@@ -1,0 +1,13 @@
+INFO: Starting PRU_PRUtoPRU_Interrupt example.
+AM33XX
+AM33XX
+        INFO: Initializing example.
+        INFO: Executing example on PRU0.
+File ./PRU_PRU0toPRU1_Interrupt.bin open passed
+                INFO: Executing example on PRU1.
+File ./PRU_PRU1toPRU0_Interrupt.bin open passed
+        INFO: Waiting for HALT command.
+        INFO: PRU0 completed transfer.
+                INFO: Waiting for HALT command.
+                INFO: PRU1 completed transfer.
+Example executed succesfully.

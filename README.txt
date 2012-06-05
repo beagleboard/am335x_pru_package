@@ -13,6 +13,8 @@ who want to use the PRU at their own risk without TI support.
 
 The AM335x PRU Package includes:
 
+AM335x PRU Reference Guide
+
 Documentation:
    AM335x PRU-ICSS overview slides
    AM18x to AM335x PRU software migration guide

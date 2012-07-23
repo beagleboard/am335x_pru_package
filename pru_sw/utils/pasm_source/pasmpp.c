@@ -65,7 +65,11 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#if !defined(__APPLE__)
 #include <malloc.h>
+#else
+#include <stdlib.h>
+#endif
 #include <ctype.h>
 #include "pasm.h"
 

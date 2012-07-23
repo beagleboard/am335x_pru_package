@@ -13,8 +13,6 @@ who want to use the PRU at their own risk without TI support.
 
 The AM335x PRU Package includes:
 
-AM335x PRU Reference Guide
-
 Documentation:
    AM335x PRU-ICSS overview slides
    AM18x to AM335x PRU software migration guide
@@ -24,7 +22,8 @@ Documentation:
 
 PRU software (pru_sw):
    Utils:
-      PASM (PRU assembler)
+      PASM (PRU assembler) binary
+      PASM Source code
 
    Linux PRU userspace driver (app_loader):
       prussdrv.c

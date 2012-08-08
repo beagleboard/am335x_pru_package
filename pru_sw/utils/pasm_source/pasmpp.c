@@ -540,7 +540,7 @@ AGAIN:
 */
 static int GetTextLine( SOURCEFILE *ps, char *Dst, int MaxLen, int *pLength, int *pEOF )
 {
-    char c;
+    int c;
     int  idx;
     int  commentFlag,quoteFlag;
 

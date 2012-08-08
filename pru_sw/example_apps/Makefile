@@ -5,7 +5,7 @@ LIBDIR_APP_LOADER?=../../app_loader/lib
 INCDIR_APP_LOADER?=../../app_loader/include
 BINDIR_APPLICATIONS?=../bin
 BINDIR_FW?=bin
-UTILS_DIR?=../utils
+PASM?=../utils/pasm
 
 all:
 # Make PRU example applications
@@ -16,7 +16,7 @@ all:
 # Pass PRU assembly code for each example through assembler
 	for a_file in ${ASSEM_FILES} ; \
 	do \
-          ${UTILS_DIR}/pasm -b $$a_file ; \
+          ${PASM} -b $$a_file ; \
 	done ; \
 	mv *.bin ${BINDIR_FW}
 

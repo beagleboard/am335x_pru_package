@@ -3,6 +3,9 @@
 *****************************************************************************/
 
 #include <stdio.h>
+#include <unistd.h>
+
+#include <dirent.h>
 
 // Driver header file
 #include <prussdrv.h>
@@ -38,6 +41,8 @@
 *****************************************************************************/
 
 static int LOCAL_exampleInit ();
+static void LOCAL_export_pin ();
+static void LOCAL_unexport_pin ();
 
 /*****************************************************************************
 * Local Variable Definitions                                                 *
@@ -68,6 +73,8 @@ int main (void)
     printf("\nINFO: Starting %s example.\r\n", "dmx");
     /* Initialize the PRU */
     prussdrv_init ();		
+
+    LOCAL_export_pin(38);
     
     /* Open PRU Interrupt */
     ret = prussdrv_open(PRU_EVTOUT_0);
@@ -131,6 +138,8 @@ int main (void)
     prussdrv_pru_disable (PRU_NUM);
     prussdrv_exit ();
 
+    LOCAL_unexport_pin(38);
+
     return(0);
 
 }
@@ -156,3 +165,27 @@ static int LOCAL_exampleInit ()
 
     return(0);
 }
+
+static void LOCAL_export_pin (int pin) {
+	FILE *file;
+	char dir_file_name[50];
+
+	// Export the GPIO pin
+	file = fopen("/sys/class/gpio/export", "w");
+	fprintf(file, "%d", pin);
+	fclose(file);
+
+	// Let GPIO know what direction we are writing
+	sprintf(dir_file_name, "/sys/class/gpio/gpio%d/direction", pin);
+	file = fopen(dir_file_name, "w");
+	fprintf(file, "out");
+	fclose(file);
+}
+
+static void LOCAL_unexport_pin (int pin) {
+	FILE *file;
+	file = fopen("/sys/class/gpio/unexport", "w");
+	fwrite(&pin, 4, 1, file);
+	fclose(file);
+}
+

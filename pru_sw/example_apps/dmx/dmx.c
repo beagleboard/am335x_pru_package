@@ -18,7 +18,9 @@
 
 #define PRU_NUM 	0
 
-#define DMX_PIN (22)
+// This pin is pin 3 on the P8 header
+#define DMX_PIN (6)
+#define DMX_CHANNELS (4)
 
 #define DMX_HALT_ADDR (0x100)
 #define DMX_CHANNELS_ADDR (0x101)
@@ -88,18 +90,20 @@ int main (void)
 
     // Instead of waiting patiently for the PRU to finish, we're going to screw around with the shared memory and hopefully influence the PRU
     
-    for (j = 0; j < 20; j++) {
-      for (i = 0; i < 256; i++) {
-        pruDataMem_byte[0] = i;
-        usleep(100);
+    for (j = 0; j < 40; j++) {
+      for (i = 0; i < 128; i++) {
+//        pruDataMem_byte[0] = i;
+        pruDataMem_byte[2] = i;
+        usleep(10000);
       }
-      for (i = 0; i < 256; i++) {
-        pruDataMem_byte[0] = 255-i;
-        usleep(100);
+      for (i = 0; i < 128; i++) {
+//        pruDataMem_byte[0] = 128-i;
+        pruDataMem_byte[2] = 128-i;
+        usleep(10000);
       }
     }
 
-    pruDataMem_byte[DMX_HALT] = 1;
+    pruDataMem_byte[DMX_HALT_ADDR] = 1;
     
     /* Wait until PRU0 has finished execution */
     printf("\tINFO: Waiting for HALT command.\r\n");
@@ -121,12 +125,18 @@ int main (void)
 
 static int LOCAL_exampleInit ()
 {  
+    int i;
+
     prussdrv_map_prumem (PRUSS0_PRU0_DATARAM, &pruDataMem);
     pruDataMem_byte = (unsigned char*) pruDataMem;
 
     pruDataMem_byte[DMX_HALT_ADDR] = 0;
-    pruDataMem_byte[DMX_CHANNELS_ADDR] = 1;
+    pruDataMem_byte[DMX_CHANNELS_ADDR] = DMX_CHANNELS;
     pruDataMem_byte[DMX_PIN_ADDR] = DMX_PIN;
+
+    for (i = 0; i < DMX_CHANNELS; i++) {
+        pruDataMem_byte[i] = 128;
+    }
 
     return(0);
 }

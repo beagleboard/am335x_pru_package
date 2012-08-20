@@ -145,7 +145,10 @@ typedef struct _PRU_INST {
 #define OP_SLP                      45
 #define OP_RET                      46
 #define OP_ZERO                     47
-#define OP_MAXIDX                   47
+#define OP_XIN                      48
+#define OP_XOUT                     49
+#define OP_XCHG                    50
+#define OP_MAXIDX                   50
 
 extern char *OpText[];
 

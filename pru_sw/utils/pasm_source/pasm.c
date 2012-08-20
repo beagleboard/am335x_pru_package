@@ -59,6 +59,7 @@
 //---------------------------------------------------------------------------
 // Revision:
 //     15-Jun-12: 0.80 - Open source version
+//     18-Aug-12: 1.81 - Resurrection of the removed XIN, XOUT, XCHG and ZERO implementation
 ============================================================================*/
 
 #include <stdio.h>
@@ -77,7 +78,7 @@
 /* ---------- Local Macro Definitions ----------- */
 
 #define PROCESSOR_NAME_STRING ("PRU")
-#define VERSION_STRING        ("0.80")
+#define VERSION_STRING        ("1.81")
 
 #define MAXFILE               (256)     /* Max file length for output files */
 #define MAX_PROGRAM           (16384)   /* Max instruction count */
@@ -138,7 +139,8 @@ int main(int argc, char *argv[])
     char outbase[MAXFILE],outfilename[MAXFILE];
 
     printf("\n\n%s Assembler Version %s\n",PROCESSOR_NAME_STRING, VERSION_STRING);
-    printf("Copyright (C) 2005-2012 by Texas Instruments Inc.\n\n");
+    printf("Copyright (C) 2005-2012 by Texas Instruments Inc.\n");
+    printf("Copyright (C) 2012 by The Open Source Community.\n\n");
 
     /* Scan argv[0] to the final '/' in program name */
     i=0;
@@ -275,7 +277,8 @@ USAGE:
     }
 
     if( Core==CORE_NONE )
-        Core = CORE_V1;
+	// Since this is the am335x_pru_package, this should do no harm
+        Core = CORE_V2;
 
     /* Check input file */
     if( !infile )

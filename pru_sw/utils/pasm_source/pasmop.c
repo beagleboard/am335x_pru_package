@@ -75,7 +75,7 @@ char *OpText[] = {
     "XOR","NOT","MIN","MAX","CLR","SET","LDI","LBBO","LBCO","SBBO",
     "SBCO","LFC","STC","JAL","JMP","QBGT","QBLT","QBEQ","QBGE","QBLE",
     "QBNE","QBA","QBBS","QBBC","LMBD","CALL","WBC","WBS","MOV","MVIB",
-    "MVIW","MVID","SCAN","HALT","SLP", "RET", "ZERO" };
+    "MVIW","MVID","SCAN","HALT","SLP", "RET", "ZERO", "XIN", "XOUT", "XCHG" };
 
 /* Local Support Funtions */
 static int GetImValue( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa, uint low, uint high );
@@ -1147,6 +1147,9 @@ WAITBIT_OPCODE:
         if( !inst.Arg[1].Value )
             { Report(ps,REP_ERROR,"Zero length clear"); return(0); }
 
+        if( Core<=CORE_V1 )
+        // TODO: determine whether it makes sense to use LDI in case of a single
+        //       byte or word, that maps to a single register(part)?
         while( inst.Arg[1].Value )
         {
             uint reg,field=0,size=0;
@@ -1277,6 +1280,63 @@ WAITBIT_OPCODE:
             opcode |= field << 5;
             GenOp( ps, TermCnt, pTerms, opcode );
         }
+        else
+        {
+            /*
+            // V2 can do the ZERO operation in one cycle using XFR
+            */
+            opcode = 0x17 << 25;        // XFR
+            opcode |= 1 << 23;		// read (XIN)
+            opcode |= 255 << 15;        // read /dev/zero
+            // TODO: count in R0.bx (count equals 124..127)
+            opcode |= (inst.Arg[1].Value - 1) << 7;	// count - 1
+            opcode |= (inst.Arg[0].Value / 4) << 0;	// register nr
+            opcode |= (inst.Arg[0].Value % 4) << 5;	// byte select
+            GenOp( ps, TermCnt, pTerms, opcode );
+        }
+        return(1);
+
+    case OP_XIN:
+    case OP_XOUT:
+    case OP_XCHG:
+        /*
+        // Instruction in the form of:
+        //     XIN  #Im255, Rdst, #Im124
+        //     XOUT #Im255, Rsrc, #Im124
+        //     XCHG #Im255, Rsrc, #Im124
+        */
+        if( Core<CORE_V2 )
+            { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
+        if( TermCnt != 4 )
+            { Report(ps,REP_ERROR,"Expected 3 operands"); return(0); }
+
+        if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 255 ) )
+            return(0);
+        if( CheckTokenType(pTerms[2]) & TOKENTYPE_FLG_REG_BASE )
+        {
+            if( !GetRegister( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 0 ) )
+                return(0);
+        }
+        else
+        {
+            if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 29 ) )
+                return(0);
+        }
+        if( !GetImValue( ps, 3, pTerms[3], &(inst.Arg[2]), 0, 124 ) )
+            return(0);
+
+        /* XFR */
+        opcode = 0x17 << 25;
+        switch( inst.Op )
+        {
+        case OP_XIN:  opcode |= 1 << 23; break;
+        case OP_XOUT: opcode |= 2 << 23; break;
+        case OP_XCHG: opcode |= 3 << 23; break;
+        }
+        opcode |= inst.Arg[0].Value << 15;
+        opcode |= (inst.Arg[2].Value - 1) << 7;
+        opcode |= inst.Arg[1].Value << 0;
+        GenOp( ps, TermCnt, pTerms, opcode );
         return(1);
     }
 

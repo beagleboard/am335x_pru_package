@@ -35,6 +35,10 @@ START:
     CLR r0, r0, 4
     SBCO r0, C4, 4, 4
 
+   MOV r6, GPIO1 | GPIO_CLEARDATAOUT
+   MOV r8, 7<<22
+   SBBO r8, r6, 0, 4
+
 LOOP:
     // Exit if the halt flag is set
     MOV r6, DMX_HALT
@@ -57,7 +61,7 @@ LOOP:
     SBBO r4, r6, 0, 4
     SLEEPUS 12, 1, START_HIGH_SLEEP
 
-    // 3. Send a DMX data frame of 0 (may not be important...)
+    // 3. Send a DMX data frame of 0 to start the sequence
     MOV r6, GPIO1 | GPIO_CLEARDATAOUT
     SBBO r4, r6, 0, 4
     SLEEPUS (9*4), 0, ZERO_START_SLEEP
@@ -71,10 +75,17 @@ LOOP:
     LBCO r5, CONST_PRUDRAM, r6, 1
 
 DMX_LOOP:
-    QBEQ LOOP, r3.b0, 4
-//    QBEQ LOOP, r3.b0, r5.b0
+//    QBEQ LOOP, r3.b0, 4
+    QBEQ LOOP, r3.b0, r5.b0
     LBCO r2, CONST_PRUDRAM, r3, 1
     MOV r1, 8
+
+    QBNE OK, r3.b0, 3
+    QBNE OK, r2, 128
+    MOV r6, GPIO1 | GPIO_SETDATAOUT
+    MOV r8, 7<<22
+    SBBO r8, r6, 0, 4
+OK:
     
     // bring low to start
     MOV r6, GPIO1 | GPIO_CLEARDATAOUT
@@ -100,7 +111,8 @@ DMX_FRAME_BIT_FINISH:
     LSR r2, r2, 1
     QBNE DMX_FRAME, r1, 0
 
-    BRING_HIGH
+    MOV r6, GPIO1 | GPIO_SETDATAOUT
+    SBBO r4, r6, 0, 4
     SLEEPUS (2*4), 6, DMX_FRAME_END_SLEEP
 
     ADD r3, r3, 1

@@ -75,7 +75,7 @@ char *OpText[] = {
     "XOR","NOT","MIN","MAX","CLR","SET","LDI","LBBO","LBCO","SBBO",
     "SBCO","LFC","STC","JAL","JMP","QBGT","QBLT","QBEQ","QBGE","QBLE",
     "QBNE","QBA","QBBS","QBBC","LMBD","CALL","WBC","WBS","MOV","MVIB",
-    "MVIW","MVID","SCAN","HALT","SLP", "RET", "ZERO", "XIN", "XOUT", "XCHG" };
+    "MVIW","MVID","SCAN","HALT","SLP", "RET", "ZERO", "XIN", "XOUT", "XCHG", "FILL" };
 
 /* Local Support Funtions */
 static int GetImValue( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa, uint low, uint high );
@@ -1294,6 +1294,39 @@ WAITBIT_OPCODE:
             opcode |= (inst.Arg[0].Value % 4) << 5;	// byte select
             GenOp( ps, TermCnt, pTerms, opcode );
         }
+        return(1);
+
+    case OP_FILL:
+        /*
+        // Instruction in the form of:
+        //     FILL  &Rdst,  #Im124
+        //     FILL  #Im123, #Im124
+        */
+        if( Core<CORE_V2 )
+            { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
+        if( TermCnt != 3 )
+            { Report(ps,REP_ERROR,"Expected 2 operands"); return(0); }
+        if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 123 ) )
+            return(0);
+        if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 124 ) )
+            return(0);
+
+        if( (inst.Arg[0].Value + inst.Arg[1].Value)>124 )
+            { Report(ps,REP_ERROR,"Fill length exceeds register file length"); return(0); }
+        if( !inst.Arg[1].Value )
+            { Report(ps,REP_ERROR,"Zero length fill"); return(0); }
+
+        /*
+        // V2 can do the FILL operation in one cycle using XFR
+        */
+        opcode = 0x17 << 25;        // XFR
+        opcode |= 1 << 23;          // read (XIN)
+        opcode |= 254 << 15;        // read /dev/ones ;-)
+        // TODO: count in R0.bx (count equals 124..127)
+        opcode |= (inst.Arg[1].Value - 1) << 7;	// count - 1
+        opcode |= (inst.Arg[0].Value / 4) << 0;	// register nr
+        opcode |= (inst.Arg[0].Value % 4) << 5;	// byte select
+        GenOp( ps, TermCnt, pTerms, opcode );
         return(1);
 
     case OP_XIN:

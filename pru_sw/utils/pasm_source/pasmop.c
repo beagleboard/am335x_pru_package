@@ -1334,16 +1334,16 @@ WAITBIT_OPCODE:
     case OP_XCHG:
         /*
         // Instruction in the form of:
-        //     XIN  #Im255, Rdst, #Im124
-        //     XOUT #Im255, Rsrc, #Im124
-        //     XCHG #Im255, Rsrc, #Im124
+        //     XIN  #Im253, Rdst, #Im124
+        //     XOUT #Im253, Rsrc, #Im124
+        //     XCHG #Im253, Rsrc, #Im124
         */
         if( Core<CORE_V2 )
             { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
         if( TermCnt != 4 )
             { Report(ps,REP_ERROR,"Expected 3 operands"); return(0); }
 
-        if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 255 ) )
+        if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 253 ) )
             return(0);
         if( CheckTokenType(pTerms[2]) & TOKENTYPE_FLG_REG_BASE )
         {

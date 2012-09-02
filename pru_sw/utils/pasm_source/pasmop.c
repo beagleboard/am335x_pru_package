@@ -1352,7 +1352,7 @@ WAITBIT_OPCODE:
         }
         else
         {
-            if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 29 ) )
+            if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 30 ) )
                 return(0);
         }
         if( !GetImValue( ps, 3, pTerms[3], &(inst.Arg[2]), 0, 124 ) )

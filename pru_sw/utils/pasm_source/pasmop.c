@@ -1344,7 +1344,7 @@ WAITBIT_OPCODE:
             if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 30 ) )
                 return(0);
         }
-        if( !GetImValue( ps, 3, pTerms[3], &(inst.Arg[2]), 0, 124 ) )
+        if( !GetImValue( ps, 3, pTerms[3], &(inst.Arg[2]), 1, 124 ) )
             return(0);
 
         /* XFR */

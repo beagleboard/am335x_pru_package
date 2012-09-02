@@ -1285,14 +1285,9 @@ WAITBIT_OPCODE:
             /*
             // V2 can do the ZERO operation in one cycle using XFR
             */
-            opcode = 0x17 << 25;        // XFR
-            opcode |= 1 << 23;		// read (XIN)
-            opcode |= 255 << 15;        // read /dev/zero
-            // TODO: count in R0.bx (count equals 124..127)
-            opcode |= (inst.Arg[1].Value - 1) << 7;	// count - 1
-            opcode |= (inst.Arg[0].Value / 4) << 0;	// register nr
-            opcode |= (inst.Arg[0].Value % 4) << 5;	// byte select
-            GenOp( ps, TermCnt, pTerms, opcode );
+            opcode = 255 << 15;        // use /dev/zero
+            utmp = 0;
+            goto CODE_XFR;
         }
         return(1);
 
@@ -1319,15 +1314,9 @@ WAITBIT_OPCODE:
         /*
         // V2 can do the FILL operation in one cycle using XFR
         */
-        opcode = 0x17 << 25;        // XFR
-        opcode |= 1 << 23;          // read (XIN)
-        opcode |= 254 << 15;        // read /dev/ones ;-)
-        // TODO: count in R0.bx (count equals 124..127)
-        opcode |= (inst.Arg[1].Value - 1) << 7;	// count - 1
-        opcode |= (inst.Arg[0].Value / 4) << 0;	// register nr
-        opcode |= (inst.Arg[0].Value % 4) << 5;	// byte select
-        GenOp( ps, TermCnt, pTerms, opcode );
-        return(1);
+        opcode = 254 << 15;        // use /dev/ones ;)
+        utmp = 0;
+        goto CODE_XFR;
 
     case OP_XIN:
     case OP_XOUT:
@@ -1359,16 +1348,22 @@ WAITBIT_OPCODE:
             return(0);
 
         /* XFR */
-        opcode = 0x17 << 25;
+        opcode = inst.Arg[0].Value << 15;       // device id
+        utmp = 1;
+CODE_XFR:
         switch( inst.Op )
         {
-        case OP_XIN:  opcode |= 1 << 23; break;
-        case OP_XOUT: opcode |= 2 << 23; break;
-        case OP_XCHG: opcode |= 3 << 23; break;
+        case OP_XCHG: opcode |= 0x5f << 23; break;
+        case OP_XOUT: opcode |= 0x5e << 23; break;
+        case OP_FILL:
+        case OP_ZERO:
+        case OP_XIN:  opcode |= 0x5d << 23; break;
+        default:      opcode |= 0x5c << 23;
         }
-        opcode |= inst.Arg[0].Value << 15;
-        opcode |= (inst.Arg[2].Value - 1) << 7;
-        opcode |= inst.Arg[1].Value << 0;
+        // TODO: implement mode with count in R0.bx (count equals 124..127) ???
+        opcode |= (inst.Arg[utmp].Value / 4) << 0;      // register nr
+        opcode |= (inst.Arg[utmp].Value % 4) << 5;      // byte select
+        opcode |= (inst.Arg[utmp+1].Value - 1) << 7;    // count - 1
         GenOp( ps, TermCnt, pTerms, opcode );
         return(1);
     }

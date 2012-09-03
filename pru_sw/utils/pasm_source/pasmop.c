@@ -1131,7 +1131,9 @@ WAITBIT_OPCODE:
         /*
         // Instruction in the form of:
         //     ZERO  &Rdst,  #Im124
+        //     ZERO  &Rdst,  bn
         //     ZERO  #Im123, #Im124
+        //     ZERO  #Im123, bn
         */
         if( Core<CORE_V1 )
             { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
@@ -1139,12 +1141,22 @@ WAITBIT_OPCODE:
             { Report(ps,REP_ERROR,"Expected 2 operands"); return(0); }
         if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 123 ) )
             return(0);
-        if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 124 ) )
-            return(0);
+        if( CheckTokenType(pTerms[2]) & TOKENTYPE_FLG_REG_BASE )
+        {
+            if( Core<CORE_V2 )
+                { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
+            if( !GetR0offset( ps, 2, pTerms[2], &(inst.Arg[1]) ) )
+                return(0);
+        }
+        else
+        {
+            if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 1, 124 ) )
+                return(0);
+        }
 
         if( (inst.Arg[0].Value + inst.Arg[1].Value)>124 )
             { Report(ps,REP_ERROR,"Clear length exceeds register file length"); return(0); }
-        if( !inst.Arg[1].Value )
+        if( inst.Arg[1].Type != TOKENTYPE_FLG_REG_BASE && inst.Arg[1].Value == 0 )
             { Report(ps,REP_ERROR,"Zero length clear"); return(0); }
 
         if( Core<=CORE_V1 )
@@ -1295,7 +1307,9 @@ WAITBIT_OPCODE:
         /*
         // Instruction in the form of:
         //     FILL  &Rdst,  #Im124
+        //     FILL  &Rdst,  bn
         //     FILL  #Im123, #Im124
+        //     FILL  #Im123, bn
         */
         if( Core<CORE_V2 )
             { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
@@ -1303,9 +1317,16 @@ WAITBIT_OPCODE:
             { Report(ps,REP_ERROR,"Expected 2 operands"); return(0); }
         if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 123 ) )
             return(0);
-        if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 124 ) )
-            return(0);
-
+        if( CheckTokenType(pTerms[2]) & TOKENTYPE_FLG_REG_BASE )
+        {
+            if( !GetR0offset( ps, 2, pTerms[2], &(inst.Arg[1]) ) )
+                return(0);
+        }
+        else
+        {
+            if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 1, 124 ) )
+                return(0);
+        }
         if( (inst.Arg[0].Value + inst.Arg[1].Value)>124 )
             { Report(ps,REP_ERROR,"Fill length exceeds register file length"); return(0); }
         if( !inst.Arg[1].Value )
@@ -1324,8 +1345,11 @@ WAITBIT_OPCODE:
         /*
         // Instruction in the form of:
         //     XIN  #Im253, Rdst, #Im124
+        //     XIN  #Im253, Rdst, bn
         //     XOUT #Im253, Rsrc, #Im124
+        //     XOUT #Im253, Rsrc, bn
         //     XCHG #Im253, Rsrc, #Im124
+        //     XCHG #Im253, Rsrc, bn
         */
         if( Core<CORE_V2 )
             { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
@@ -1344,9 +1368,16 @@ WAITBIT_OPCODE:
             if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 30 ) )
                 return(0);
         }
-        if( !GetImValue( ps, 3, pTerms[3], &(inst.Arg[2]), 1, 124 ) )
-            return(0);
-
+        if( CheckTokenType(pTerms[3]) & TOKENTYPE_FLG_REG_BASE )
+        {
+            if( !GetR0offset( ps, 3, pTerms[3], &(inst.Arg[2]) ) )
+                return(0);
+        }
+        else
+        {
+            if( !GetImValue( ps, 3, pTerms[3], &(inst.Arg[2]), 1, 124 ) )
+                return(0);
+        }
         /* XFR */
         opcode = inst.Arg[0].Value << 15;       // device id
         utmp = 1;
@@ -1360,10 +1391,12 @@ CODE_XFR:
         case OP_XIN:  opcode |= 0x5d << 23; break;
         default:      opcode |= 0x5c << 23;
         }
-        // TODO: implement mode with count in R0.bx (count equals 124..127) ???
         opcode |= (inst.Arg[utmp].Value / 4) << 0;      // register nr
         opcode |= (inst.Arg[utmp].Value % 4) << 5;      // byte select
-        opcode |= (inst.Arg[utmp+1].Value - 1) << 7;    // count - 1
+        if( inst.Arg[utmp+1].Type == ARGTYPE_R0BYTE)
+            opcode |= (124 + inst.Arg[utmp+1].Value) << 7;
+        else
+            opcode |= (inst.Arg[utmp+1].Value - 1) << 7;    // count - 1
         GenOp( ps, TermCnt, pTerms, opcode );
         return(1);
     }

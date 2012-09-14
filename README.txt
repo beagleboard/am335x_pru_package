@@ -8,7 +8,14 @@ These materials are intended for do-it-yourself (DIY) users
 who want to use the PRU at their own risk without TI support.  
 "Community" support is offered at BeagleBoard.org/discuss.
  
-
+-------------------------------------------------------------
+This tree contains a modified PRUSS assembler source that
+(currently) implements the following undocumented PRUSS V2
+instructions:
+  XIN, XOUT, XCHG, ZERO and FILL.
+For documentation see the SPRUH73C (TRM rev. C) document.
+Note: the pasm binaries in this tree are old, you'll have
+to compile pasm for your platform yourself.
 -------------------------------------------------------------
 
 The AM335x PRU Package includes:

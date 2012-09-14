@@ -105,7 +105,7 @@ int CheckOpcode( char *word )
 
 
 /*
-// GetTokenType
+// CheckTokenType
 //
 // Called to see if the supplied token is reserved word.
 //
@@ -1135,174 +1135,6 @@ WAITBIT_OPCODE:
         //     ZERO  #Im123, #Im124
         //     ZERO  #Im123, bn
         */
-        if( Core<CORE_V1 )
-            { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
-        if( TermCnt != 3 )
-            { Report(ps,REP_ERROR,"Expected 2 operands"); return(0); }
-        if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 123 ) )
-            return(0);
-        if( CheckTokenType(pTerms[2]) & TOKENTYPE_FLG_REG_BASE )
-        {
-            if( Core<CORE_V2 )
-                { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
-            if( !GetR0offset( ps, 2, pTerms[2], &(inst.Arg[1]) ) )
-                return(0);
-        }
-        else
-        {
-            if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 1, 124 ) )
-                return(0);
-        }
-
-        if( (inst.Arg[0].Value + inst.Arg[1].Value)>124 )
-            { Report(ps,REP_ERROR,"Clear length exceeds register file length"); return(0); }
-        if( inst.Arg[1].Type != TOKENTYPE_FLG_REG_BASE && inst.Arg[1].Value == 0 )
-            { Report(ps,REP_ERROR,"Zero length clear"); return(0); }
-
-        if( Core<=CORE_V1 )
-        // TODO: determine whether it makes sense to use LDI in case of a single
-        //       byte or word, that maps to a single register(part)?
-        while( inst.Arg[1].Value )
-        {
-            uint reg,field=0,size=0;
-
-            reg = inst.Arg[0].Value/4;
-
-            if( !(Options & OPTION_BIGENDIAN) )
-            {
-                /*
-                // Little Endian Version
-                */
-                switch( inst.Arg[0].Value & 0x3 )
-                {
-                case 0:
-                    if( inst.Arg[1].Value >= 4 )
-                    {
-                        size = 4;
-                        field = FIELDTYPE_31_0;
-                    }
-                    else if( inst.Arg[1].Value >= 2 )
-                    {
-                        size = 2;
-                        field = FIELDTYPE_15_0;
-                    }
-                    else
-                    {
-                        size = 1;
-                        field = FIELDTYPE_7_0;
-                    }
-                    break;
-
-                case 1:
-                    if( inst.Arg[1].Value >= 2 )
-                    {
-                        size = 2;
-                        field = FIELDTYPE_23_8;
-                    }
-                    else
-                    {
-                        size = 1;
-                        field = FIELDTYPE_15_8;
-                    }
-                    break;
-
-                case 2:
-                    if( inst.Arg[1].Value >= 2 )
-                    {
-                        size = 2;
-                        field = FIELDTYPE_31_16;
-                    }
-                    else
-                    {
-                        size = 1;
-                        field = FIELDTYPE_23_16;
-                    }
-                    break;
-
-                case 3:
-                    size = 1;
-                    field = FIELDTYPE_31_24;
-                    break;
-                }
-            }
-            else
-            {
-                /*
-                // Big Endian Version
-                */
-                switch( inst.Arg[0].Value & 0x3 )
-                {
-                case 0:
-                    if( inst.Arg[1].Value >= 4 )
-                    {
-                        size = 4;
-                        field = FIELDTYPE_31_0;
-                    }
-                    else if( inst.Arg[1].Value >= 2 )
-                    {
-                        size = 2;
-                        field = FIELDTYPE_31_16;
-                    }
-                    else
-                    {
-                        size = 1;
-                        field = FIELDTYPE_31_24;
-                    }
-                    break;
-
-                case 1:
-                    if( inst.Arg[1].Value >= 2 )
-                    {
-                        size = 2;
-                        field = FIELDTYPE_23_8;
-                    }
-                    else
-                    {
-                        size = 1;
-                        field = FIELDTYPE_23_16;
-                    }
-                    break;
-
-                case 2:
-                    if( inst.Arg[1].Value >= 2 )
-                    {
-                        size = 2;
-                        field = FIELDTYPE_15_0;
-                    }
-                    else
-                    {
-                        size = 1;
-                        field = FIELDTYPE_15_8;
-                    }
-                    break;
-
-                case 3:
-                    size = 1;
-                    field = FIELDTYPE_7_0;
-                    break;
-                }
-            }
-
-            inst.Arg[0].Value += size;
-            inst.Arg[1].Value -= size;
-
-            /* LDI */
-            opcode = 0x24 << 24;
-            opcode |= reg;
-            opcode |= field << 5;
-            GenOp( ps, TermCnt, pTerms, opcode );
-        }
-        else
-        {
-            /*
-            // V2 can do the ZERO operation in one cycle using XFR
-            */
-            opcode = 255 << 15;        // use /dev/zero
-            utmp = 0;
-            goto CODE_XFR;
-        }
-        return(1);
-
     case OP_FILL:
         /*
         // Instruction in the form of:
@@ -1315,8 +1147,18 @@ WAITBIT_OPCODE:
             { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
         if( TermCnt != 3 )
             { Report(ps,REP_ERROR,"Expected 2 operands"); return(0); }
-        if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 123 ) )
-            return(0);
+        // First argument
+        if( CheckTokenType(pTerms[1]) == TOKENTYPE_FLG_REG_ADDR )
+        {
+            if( !GetRegister( ps, 1, pTerms[1]+1, &(inst.Arg[0]), 0, 0 ) )
+                return(0);
+        }
+        else
+        {
+            if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 123 ) )
+                return(0);
+        }
+        // Second argument
         if( CheckTokenType(pTerms[2]) & TOKENTYPE_FLG_REG_BASE )
         {
             if( !GetR0offset( ps, 2, pTerms[2], &(inst.Arg[1]) ) )
@@ -1326,16 +1168,17 @@ WAITBIT_OPCODE:
         {
             if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 1, 124 ) )
                 return(0);
+            if( (inst.Arg[0].Value + inst.Arg[1].Value)>124 )
+                { Report(ps,REP_ERROR,"Operation length exceeds register file length"); return(0); }
+            if( inst.Arg[1].Type != TOKENTYPE_FLG_REG_BASE && inst.Arg[1].Value == 0 )
+                { Report(ps,REP_ERROR,"Zero length operation"); return(0); }
         }
-        if( (inst.Arg[0].Value + inst.Arg[1].Value)>124 )
-            { Report(ps,REP_ERROR,"Fill length exceeds register file length"); return(0); }
-        if( !inst.Arg[1].Value )
-            { Report(ps,REP_ERROR,"Zero length fill"); return(0); }
 
-        /*
-        // V2 can do the FILL operation in one cycle using XFR
-        */
-        opcode = 254 << 15;        // use /dev/ones ;)
+        if ( inst.Op == OP_FILL )
+            opcode = 254 << 15;        // use /dev/fill
+        else
+            opcode = 255 << 15;        // use /dev/zero
+
         utmp = 0;
         goto CODE_XFR;
 
@@ -1350,24 +1193,31 @@ WAITBIT_OPCODE:
         //     XOUT #Im253, Rsrc, bn
         //     XCHG #Im253, Rsrc, #Im124
         //     XCHG #Im253, Rsrc, bn
+        // for reasons of consistency with FILL and ZERO, the second argument can also have a '&' !
         */
         if( Core<CORE_V2 )
             { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
         if( TermCnt != 4 )
             { Report(ps,REP_ERROR,"Expected 3 operands"); return(0); }
-
+        // First argument: #Im253
         if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 253 ) )
+            return(0);
+        // Second argument: Rsrc or Rdst
+        if( !(CheckTokenType(pTerms[2]) & (TOKENTYPE_FLG_REG_BASE|TOKENTYPE_FLG_REG_ADDR)) )
             return(0);
         if( CheckTokenType(pTerms[2]) & TOKENTYPE_FLG_REG_BASE )
         {
             if( !GetRegister( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 0 ) )
-                return(0);
+               return(0);
+        }
+        else if( CheckTokenType(pTerms[2]) & TOKENTYPE_FLG_REG_ADDR )
+        {
+            if( !GetRegister( ps, 2, pTerms[2]+1, &(inst.Arg[1]), 0, 0 ) )
+               return(0);
         }
         else
-        {
-            if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 30 ) )
-                return(0);
-        }
+            return(0);
+        // Third argument: #Im124 or bn
         if( CheckTokenType(pTerms[3]) & TOKENTYPE_FLG_REG_BASE )
         {
             if( !GetR0offset( ps, 3, pTerms[3], &(inst.Arg[2]) ) )
@@ -1391,12 +1241,32 @@ CODE_XFR:
         case OP_XIN:  opcode |= 0x5d << 23; break;
         default:      opcode |= 0x5c << 23;
         }
-        opcode |= (inst.Arg[utmp].Value / 4) << 0;      // register nr
-        opcode |= (inst.Arg[utmp].Value % 4) << 5;      // byte select
-        if( inst.Arg[utmp+1].Type == ARGTYPE_R0BYTE)
-            opcode |= (124 + inst.Arg[utmp+1].Value) << 7;
+        // merge base register
+	if( inst.Arg[utmp].Type == ARGTYPE_IMMEDIATE )
+        {
+            if( !Offset2Reg( ps, utmp+1, &(inst.Arg[utmp]), inst.Arg[utmp].Value, 1 ) )
+                return(0);
+        }
+        opcode |= inst.Arg[utmp].Value << 0;      // register nr
+        // merge register offset field
+        switch (inst.Arg[utmp].Field)
+        {
+        case FIELDTYPE_7_0:
+        case FIELDTYPE_31_0:
+        case FIELDTYPE_15_0:	opcode |= FIELDTYPE_OFF_0  << 5; break;
+        case FIELDTYPE_15_8:
+        case FIELDTYPE_23_8:	opcode |= FIELDTYPE_OFF_8  << 5; break;
+        case FIELDTYPE_23_16:
+        case FIELDTYPE_31_16:	opcode |= FIELDTYPE_OFF_16 << 5; break;
+        case FIELDTYPE_31_24:	opcode |= FIELDTYPE_OFF_24 << 5; break;
+        }
+        // merge count
+        if( inst.Arg[utmp+1].Type == ARGTYPE_IMMEDIATE )
+            opcode |= (inst.Arg[utmp+1].Value - 1) << 7;      // count - 1
+        else if( inst.Arg[utmp+1].Type == ARGTYPE_R0BYTE)
+            opcode |= (124 + inst.Arg[utmp+1].Value) << 7;    // count in R0 byte
         else
-            opcode |= (inst.Arg[utmp+1].Value - 1) << 7;    // count - 1
+            return(0);
         GenOp( ps, TermCnt, pTerms, opcode );
         return(1);
     }

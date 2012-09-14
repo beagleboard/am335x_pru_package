@@ -75,7 +75,8 @@ char *OpText[] = {
     "XOR","NOT","MIN","MAX","CLR","SET","LDI","LBBO","LBCO","SBBO",
     "SBCO","LFC","STC","JAL","JMP","QBGT","QBLT","QBEQ","QBGE","QBLE",
     "QBNE","QBA","QBBS","QBBC","LMBD","CALL","WBC","WBS","MOV","MVIB",
-    "MVIW","MVID","SCAN","HALT","SLP", "RET", "ZERO", "XIN", "XOUT", "XCHG", "FILL" };
+    "MVIW","MVID","SCAN","HALT","SLP", "RET", "ZERO", "XIN", "XOUT", "XCHG",
+    "FILL", "SXIN", "SXOUT", "SXCHG" };
 
 /* Local Support Funtions */
 static int GetImValue( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa, uint low, uint high );
@@ -544,10 +545,8 @@ CODE_ARITHMETIC:
 CODE_MVI:
         if( Core<CORE_V1 )
             { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
-        if( TermCnt==4 )
-            { Report(ps,REP_ERROR,"3 operand mode not supported on this PRU"); return(0); }
-        else if( TermCnt!=3 )
-            { Report(ps,REP_ERROR,"Expected 2 operands"); return(0); }
+        if( TermCnt < 3 || TermCnt > 4)
+            { Report(ps,REP_ERROR,"Expected 2 or 3 operands"); return(0); }
         else
         {
             uint argtype;
@@ -1185,6 +1184,9 @@ WAITBIT_OPCODE:
     case OP_XIN:
     case OP_XOUT:
     case OP_XCHG:
+    case OP_SXIN:
+    case OP_SXOUT:
+    case OP_SXCHG:
         /*
         // Instruction in the form of:
         //     XIN  #Im253, Rdst, #Im124
@@ -1234,12 +1236,15 @@ WAITBIT_OPCODE:
 CODE_XFR:
         switch( inst.Op )
         {
-        case OP_XCHG: opcode |= 0x5f << 23; break;
-        case OP_XOUT: opcode |= 0x5e << 23; break;
+        case OP_XCHG:  opcode |=  0x5f << 23;              break;
+        case OP_SXCHG: opcode |= (0x5f << 23) | (1 << 14); break;
+        case OP_XOUT:  opcode |=  0x5e << 23;              break;
+        case OP_SXOUT: opcode |= (0x5e << 23) | (1 << 14); break;
         case OP_FILL:
         case OP_ZERO:
-        case OP_XIN:  opcode |= 0x5d << 23; break;
-        default:      opcode |= 0x5c << 23;
+        case OP_XIN:   opcode |=  0x5d << 23;              break;
+        case OP_SXIN:  opcode |= (0x5d << 23) | (1 << 14); break;
+        default:       opcode |=  0x5c << 23;
         }
         // merge base register
 	if( inst.Arg[utmp].Type == ARGTYPE_IMMEDIATE )

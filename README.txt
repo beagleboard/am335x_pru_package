@@ -12,7 +12,7 @@ who want to use the PRU at their own risk without TI support.
 This tree contains a modified PRUSS assembler source that
 (currently) implements the following undocumented PRUSS V2
 instructions:
-  XIN, XOUT, XCHG, ZERO and FILL.
+  XIN, XOUT, XCHG, ZERO, FILL, SXIN, SXOUT and SXCHG.
 For documentation see the SPRUH73C (TRM rev. C) document.
 Note: the pasm binaries in this tree are old, you'll have
 to compile pasm for your platform yourself.

@@ -149,7 +149,10 @@ typedef struct _PRU_INST {
 #define OP_XOUT                     49
 #define OP_XCHG                     50
 #define OP_FILL                     51
-#define OP_MAXIDX                   51
+#define OP_SXIN                     52
+#define OP_SXOUT                    53
+#define OP_SXCHG                    54
+#define OP_MAXIDX                   54
 
 extern char *OpText[];
 

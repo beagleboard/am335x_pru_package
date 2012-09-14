@@ -6,7 +6,8 @@ ASSEMBLER ?= ../pasm
 EVALUATOR ?= ../reval.py
 
 SRCS :=	xchg.p xin.p xout.p \
-	zero.p fill.p
+	zero.p fill.p \
+	sxchg.p sxin.p sxout.p
 
 OBJS := $(patsubst %.p,%.bin, ${SRCS})
 LSTS := $(patsubst %.p,%.txt, ${SRCS})

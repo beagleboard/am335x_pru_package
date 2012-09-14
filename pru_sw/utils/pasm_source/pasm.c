@@ -389,7 +389,9 @@ USAGE:
     /* Process the results */
     printf("\nPass %d : %d Error(s), %d Warning(s)\n\n",Pass,Errors,Warnings);
     if( Errors || CodeOffset<=0 )
-        Options = 0;
+//        Options = 0;
+// Do generate a listing so we can see where it fails
+        Options = ( Options & OPTION_SOURCELISTING );
     else
         printf("Writing Code Image of %d word(s)\n\n",CodeOffset);
 

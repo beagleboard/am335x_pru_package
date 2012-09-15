@@ -76,7 +76,7 @@ char *OpText[] = {
     "SBCO","LFC","STC","JAL","JMP","QBGT","QBLT","QBEQ","QBGE","QBLE",
     "QBNE","QBA","QBBS","QBBC","LMBD","CALL","WBC","WBS","MOV","MVIB",
     "MVIW","MVID","SCAN","HALT","SLP", "RET", "ZERO", "XIN", "XOUT", "XCHG",
-    "FILL", "SXIN", "SXOUT", "SXCHG" };
+    "FILL", "SXIN", "SXOUT", "SXCHG", "LOOP", "ILOOP" };
 
 /* Local Support Funtions */
 static int GetImValue( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa, uint low, uint high );
@@ -1274,6 +1274,51 @@ CODE_XFR:
             return(0);
         GenOp( ps, TermCnt, pTerms, opcode );
         return(1);
+
+    case OP_LOOP:
+    case OP_ILOOP:
+        /*
+        // Instruction in the form of:
+        //     LOOP  #Im65535, Rcnt
+        //     LOOP  #Im65535, #Im255
+        //     ILOOP #Im65535, Rcnt
+        //     ILOOP #Im65535, #Im255
+        */
+        if( TermCnt != 3 )
+            { Report(ps,REP_ERROR,"Expected 2 operands"); return(0); }
+	// First argument
+        if( !GetJmpOffset( ps, 1, pTerms[1], &(inst.Arg[0]) ) )
+            return(0);
+        if( Pass==2 && (inst.Arg[0].Value > 255) )
+            { Report(ps,REP_ERROR,"Operand 1 relative jump out of range"); return(0); }
+
+	// Second argument
+        if( CheckTokenType(pTerms[2]) & TOKENTYPE_FLG_REG_BASE )
+        {
+            if( !GetRegister( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 0 ) )
+                return(0);
+        }
+        else
+        {
+            if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 1, 32 ) )
+                return(0);
+        }
+        opcode = 0x18 << 25;
+	if( inst.Op == OP_ILOOP)
+            opcode |= 1 << 15;
+        opcode |= inst.Arg[0].Value & 0xFF;
+        if( inst.Arg[1].Type == ARGTYPE_REGISTER )
+        {
+            opcode |= inst.Arg[1].Value << 16;
+            opcode |= inst.Arg[1].Field << 21;
+        }
+        else
+        {
+            opcode |= ((inst.Arg[1].Value - 1) & 31) << 16;
+            opcode |= 1 << 24;
+        }
+        GenOp( ps, TermCnt, pTerms, opcode );
+        return(1);
     }
 
     Report(ps,REP_ERROR,"Invalid opcode");
@@ -1616,7 +1661,7 @@ INVALID_R0BYTE:
 // Parses the source string for a register and field
 //
 // ps      - Pointer to source file record
-// num     - source line number
+// num     - operand number (1 based)
 // src     - source string
 // pa      - Pointer to register structure
 //
@@ -1638,13 +1683,16 @@ static int GetJmpOffset( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa )
         return(0);
     }
 
-    if( Pass==2 && (Options & OPTION_DEBUG) )
-        printf("%s(%5d) : EXP    : '%s' = %d\n", ps->SourceName,ps->CurrentLine,src,val);
-
-    jmpoff = ((int)val) - CodeOffset;
-    if( Pass==2 && (jmpoff<-512 || jmpoff>511) )
-        { Report(ps,REP_ERROR,"Operand %d relative jump out of range",num); return(0); }
-
+    if( Pass==2 )
+    {
+        if( Options & OPTION_DEBUG )
+            printf("%s(%5d) : EXP    : '%s' = %d\n", ps->SourceName,ps->CurrentLine,src,val);
+        jmpoff = ((int)val) - CodeOffset;
+        if( jmpoff < -512 || jmpoff > 511 )
+            { Report(ps,REP_ERROR,"Operand %d relative jump out of range",num); return(0); }
+    }
+    else
+        jmpoff = 0x3FF;
     /* Setup the record */
     pa->Type  = ARGTYPE_OFFSET;
     pa->Value = (uint)jmpoff;

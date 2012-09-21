@@ -112,13 +112,6 @@ int main (void)
     /* Execute example on PRU */
     printf("\tINFO: Executing example.\r\n");
     prussdrv_exec_program (PRU_NUM, "./dmx.bin");
-printf("\tYUP WE'RE HERE\n");
-printf("\tYUP WE'RE HERE\n");
-printf("\tYUP WE'RE HERE\n");
-printf("\tYUP WE'RE HERE\n");
-printf("\tYUP WE'RE HERE\n");
-printf("\tYUP WE'RE HERE\n");
-    printf("\tWaiting for packet...\n");
     LOCAL_udp_listen();
  
     // Instead of waiting patiently for the PRU to finish, we're going to screw around with the shared memory and hopefully influence the PRU
@@ -152,7 +145,6 @@ printf("\tYUP WE'RE HERE\n");
       }
     }
 */
-
  
     pruDataMem_byte[DMX_HALT_ADDR] = 1;
     
@@ -254,10 +246,12 @@ static void LOCAL_udp_listen () {
 		if (packet_length == -1) {
 			diep("recvfrom()");
 		}
-		buf[packet_length] = 0;
-//		printf("\tReceived packet (size %d) from %s:%d\nData: %s\n\n", packet_length, inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buf);
-		sscanf(buf, "%d %d", &channel, &value);
-		pruDataMem_byte[channel] = value;
+		for (i=0; i<packet_length; i+=8) {
+			buf[packet_length] = 0;
+//			printf("\tReceived packet (size %d) from %s:%d\nData: %s\n\n", packet_length, inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buf);
+			sscanf(buf+i, "%3d %3d ", &channel, &value);
+			pruDataMem_byte[channel] = value;
+		}
  	}
 
 	close(s);

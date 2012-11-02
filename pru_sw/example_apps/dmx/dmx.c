@@ -39,7 +39,7 @@
 #define DMX_PIN_ADDR (0x102)
 
 #define UDP_PORT (9930)
-#define UDP_BUFLEN (1024*64)
+#define UDP_BUFLEN (512)
 
 #define AM33XX
 
@@ -57,8 +57,6 @@ static void LOCAL_export_pin (int);
 static void LOCAL_unexport_pin (int);
 static void LOCAL_udp_listen ();
 static void diep (char*);
-
-static void sighandler(int);
 
 /*****************************************************************************
 * Local Variable Definitions                                                 *
@@ -220,7 +218,7 @@ static void LOCAL_udp_listen () {
 	struct sockaddr_in si_me, si_other;
 	int s, i, slen=sizeof(si_other);
 	char buf[UDP_BUFLEN];
-	int channel, channels, value;
+	int channel, value;
 	int packet_length;
 
 	if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
@@ -237,32 +235,18 @@ static void LOCAL_udp_listen () {
 		buf[i] = 0;
 	}
 
-//	signal(SIGABRT, &sighandler);
-//	signal(SIGTERM, &sighandler);
-//	signal(SIGINT, &sighandler);
-
 	while (udp_forever) {
 		packet_length = recvfrom(s, buf, UDP_BUFLEN, 0, &si_other, &slen);
 		if (packet_length == -1) {
 			diep("recvfrom()");
 		}
-    sscanf(buf, "%3d ", &channels);
-    pruDataMem_byte[DMX_CHANNELS_ADDR] = channels+1; // does this get updated too often?
-    channel = 0;
-		buf[packet_length] = 0;
-		for (i=4; i<packet_length; i+=4) {
+		for (i=0; i<packet_length; i+=8) {
+			buf[packet_length] = 0;
 //			printf("\tReceived packet (size %d) from %s:%d\nData: %s\n\n", packet_length, inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buf);
-			sscanf(buf+i, "%3d ", &value);
-//			printf("%3d %3d ", channel, value);
-			pruDataMem_byte[channel++] = value;
+			sscanf(buf+i, "%3d %3d ", &channel, &value);
+			pruDataMem_byte[channel] = value;
 		}
-//		printf("\n");
  	}
 
 	close(s);
-}
-
-static void sighandler(int sig) {
-	printf("\tCaught signal! %d\n", sig);
-	udp_forever = 0;
 }

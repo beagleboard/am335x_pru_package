@@ -32,3 +32,6 @@ PRU software (pru_sw):
       PRU_memAccess_DDR_PRUsharedRAM
       PRU_memAccessPRUDataRam
       PRU_PRUtoPRUInterrupt   
+      blink
+      blinkslave
+      dmx

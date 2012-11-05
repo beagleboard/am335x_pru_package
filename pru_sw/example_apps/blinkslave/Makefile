@@ -1,4 +1,4 @@
-#CROSS_COMPILE?=arm-arago-linux-gnueabi-
+CROSS_COMPILE?=arm-arago-linux-gnueabi-
 
 LIBDIR_APP_LOADER?=../../app_loader/lib
 INCDIR_APP_LOADER?=../../app_loader/include

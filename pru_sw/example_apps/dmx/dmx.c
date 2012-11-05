@@ -112,38 +112,6 @@ int main (void)
     prussdrv_exec_program (PRU_NUM, "./dmx.bin");
     LOCAL_udp_listen();
  
-    // Instead of waiting patiently for the PRU to finish, we're going to screw around with the shared memory and hopefully influence the PRU
-    
-/*    for (k = 0; k < 10; k++) {
-      for (j = 0; j < 5; j++) {
-	for (i = 0; i < 3; i++) {
-          pruDataMem_byte[0] = 64;
-          usleep(10000);
-          pruDataMem_byte[0] = 0;
-          usleep(10000);
-	}
-	for (i = 0; i < 3; i++) {
-          pruDataMem_byte[1] = 64;
-          usleep(10000);
-          pruDataMem_byte[1] = 0;
-          usleep(10000);
-	}
-      }
-      for (j = 0; j < 5; j++) {
-        for (i = 0; i < 64; i++) {
-          pruDataMem_byte[0] = i;
-          pruDataMem_byte[1] = 64-i;
-          usleep(10000);
-        }
-        for (i = 0; i < 64; i++) {
-          pruDataMem_byte[0] = 64-i;
-          pruDataMem_byte[1] = i;
-          usleep(10000);
-        }
-      }
-    }
-*/
- 
     pruDataMem_byte[DMX_HALT_ADDR] = 1;
     
     /* Wait until PRU0 has finished execution */

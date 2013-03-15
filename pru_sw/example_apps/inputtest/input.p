@@ -41,5 +41,5 @@ ENDNOW:
 //#endif
 
 CLR r30.t15
-CLR r1
+MOV r1, 0
 HALT

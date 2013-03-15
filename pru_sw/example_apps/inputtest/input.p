@@ -16,7 +16,7 @@ START:
 
     MOV r1, 0xf0000000 //Duration in #instructions of program
 BLINK:
-    MOV r30.t15, r31.t14 //Set GPIO13 to value of GPIO14 which is configed as input
+    MOV r30.t15, r31.b14 //Set GPIO13 to value of GPIO14 which is configed as input
 	SUB r1, r1, 1 //Subtract from counter
 	QBNE BLINK, r1, 0
 

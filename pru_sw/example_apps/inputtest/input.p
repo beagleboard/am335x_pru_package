@@ -14,7 +14,7 @@ START:
     CLR r0, r0, 4
     SBCO r0, C4, 4, 4
 
-    MOV r1, 0x0f000000 //Duration in #instructions of program
+    MOV r1, 0xf0000000 //Duration in #instructions of program
 	QBA INPUTTEST
 	
 TURNON:

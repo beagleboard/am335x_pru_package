@@ -1,0 +1,60 @@
+//
+// Source: PRU_gpioToggle.hp
+// Revision: 1.1
+//
+// PRU_gpioToggle assembly constants/macros. 
+
+#ifndef _PRU_GPIOTOGGLE_HP_
+#define _PRU_GPIOTOGGLE_HP_
+
+
+// ***************************************
+// *      Global Macro definitions       *
+// ***************************************
+
+// gpioSet : Set one of the PRU gpio pins through R30
+//
+// Usage:
+//  gpioSet	bitNum
+//
+// Sets r30 bit specified in bitNum.
+//
+.macro	gpioSet
+.mparam bitNum
+    SET	r30, r30, bitNum
+.endm
+
+// gpioClr : Clear one of the PRU gpio pins through R30
+//
+// Usage:
+//	gpioClr	bitNum
+//
+// Clears r30 bit specified in bitNum.
+//
+.macro	gpioClr
+.mparam bitNum
+  CLR	r30, r30, bitNum
+.endm
+
+#define GPIO_BIT          0x0
+#define GPIO_COUNT        0x8
+
+
+// ***************************************
+// *    Global Structure Definitions     *
+// ***************************************
+
+.struct Global
+    .u16 count
+    .u16 delay
+.ends
+
+
+// ***************************************
+// *     Global Register Assignments     *
+// ***************************************
+
+.assign Global, r2, *, global
+
+
+#endif // _PRU_GPIOTOGGLE_HP_

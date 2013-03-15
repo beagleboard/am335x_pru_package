@@ -15,11 +15,21 @@ START:
     SBCO r0, C4, 4, 4
 
     MOV r1, 0xf0000000 //Duration in #instructions of program
+	
 INPUTTEST:
-	MOV r2, r31.t14 //Store input
-    SET r30.t15, r2 //Set GPIO13 to stored input value
+	SET r2, r31.t14
     SUB r1, r1, 1 //Subtract from counter
-    QBNE BLINK, r1, 0
+	QBNE TURNON, r2, 1
+    QBNE TURNOFF, r2, 0
+	
+TURNON:
+	SET r30.t15
+	QBA INPUTTEST
+TURNOFF:
+	CLR r30.t15
+	QBA INPUTTEST
+
+	
 
 //#ifdef AM33XX
     // Send notification to Host for program completion

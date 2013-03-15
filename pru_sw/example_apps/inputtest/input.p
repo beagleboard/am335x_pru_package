@@ -28,8 +28,8 @@ INPUTTEST:
 	SET r2, r31.t14
     SUB r1, r1, 1 //Subtract from counter
 	QBEQ ENDNOW, r1, 0
-	QBNE TURNON, r2, 1
-    QBNE TURNOFF, r2, 0
+	QBEQ TURNON, r2, 1
+    QBEQ TURNOFF, r2, 0
 
 
 ENDNOW:
@@ -41,4 +41,5 @@ ENDNOW:
 //    MOV R31.b0, PRU0_ARM_INTERRUPT
 //#endif
 
+CLR r30.t15
 HALT

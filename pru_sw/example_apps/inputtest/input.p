@@ -17,8 +17,6 @@ START:
     MOV r0, 10 //# cycles
 	
 INPUTTEST:
-	QBEQ ENDNOW, r1, 0
-	
 	WBS r31.t14
 	SET r30.t15
 	WBC r31.t14

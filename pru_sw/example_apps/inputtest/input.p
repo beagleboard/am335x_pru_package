@@ -14,32 +14,27 @@ START:
     CLR r0, r0, 4
     SBCO r0, C4, 4, 4
 
-    MOV r1, 0xf0000000 //Duration in #instructions of program
-	QBA INPUTTEST
-	
-TURNON:
-	SET r30.t15
-	QBA INPUTTEST
-TURNOFF:
-	CLR r30.t15
-	QBA INPUTTEST
+    MOV r0, 10 //# cycles
 	
 INPUTTEST:
-    SUB r1, r1, 1 //Subtract from counter
 	QBEQ ENDNOW, r1, 0
-	QBBS TURNON, r31.t14
-    QBBC TURNOFF, r31.t14
-
-
-ENDNOW:
-
+	
+	WBS r31.t14
+	SET r30.t15
+	WBC r31.t14
+	CLR r30.t15
+	
+	SUB r0, r0, 1 //Subtract from counter
+	QBNE INPUTTEST, r0, 0
+	
 //#ifdef AM33XX
-    // Send notification to Host for program completion
-    MOV R31.b0, PRU0_ARM_INTERRUPT+16
+	// Send notification to Host for program completion
+	MOV R31.b0, PRU0_ARM_INTERRUPT+16
 //#else
 //    MOV R31.b0, PRU0_ARM_INTERRUPT
 //#endif
 
 CLR r30.t15
-MOV r1, 0
+MOV r0, 0
 HALT
+	

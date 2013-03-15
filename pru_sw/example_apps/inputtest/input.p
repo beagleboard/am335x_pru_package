@@ -25,11 +25,10 @@ TURNOFF:
 	QBA INPUTTEST
 	
 INPUTTEST:
-	SET r2, r31.t14
     SUB r1, r1, 1 //Subtract from counter
 	QBEQ ENDNOW, r1, 0
-	QBEQ TURNON, r2, 1
-    QBEQ TURNOFF, r2, 0
+	QBBS TURNON, r31.t14
+    QBBC TURNOFF, r31.t14
 
 
 ENDNOW:

@@ -17,13 +17,13 @@ START:
     MOV r0, 1000 //# cycles
 	
 INPUTTEST:
-	WBS r31.t14
-	SET r30.t15
-	WBC r31.t14
-	CLR r30.t15
+	WBS r31.t14 //When GPIO-14-in is high...
+	SET r30.t15 //...set GPIO-13-out high.
+	WBC r31.t14 //When GPIO-14-in is low...
+	CLR r30.t15 //...set GPIO-13-out low.
 	
 	SUB r0, r0, 1 //Subtract from counter
-	QBNE INPUTTEST, r0, 0
+	QBNE INPUTTEST, r0, 0 //Loop if counter not at zero
 	
 //#ifdef AM33XX
 	// Send notification to Host for program completion

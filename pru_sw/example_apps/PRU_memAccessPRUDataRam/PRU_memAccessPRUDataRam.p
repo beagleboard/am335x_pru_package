@@ -80,19 +80,26 @@ MEMACCESSPRUDATARAM:
     //Load address of PRU data memory in r2
     MOV       r2, 0x0004
 
+DECR_MEM:
     // Move value from register to the PRU local data memory using registers
     ST32      r1,r2
+    
+    //Decrement r1
+    SUB r1, r1, 1
 
+    //Loop if not at 0
+    QBNE DECR_MEM, r1, 0
+    
     // Load 32 bit value into r3
-    MOV       r3, 0x0000567A
+    //MOV       r3, 0x0000567A
 
-    LBCO      r4, CONST_PRUDRAM, 4, 4 //Load 4 bytes from memory location c3(PRU0/1 Local Data)+4 into r4 using constant table
+    //LBCO      r4, CONST_PRUDRAM, 4, 4 //Load 4 bytes from memory location c3(PRU0/1 Local Data)+4 into r4 using constant table
 
     // Add r3 and r4 
-    ADD       r3, r3, r4
+    //ADD       r3, r3, r4
 
     //Store result in into memory location c3(PRU0/1 Local Data)+8 using constant table
-    SBCO      r3, CONST_PRUDRAM, 8, 4
+    //SBCO      r3, CONST_PRUDRAM, 8, 4
         
 #ifdef AM33XX	
 

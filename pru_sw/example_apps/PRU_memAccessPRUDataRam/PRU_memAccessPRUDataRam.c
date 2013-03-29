@@ -142,6 +142,7 @@ int main (void)
     
     //Added by Riley Wood
     //Go through all memory locs until value found, and print address
+    /*
     int i;
     for(i=0; i<1024; i++)
     {
@@ -150,6 +151,12 @@ int main (void)
             printf("Found it at %d",i);
             printf("\r\n");
         }
+    }
+    */
+    
+    int ADDR = 1;
+    while(true){
+        printf("%d \r\n",pruDataMem_int[ADDR])
     }
     
     /* Wait until PRU0 has finished execution */

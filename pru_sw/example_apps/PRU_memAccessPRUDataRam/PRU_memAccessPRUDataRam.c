@@ -141,8 +141,8 @@ int main (void)
     prussdrv_exec_program (PRU_NUM, "./PRU_memAccessPRUDataRam.bin");
     
     //Added by Riley Wood
-    printf("Read from PRU DRAM: %d",pruDataRam[0x0004]);
-    printf("\n");
+    printf("Read from PRU DRAM: %d",pruDataMem_int[0x0004]);
+    printf("\r\n");
     
     /* Wait until PRU0 has finished execution */
     printf("\tINFO: Waiting for HALT command.\r\n");

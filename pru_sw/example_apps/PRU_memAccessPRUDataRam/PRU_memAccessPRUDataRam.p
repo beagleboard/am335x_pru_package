@@ -75,7 +75,7 @@ MEMACCESSPRUDATARAM:
 #endif
 
     //Load 32 bit value in r1
-    MOV       r1, 0x0010f012
+    MOV       r1, 0x0010f013
 
     //Load address of PRU data memory in r2
     MOV       r2, 0x0004

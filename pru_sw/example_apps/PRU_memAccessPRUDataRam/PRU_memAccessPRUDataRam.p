@@ -78,7 +78,7 @@ MEMACCESSPRUDATARAM:
     MOV       r1, 0x0010f012
 
     //Load address of PRU data memory in r2
-    MOV       r2, 0x0005
+    MOV       r2, 0x0004
 
     // Move value from register to the PRU local data memory using registers
     ST32      r1,r2

@@ -156,7 +156,7 @@ int main (void)
     
     int ADDR = 1;
     while(true){
-        printf("%d \r\n",pruDataMem_int[ADDR])
+        printf("%d \r\n",pruDataMem_int[ADDR]);
     }
     
     /* Wait until PRU0 has finished execution */

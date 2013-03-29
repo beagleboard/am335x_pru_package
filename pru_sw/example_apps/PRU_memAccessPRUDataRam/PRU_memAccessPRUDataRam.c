@@ -141,8 +141,16 @@ int main (void)
     prussdrv_exec_program (PRU_NUM, "./PRU_memAccessPRUDataRam.bin");
     
     //Added by Riley Wood
-    printf("Read from PRU DRAM: %d",pruDataMem_int[0x0004]);
-    printf("\r\n");
+    //Go through all memory locs until value found, and print address
+    int i;
+    for(i=0; i<1024; i++)
+    {
+        if(pruDataMem_int[i] == 0x0010f012) //Value from PRU_memAccessPRUDataRam.p
+        {
+            printf("Found it at %d",i);
+            printf("\r\n");
+        }
+    }
     
     /* Wait until PRU0 has finished execution */
     printf("\tINFO: Waiting for HALT command.\r\n");

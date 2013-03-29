@@ -155,7 +155,7 @@ int main (void)
     */
     
     int ADDR = 1;
-    while(true){
+    for(;;)){
         printf("%d \r\n",pruDataMem_int[ADDR]);
     }
     

@@ -117,7 +117,7 @@ int main (void)
     unsigned int ret;
     tpruss_intc_initdata pruss_intc_initdata = PRUSS_INTC_INITDATA;
     
-    printf("\nINFO: Starting %s example.\r\n", "PRU_memAccessPRUDataRam");
+    printf("\nINFO: Starting %s example.\r\n", "encoder");
     /* Initialize the PRU */
     prussdrv_init ();		
     
@@ -138,7 +138,7 @@ int main (void)
     
     /* Execute example on PRU */
     printf("\tINFO: Executing example.\r\n");
-    prussdrv_exec_program (PRU_NUM, "./PRU_memAccessPRUDataRam.bin");
+    prussdrv_exec_program (PRU_NUM, "./encoder.bin");
     
     //Added by Riley Wood
     //Go through all memory locs until value found, and print address

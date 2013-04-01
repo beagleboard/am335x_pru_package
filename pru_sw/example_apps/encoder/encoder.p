@@ -59,7 +59,7 @@
 .origin 0
 .entrypoint MEMACCESSPRUDATARAM
 
-#include "PRU_memAccessPRUDataRam.hp"
+#include "encoder.hp"
 
 MEMACCESSPRUDATARAM:
       

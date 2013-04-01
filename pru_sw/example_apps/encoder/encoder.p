@@ -109,13 +109,13 @@ EDGEDETECTED:
     QBEQ CW, r3, 1
     SUB r5, r5, 1
     // Move value from register to the PRU local data memory using registers
-    ST32 POSITIONVALUEHERE,r0
+    ST32 r5, r0
     QBA READPINS
 
 CW:
     ADD r5, r5, 1
     // Move value from register to the PRU local data memory using registers
-    ST32 POSITIONVALUEHERE,r0
+    ST32 r5, r0
     QBA READPINS
     
 #ifdef AM33XX    

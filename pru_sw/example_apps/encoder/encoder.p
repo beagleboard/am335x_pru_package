@@ -100,8 +100,8 @@ READPINS:
     //Jump to edge detection steps if edge detected
     QBEQ EDGEDETECTED, r4, 1
     
-    //Loop if 0!=1 (forever)
-    QBNE READPINS, 1, 0
+    //Loop forever
+    QBA READPINS
     
 //Jump to CW handling if clockwise (B high while edge present).
 //Otherwise handle CCW in this label

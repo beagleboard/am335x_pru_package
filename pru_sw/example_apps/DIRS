@@ -5,6 +5,7 @@ APP_DIRS += PRU_memAccessPRUDataRam
 APP_DIRS += PRU_PRUtoPRU_Interrupt
 APP_DIRS += HRIBeagleBone
 APP_DIRS += inputtest
+APP_DIRS += encoder
 
 
 ASSEM_FILES :=
@@ -15,6 +16,7 @@ ASSEM_FILES += PRU_PRUtoPRU_Interrupt/PRU_PRU0toPRU1_Interrupt.p
 ASSEM_FILES += PRU_PRUtoPRU_Interrupt/PRU_PRU1toPRU0_Interrupt.p
 ASSEM_FILES += HRIBeagleBone/gpioblink.p
 ASSEM_FILES += inputtest/input.p
+ASSEM_FILES += encoder/encoder.p
 
 
 
@@ -26,4 +28,5 @@ BIN_FILES += PRU_PRU0toPRU1_Interrupt.bin
 BIN_FILES += PRU_PRU1toPRU0_Interrupt.bin
 BIN_FILES += gpioblink.bin
 BIN_FILES += inputtest.bin
+BIN_FILES += encoder.bin
 

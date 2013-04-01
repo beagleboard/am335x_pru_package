@@ -86,10 +86,10 @@ MEMACCESSPRUDATARAM:
 READPINS:
     
     //Store pin1 current value
-    MOV r1, (r31 & 1<<PIN1)
+    LSL r1, r31, PIN1
     
     //Store pin2 current value
-    MOV r3, (r31 & 1<<PIN2)
+    MOV r3, r31, PIN2
     
     //Invert pin1 value to test logic later on...
     NOT r1, r1

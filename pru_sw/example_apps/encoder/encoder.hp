@@ -112,11 +112,11 @@
 // Address for the Constant table Programmable Pointer Register 1(CTPPR_1)      
 #define CTPPR_1         0x702C
 
+#endif
+
 //~~~~~~PINS~~~~~~//
 #define PIN1 14
 #define PIN2 15
-
-#endif
 
 .macro  LD32
 .mparam dst,src

@@ -87,6 +87,7 @@ READPINS:
     
     //Store pin1 current value
     LSL r1, r31, PIN1
+	AND r1, r1, 1
 	
 	// Move value from register to the PRU local data memory using registers
     ST32 r1, r0

@@ -102,6 +102,7 @@ READPINS:
     
     //Store a new value for previous value of PIN1
     MOV r2, r1
+	NOT r2, r2
     
     //Jump to edge detection steps if edge detected
     QBEQ EDGEDETECTED, r4, 1

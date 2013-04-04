@@ -156,7 +156,7 @@ int main (void)
     */
     
 	//Read out memory forever
-    int ADDR = 1;
+    int ADDR = 2;
     for(;;){
         printf("%d \r\n",pruDataMem_int[ADDR]);
 		sleep(1);

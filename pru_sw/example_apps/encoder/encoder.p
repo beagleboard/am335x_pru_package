@@ -74,6 +74,7 @@ MEMACCESSPRUDATARAM:
 
 #endif
     //Register map:
+	//r0: Memory loc of shared memory (where position will be written)
 	//r1: pin1 current
 	//r2: pin1 prev
 	//r3: pin2 current

@@ -88,11 +88,20 @@ READPINS:
     //Store pin1 current value
     LSR r1, r31, PIN1
 	AND r1, r1, 1
-    
-	ST32 r1, r0
 	
-
+    //Store pin2 current value
+    LSR r3, r31, PIN2
+	AND r3, r3, 1
     
+    //Invert pin1 value to test logic later on...
+    NOT r1, r1
+    
+    //Store boolean for if pin1 is experiencing an edge (high to low) in r4
+    AND r4, r1, r3
+	
+	ST32 r4, r0
+    
+	QBA READPINS
 	
 	
 #ifdef AM33XX    

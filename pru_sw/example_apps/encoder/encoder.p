@@ -78,7 +78,7 @@ MEMACCESSPRUDATARAM:
     MOV r0, 0x0004
     
     //Initialize the "previous" value for pinA of encoder (edge pin)
-    MOV r3, 0
+    MOV r2, 0
     
     //Initialize position
     MOV r5, 0
@@ -97,16 +97,13 @@ READPINS:
     NOT r1, r1
     
     //Store boolean for if pin1 is experiencing an edge (high to low) in r4
-    AND r4, r1, r3
+    AND r4, r1, r2
+	
+	//Store a new value for previous value of PIN1
+	MOV r2, r1
     
     //Jump to edge detection steps if edge detected
-    //QBEQ EDGEDETECTED, r4, 1
-    
-    //Store current value of PIN1 as the previous value
-    MOV r3, r1
-    
-	//Store value in accessible memory
-    ST32 r4, r0
+    QBEQ EDGEDETECTED, r4, 1
     
     //Loop forever
     QBA READPINS

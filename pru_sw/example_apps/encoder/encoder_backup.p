@@ -86,10 +86,12 @@ MEMACCESSPRUDATARAM:
 READPINS:
     
     //Store pin1 current value
-    LSL r1, r31, PIN1
+    LSR r1, r31, PIN1
+	AND r1, r1, 1
     
     //Store pin2 current value
-    LSL r3, r31, PIN2
+    LSR r3, r31, PIN2
+	AND r3, r3, 1
     
     //Invert pin1 value to test logic later on...
     NOT r1, r1
@@ -100,6 +102,9 @@ READPINS:
     //Jump to edge detection steps if edge detected
     QBEQ EDGEDETECTED, r4, 1
     
+	//Store current value of PIN1 as the previous value
+	MOV r3, r1
+	
     //Loop forever
     QBA READPINS
     

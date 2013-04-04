@@ -88,13 +88,41 @@ READPINS:
     //Store pin1 current value
     LSR r1, r31, PIN1
 	AND r1, r1, 1
+    
+    //Store pin2 current value
+    LSR r3, r31, PIN2
+	AND r3, r3, 1
+    
+    //Invert pin1 value to test logic later on...
+    NOT r1, r1
+    
+    //Store boolean for if pin1 is experiencing an edge (high to low) in r4
+    AND r4, r1, r3
+    
+    //Jump to edge detection steps if edge detected
+    QBEQ EDGEDETECTED, r4, 1
+    
+	//Store current value of PIN1 as the previous value
+	MOV r3, r1
 	
-	// Move value from register to the PRU local data memory using registers
-    ST32 r1, r0
-	
-	QBA READPINS
-	
-	
+    //Loop forever
+    QBA READPINS
+    
+//Jump to CW handling if clockwise (B high while edge present).
+//Otherwise handle CCW in this label
+EDGEDETECTED:
+    QBEQ CW, r3, 1
+    SUB r5, r5, 1
+    // Move value from register to the PRU local data memory using registers
+    ST32 r5, r0
+    QBA READPINS
+
+CW:
+    ADD r5, r5, 1
+    // Move value from register to the PRU local data memory using registers
+    ST32 r5, r0
+    QBA READPINS
+    
 #ifdef AM33XX    
 
     // Send notification to Host for program completion

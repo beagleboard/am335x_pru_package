@@ -90,7 +90,7 @@ READPINS:
 	AND r1, r1, 1
     
     //Store pin2 current value
-    LSR r3, r31, PIN2
+    LSR r3, r31, PIN1
 	AND r3, r3, 1
     
     //Invert pin1 value to test logic later on...

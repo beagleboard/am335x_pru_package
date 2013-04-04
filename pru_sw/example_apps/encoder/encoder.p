@@ -78,7 +78,7 @@ MEMACCESSPRUDATARAM:
     MOV r0, 0x0004
     
     //Initialize the "previous" value for pinA of encoder (edge pin)
-    MOV r3, 0
+    MOV r3, 1
     
     //Initialize position
     MOV r5, 0
@@ -99,30 +99,8 @@ READPINS:
     //Store boolean for if pin1 is experiencing an edge (high to low) in r4
     AND r4, r1, r3
     
-    //Jump to edge detection steps if edge detected
-    QBEQ EDGEDETECTED, r4, 1
-    
-	//Store current value of PIN1 as the previous value
-	MOV r3, r1
+	ST32 r4, r0
 	
-    //Loop forever
-    QBA READPINS
-    
-//Jump to CW handling if clockwise (B high while edge present).
-//Otherwise handle CCW in this label
-EDGEDETECTED:
-    QBEQ CW, r3, 1
-    SUB r5, r5, 1
-    // Move value from register to the PRU local data memory using registers
-    ST32 r5, r0
-    QBA READPINS
-
-CW:
-    ADD r5, r5, 1
-    // Move value from register to the PRU local data memory using registers
-    ST32 r5, r0
-    QBA READPINS
-    
 #ifdef AM33XX    
 
     // Send notification to Host for program completion

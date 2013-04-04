@@ -73,12 +73,21 @@ MEMACCESSPRUDATARAM:
     ST32      r0, r1
 
 #endif
-
+    //Register map:
+	//r0: Memory loc of shared memory (where position will be written)
+	//r1: pin1 current
+	//r2: pin1 prev
+	//r3: pin2 current
+	//r4: Is edge?
+	//r5: Position
+	//r6: pin1 inverted
+	//r31: GPIO input register (readonly)
+	
     //Load address of PRU data memory in r2
     MOV r0, 0x0004
     
     //Initialize the "previous" value for pinA of encoder (edge pin)
-    MOV r3, 0
+    MOV r2, 0
     
     //Initialize position
     MOV r5, 0
@@ -87,24 +96,25 @@ READPINS:
     
     //Store pin1 current value
     LSR r1, r31, PIN1
-	AND r1, r1, 1
+    AND r1, r1, 1
     
     //Store pin2 current value
     LSR r3, r31, PIN2
-	AND r3, r3, 1
+    AND r3, r3, 1
     
-    //Invert pin1 value to test logic later on...
-    NOT r1, r1
+    //Invert pin1 value and store in r6 to test logic later on...
+    NOT r6, r1
+	AND r6, r6, 1
     
     //Store boolean for if pin1 is experiencing an edge (high to low) in r4
-    AND r4, r1, r3
+    AND r4, r6, r2
+    
+    //Update previous value of PIN1
+    MOV r2, r1
     
     //Jump to edge detection steps if edge detected
     QBEQ EDGEDETECTED, r4, 1
     
-	//Store current value of PIN1 as the previous value
-	MOV r3, r1
-	
     //Loop forever
     QBA READPINS
     

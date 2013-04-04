@@ -93,7 +93,11 @@ MEMACCESSPRUDATARAM:
     MOV r5, 0
     
 READPINS:
-    
+    MOV r5, 123
+	ST32 r5, r0
+	QBA READPINS
+	
+	
     //Store pin1 current value
     LSR r1, r31, PIN1
     AND r1, r1, 1

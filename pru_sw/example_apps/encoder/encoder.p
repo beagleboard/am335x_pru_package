@@ -98,12 +98,12 @@ READPINS:
     
     //Store boolean for if pin1 is experiencing an edge (high to low) in r4
     AND r4, r1, r2
-	
-	//Store a new value for previous value of PIN1
-	MOV r2, r1
+    
+    //Store a new value for previous value of PIN1
+    MOV r2, r1
     
     ST32 r4, r0
-	
+    
     //Jump to edge detection steps if edge detected
     QBEQ EDGEDETECTED, r4, 1
     

@@ -115,8 +115,10 @@
 #endif
 
 //~~~~~~PINS~~~~~~//
-#define PIN1 14
-#define PIN2 15
+#define ENC1_A 14
+#define ENC1_B 15
+#define ENC2_A 14
+#define ENC2_B 15
 
 .macro  LD32
 .mparam dst,src

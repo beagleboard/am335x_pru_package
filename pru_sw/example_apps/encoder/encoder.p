@@ -75,12 +75,13 @@ MEMACCESSPRUDATARAM:
 #endif
     //Register map:
 	//r0: Memory loc of shared memory (where position will be written)
-	//r1: pin1 current
-	//r2: pin1 prev
-	//r3: pin2 current
-	//r4: Is edge?
-	//r5: Position
-	//r6: pin1 inverted
+	//r1: encoder_A current
+	//r2: encoder_A prev
+	//r3: encoder_B current
+	//r4: encoder_A inverted
+	//r5: Is edge?
+	//r6: position1
+	//r7: position2
 	//r31: GPIO input register (readonly)
 	
     //Load address of PRU data memory in r2
@@ -90,49 +91,93 @@ MEMACCESSPRUDATARAM:
     MOV r2, 0
     
     //Initialize position
-    MOV r5, 0
+    MOV r6, 0
+	ST_POS1 r6, r0
+	MOV r7, 0
+	ST_POS2 r7, r0
     
-READPINS:
-	
+READPINS_ENCODER1:
     //Store pin1 current value
-    LSR r1, r31, PIN1
+    LSR r1, r31, ENC1_A
     AND r1, r1, 1
     
     //Store pin2 current value
-    LSR r3, r31, PIN2
+    LSR r3, r31, ENC1_B
     AND r3, r3, 1
     
     //Invert pin1 value and store in r6 to test logic later on...
-    NOT r6, r1
-	AND r6, r6, 1
+    NOT r4, r1
+	AND r4, r4, 1
     
     //Store boolean for if pin1 is experiencing an edge (high to low) in r4
-    AND r4, r6, r2
+    AND r5, r4, r2
     
-    //Update previous value of PIN1
+    //Update previous value of ENC_A
     MOV r2, r1
     
     //Jump to edge detection steps if edge detected
-    QBEQ EDGEDETECTED, r4, 1
+    QBEQ EDGEDETECTED_ENCODER1, r5, 1
     
     //Loop forever
-    QBA READPINS
+    QBA READPINS_ENCODER2
     
 //Jump to CW handling if clockwise (B high while edge present).
 //Otherwise handle CCW in this label
-EDGEDETECTED:
-    QBEQ CW, r3, 1
-    SUB r5, r5, 1
+EDGEDETECTED_ENCODER1:
+    QBEQ CW_ENCODER1, r3, 1
+    SUB r6, r6, 1
     // Move value from register to the PRU local data memory using registers
-    ST_POS1 r5, r0
-    QBA READPINS
+    ST_POS1 r6, r0
+    QBA READPINS_ENCODER2
 
-CW:
-    ADD r5, r5, 1
+CW_ENCODER1:
+    ADD r6, r6, 1
     // Move value from register to the PRU local data memory using registers
-    ST_POS2 r5, r0
-    QBA READPINS
+    ST_POS1 r6, r0
+    QBA READPINS_ENCODER2
+	
+
+
+READPINS_ENCODER2:
+    //Store pin1 current value
+    LSR r1, r31, ENC2_A
+    AND r1, r1, 1
     
+    //Store pin2 current value
+    LSR r3, r31, ENC2_B
+    AND r3, r3, 1
+    
+    //Invert pin1 value and store in r6 to test logic later on...
+    NOT r4, r1
+	AND r4, r4, 1
+    
+    //Store boolean for if pin1 is experiencing an edge (high to low) in r4
+    AND r5, r4, r2
+    
+    //Update previous value of ENC_A
+    MOV r2, r1
+    
+    //Jump to edge detection steps if edge detected
+    QBEQ EDGEDETECTED_ENCODER2, r5, 1
+    
+    //Loop forever
+    QBA READPINS_ENCODER1
+    
+//Jump to CW handling if clockwise (B high while edge present).
+//Otherwise handle CCW in this label
+EDGEDETECTED_ENCODER2:
+    QBEQ CW_ENCODER2, r3, 1
+    SUB r7, r7, 1
+    // Move value from register to the PRU local data memory using registers
+    ST_POS2 r7, r0
+    QBA READPINS_ENCODER1
+
+CW_ENCODER2:
+    ADD r7, r7, 1
+    // Move value from register to the PRU local data memory using registers
+    ST_POS2 r7, r0
+    QBA READPINS_ENCODER1
+	
 #ifdef AM33XX    
 
     // Send notification to Host for program completion

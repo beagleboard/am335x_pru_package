@@ -115,8 +115,8 @@
 #endif
 
 //~~~~~~PINS~~~~~~//
-#define PIN1 15 //14 + 1
-#define PIN2 16 //15 + 1
+#define PIN1 14
+#define PIN2 15
 
 .macro  LD32
 .mparam dst,src

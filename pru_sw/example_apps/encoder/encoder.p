@@ -73,7 +73,15 @@ MEMACCESSPRUDATARAM:
     ST32      r0, r1
 
 #endif
-
+    //Register map:
+	//r1: pin1 current
+	//r2: pin1 prev
+	//r3: pin2 current
+	//r4: Is edge?
+	//r5: Position
+	//r6: pin1 inverted
+	//r31: GPIO input register (readonly)
+	
     //Load address of PRU data memory in r2
     MOV r0, 0x0004
     
@@ -93,14 +101,14 @@ READPINS:
     LSR r3, r31, PIN2
     AND r3, r3, 1
     
-    //Invert pin1 value to test logic later on...
+    //Invert pin1 value and store in r6 to test logic later on...
     NOT r6, r1
 	AND r6, r6, 1
     
     //Store boolean for if pin1 is experiencing an edge (high to low) in r4
     AND r4, r6, r2
     
-    //Store a new value for previous value of PIN1
+    //Update previous value of PIN1
     MOV r2, r1
     
     //Jump to edge detection steps if edge detected

@@ -94,15 +94,14 @@ READPINS:
     AND r3, r3, 1
     
     //Invert pin1 value to test logic later on...
-    NOT r1, r1
-	AND r1, r1, 1
+    NOT r6, r1
+	AND r6, r6, 1
     
     //Store boolean for if pin1 is experiencing an edge (high to low) in r4
-    AND r4, r1, r2
+    AND r4, r6, r2
     
     //Store a new value for previous value of PIN1
     MOV r2, r1
-	NOT r2, r2
     
     //Jump to edge detection steps if edge detected
     QBEQ EDGEDETECTED, r4, 1

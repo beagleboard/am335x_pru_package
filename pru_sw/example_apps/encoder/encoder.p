@@ -105,7 +105,7 @@ READPINS:
     ST8 r4, r0
     
     //Jump to edge detection steps if edge detected
-    QBEQ EDGEDETECTED, r4, 1
+    //QBEQ EDGEDETECTED, r4, 1
     
     //Loop forever
     QBA READPINS

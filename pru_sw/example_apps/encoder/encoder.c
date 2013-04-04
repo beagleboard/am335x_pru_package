@@ -64,7 +64,6 @@
 // Driver header file
 #include <prussdrv.h>
 #include <pruss_intc_mapping.h>
-#include <time.h>
 
 /*****************************************************************************
 * Explicit External Declarations                                             *
@@ -158,7 +157,9 @@ int main (void)
     int ADDR = 1;
     for(;;){
         printf("%d \r\n",pruDataMem_int[ADDR]);
-		sleep(500);
+		//Delay
+		int i;
+		for(i=0;i<500;i++){}
     }
     
     /* Wait until PRU0 has finished execution */

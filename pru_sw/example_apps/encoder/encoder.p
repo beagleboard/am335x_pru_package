@@ -95,6 +95,7 @@ READPINS:
     
     //Invert pin1 value to test logic later on...
     NOT r1, r1
+	AND r1, r1, 1
     
     //Store boolean for if pin1 is experiencing an edge (high to low) in r4
     AND r4, r1, r2

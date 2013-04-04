@@ -93,10 +93,6 @@ MEMACCESSPRUDATARAM:
     MOV r5, 0
     
 READPINS:
-    MOV r5, 2147483647
-	ST32 r5, r0
-	QBA READPINS
-	
 	
     //Store pin1 current value
     LSR r1, r31, PIN1
@@ -128,13 +124,13 @@ EDGEDETECTED:
     QBEQ CW, r3, 1
     SUB r5, r5, 1
     // Move value from register to the PRU local data memory using registers
-    ST32 r5, r0
+    ST_POS1 r5, r0
     QBA READPINS
 
 CW:
     ADD r5, r5, 1
     // Move value from register to the PRU local data memory using registers
-    ST32 r5, r0
+    ST_POS2 r5, r0
     QBA READPINS
     
 #ifdef AM33XX    

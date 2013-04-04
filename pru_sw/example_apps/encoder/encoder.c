@@ -156,14 +156,12 @@ int main (void)
     */
     
 	//Read out memory forever
-    int ADDR;
-    for(ADDR=0; ADDR<1024; ADDR++){
-		if(pruDataMem_int[ADDR]==2147483647)
-		{
-			printf("%d \r\n",pruDataMem_int[ADDR]);
-			printf("Found at %d \r\n",ADDR);
-		}
-		//sleep(1);
+    int ADDR_pos1 = 1;
+	int ADDR_pos2 = 2;
+    for(;;){
+        printf("%d, ",pruDataMem_int[ADDR_pos1]);
+		printf("%d \r\n",pruDataMem_int[ADDR_pos2]);
+		sleep(1);
     }
     
     /* Wait until PRU0 has finished execution */

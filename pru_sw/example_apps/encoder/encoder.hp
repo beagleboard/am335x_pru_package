@@ -135,7 +135,17 @@
 
 .macro ST32
 .mparam src,dst
-    SBBO    src,dst,#0x08,4
+    SBBO    src,dst,#0x08,4 //Third param is the number of bytes (in hex) to offset
+.endm
+
+.macro ST_POS1
+.mparam src,dst
+    SBBO    src,dst,#0x00,4 //Third param is the number of bytes (in hex) to offset
+.endm
+
+.macro ST_POS2
+.mparam src,dst
+    SBBO    src,dst,#0x04,4 //Third param is the number of bytes (in hex) to offset
 .endm
 
 .macro ST16

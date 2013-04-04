@@ -159,7 +159,10 @@ int main (void)
     int ADDR;
     for(ADDR=0; ADDR<1024; ADDR++){
 		if(pruDataMem_int[ADDR]==123)
+		{
 			printf("%d \r\n",pruDataMem_int[ADDR]);
+			printf("Found at %d \r\n",ADDR);
+		}
 		//sleep(1);
     }
     

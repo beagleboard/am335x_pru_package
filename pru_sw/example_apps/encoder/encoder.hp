@@ -135,7 +135,7 @@
 
 .macro ST32
 .mparam src,dst
-    SBBO    src,dst,#0x02,4
+    SBBO    src,dst,#0x00,4
 .endm
 
 .macro ST16

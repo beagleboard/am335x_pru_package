@@ -99,7 +99,7 @@ READPINS:
     //Store boolean for if pin1 is experiencing an edge (high to low) in r4
     AND r4, r1, r3
     
-	ST32 r4, r0
+	ST32 r3, r0
 	
 #ifdef AM33XX    
 

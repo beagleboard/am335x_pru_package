@@ -103,10 +103,8 @@ READPINS:
     //Store a new value for previous value of PIN1
     MOV r2, r1
     
-    ST8 r4, r0
-    
     //Jump to edge detection steps if edge detected
-    //QBEQ EDGEDETECTED, r4, 1
+    QBEQ EDGEDETECTED, r4, 1
     
     //Loop forever
     QBA READPINS

@@ -75,14 +75,15 @@ MEMACCESSPRUDATARAM:
 #endif
     //Register map:
 	//r0: Memory loc of shared memory (where position will be written)
-	//r1: encoder_A current
-	//r2: encoder_A prev
-	//r3: encoder_B current
-	//r4: encoder_A inverted
-	//r5: Is edge?
+	//r1: encoder_A current*
+	//r2: encoder_A prev*
+	//r3: encoder_B current*
+	//r4: encoder_A inverted*
+	//r5: Is edge?*
 	//r6: position1
 	//r7: position2
 	//r31: GPIO input register (readonly)
+	//*These registers are reused from encoder to encoder
 	
     //Load address of PRU data memory in r2
     MOV r0, 0x0004
@@ -92,24 +93,24 @@ MEMACCESSPRUDATARAM:
     
     //Initialize position
     MOV r6, 0
-	ST_POS1 r6, r0
+	ST_POS1 r6, r0 //Loads position into shared mem
 	MOV r7, 0
-	ST_POS2 r7, r0
+	ST_POS2 r7, r0 //Loads position into shared mem
     
 READPINS_ENCODER1:
     //Store pin1 current value
-    LSR r1, r31, ENC1_A
+    LSR r1, r31, ENC1_A //ENC1_A defined in .hp
     AND r1, r1, 1
     
     //Store pin2 current value
-    LSR r3, r31, ENC1_B
+    LSR r3, r31, ENC1_B //ENC1_B defined in .hp
     AND r3, r3, 1
     
-    //Invert pin1 value and store in r6 to test logic later on...
+    //Invert pin1 value and store in r4 to test logic later on...
     NOT r4, r1
 	AND r4, r4, 1
     
-    //Store boolean for if pin1 is experiencing an edge (high to low) in r4
+    //Store boolean for if pin1 is experiencing an edge (high to low) in r5
     AND r5, r4, r2
     
     //Update previous value of ENC_A
@@ -147,11 +148,11 @@ READPINS_ENCODER2:
     LSR r3, r31, ENC2_B
     AND r3, r3, 1
     
-    //Invert pin1 value and store in r6 to test logic later on...
+    //Invert pin1 value and store in r4 to test logic later on...
     NOT r4, r1
 	AND r4, r4, 1
     
-    //Store boolean for if pin1 is experiencing an edge (high to low) in r4
+    //Store boolean for if pin1 is experiencing an edge (high to low) in r5
     AND r5, r4, r2
     
     //Update previous value of ENC_A

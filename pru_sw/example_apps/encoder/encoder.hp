@@ -117,8 +117,8 @@
 //~~~~~~PINS~~~~~~//
 #define ENC1_A 14
 #define ENC1_B 15
-#define ENC2_A 14
-#define ENC2_B 15
+#define ENC2_A 6
+#define ENC2_B 7
 
 .macro  LD32
 .mparam dst,src

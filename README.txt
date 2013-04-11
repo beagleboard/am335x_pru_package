@@ -9,13 +9,33 @@ who want to use the PRU at their own risk without TI support.
 "Community" support is offered at BeagleBoard.org/discuss.
  
 -------------------------------------------------------------
+
+PLEASE NOTE:
+
 This tree contains a modified PRUSS assembler source that
-(currently) implements the following undocumented PRUSS V2
-instructions:
-  XIN, XOUT, XCHG, ZERO, FILL, SXIN, SXOUT and SXCHG.
-For documentation see the SPRUH73C (TRM rev. C) document.
-Note: the pasm binaries in this tree are old, you'll have
+implements a number of additional instructions:
+
+  XIN, XOUT, XCHG, ZERO, FILL, SXIN, SXOUT, SXCHG,
+  LOOP & ILOOP.
+
+These are the (very powerfull) PRUSS Version 2 extensions
+as implemented on the AM335X silicon.
+
+For documentation see the SPRUH73C (TRM rev. C) document, you'll
+need this version! The information was removed from later issues.
+
+The XIN, XOUT, ZERO, FILL and LOOP instructions are confirmed
+to be working as documented. The MAC seems to be working too,
+albeit with some issues that need to be worked around and will
+degrade performance, depending on the application.
+
+Reports on ILOOP, SXIN, SXOUT and SXCHG are welcome!
+
+Warning: the pasm binaries in this tree are old, you'll have
 to compile pasm for your platform yourself.
+
+Last updated: 2013-04-11 - Bas Laarhoven.
+
 -------------------------------------------------------------
 
 The AM335x PRU Package includes:

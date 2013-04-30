@@ -75,15 +75,15 @@ MEMACCESSPRUDATARAM:
 #endif
     //Register map:
 	//r0: Memory loc of shared memory (where position will be written)
-	//r1: encoder_A current*
-	//r2: encoder_A prev*
-	//r3: encoder_B current*
-	//r4: encoder_A inverted*
+	//r1: encoder_A current^
+	//r2: encoder_A prev^
+	//r3: encoder_B current^
+	//r4: encoder_A inverted^
 	//r5: Is edge?*
 	//r6: position1
 	//r7: position2
 	//r31: GPIO input register (readonly)
-	//*These registers are reused from encoder to encoder
+	//^These registers are reused from encoder to encoder
 	
     //Load address of PRU data memory in r2
     MOV r0, 0x0004

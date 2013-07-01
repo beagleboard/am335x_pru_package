@@ -58,7 +58,7 @@
 //
 //---------------------------------------------------------------------------
 // Revision:
-//     15-Jun-12: 0.80 - Open source version
+//     21-Jun-13: 0.84 - Open source version
 ============================================================================*/
 
 #include <stdio.h>
@@ -73,11 +73,33 @@
 #include "pasm.h"
 #include "pasmdbg.h"
 
+/*
+// Multiple Core Revision Support
+// ------------------------------
+//
+//  -V0  PRU Legacy        (same as -x)
+//  -V1  PRU Generation 1  (default)
+//       Adds [LMBD,SCAN,HALT,ZERO(1),MVI(1),SLP(1)]  Removes [LFC,STC]
+//  -V2  PRU Generation 2  (same as -X)
+//       Adds [ZERO(2),FILL,XIN,XOUT,XCHG,MVI(2)] Removes [SCAN]
+//  -V3  PRU Generation 3
+//       Adds [SLP(2),LOOP,ILOOP,SXIN,SXOUT,SXCHG,NOPx]
+//
+// ZERO(1) : Zero is multi-cycle pseudo op encoded via moves
+// ZERO(2) : Zero is single-cycle pseudo op encoded via XFR
+//
+// MVI(1)  : Pseudo op forms of MVI only
+// MVI(2)  : Pseudo op forms of MVI only
+//
+// SLP(1)  : SLP with trailing NOP
+// SLP(2)  : SLP without trailing NOP
+*/
+
 
 /* ---------- Local Macro Definitions ----------- */
 
 #define PROCESSOR_NAME_STRING ("PRU")
-#define VERSION_STRING        ("0.80")
+#define VERSION_STRING        ("0.84")
 
 #define MAXFILE               (256)     /* Max file length for output files */
 #define MAX_PROGRAM           (16384)   /* Max instruction count */
@@ -138,7 +160,7 @@ int main(int argc, char *argv[])
     char outbase[MAXFILE],outfilename[MAXFILE];
 
     printf("\n\n%s Assembler Version %s\n",PROCESSOR_NAME_STRING, VERSION_STRING);
-    printf("Copyright (C) 2005-2012 by Texas Instruments Inc.\n\n");
+    printf("Copyright (C) 2005-2013 by Texas Instruments Inc.\n\n");
 
     /* Scan argv[0] to the final '/' in program name */
     i=0;
@@ -161,7 +183,10 @@ int main(int argc, char *argv[])
     if( argc<2 )
     {
 USAGE:
-        printf("Usage: %s [-bcmLldz] [-Dname=value] [-Cname] InFile [OutFileBase]\n\n",argv[0]);
+        printf("Usage: %s [-V#EBbcmLldz] [-Dname=value] [-Cname] InFile [OutFileBase]\n\n",argv[0]);
+        printf("    V# - Specify core version (V0,V1,V2,V3). (Default is V1)\n");
+        printf("    E  - Assemble for big endian core\n");
+        printf("    B  - Create big endian binary output (*.bib)\n");
         printf("    b  - Create little endian binary output (*.bin)\n");
         printf("    c  - Create 'C array' binary output (*_bin.h)\n");
         printf("    m  - Create 'image' binary output (*.img)\n");
@@ -248,6 +273,41 @@ USAGE:
                     nameCArraySet = 1;
                     break;
                 }
+                else if( *flags == 'V' )
+                {
+                    flags++;
+                    if( *flags<'0' || *flags>'3' )
+                    {
+                        printf("\nExpected a number (0-3) after option 'V'\n\n");
+                        goto USAGE;
+                    }
+                    if( Core != CORE_NONE )
+                    {
+                        printf("\nDo not specify more than one core version or use -V with -X or -x\n\n");
+                        goto USAGE;
+                    }
+                    Core = CORE_V0 + *flags - '0';
+                }
+                else if( *flags == 'x' )
+                {
+                    if( Core != CORE_NONE )
+                    {
+                        printf("\nDo not use -x with -X or -V\n\n");
+                        goto USAGE;
+                    }
+                    Core = CORE_V0;
+                }
+                else if( *flags == 'X' )
+                {
+                    if( Core != CORE_NONE )
+                    {
+                        printf("\nDo not use -X with -x or -V\n\n");
+                        goto USAGE;
+                    }
+                    Core = CORE_V2;
+                }
+                else if( *flags == 'E' )
+                    Options |= OPTION_BIGENDIAN;
                 else if( *flags == 'b' )
                     Options |= OPTION_BINARY;
                 else if( *flags == 'B' )

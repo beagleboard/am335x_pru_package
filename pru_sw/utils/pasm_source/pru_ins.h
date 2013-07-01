@@ -54,7 +54,7 @@
 //
 //---------------------------------------------------------------------------
 // Revision:
-//     15-Jun-12: 0.80 - Open source version
+//     21-Jun-13: 0.84 - Open source version
 ============================================================================*/
 
 typedef struct _PRU_ARG {
@@ -145,7 +145,32 @@ typedef struct _PRU_INST {
 #define OP_SLP                      45
 #define OP_RET                      46
 #define OP_ZERO                     47
-#define OP_MAXIDX                   47
+#define OP_FILL                     48
+#define OP_XIN                      49
+#define OP_XOUT                     50
+#define OP_XCHG                     51
+#define OP_SXIN                     52
+#define OP_SXOUT                    53
+#define OP_SXCHG                    54
+#define OP_LOOP                     55
+#define OP_ILOOP                    56
+#define OP_NOP0                     57
+#define OP_NOP1                     58
+#define OP_NOP2                     59
+#define OP_NOP3                     60
+#define OP_NOP4                     61
+#define OP_NOP5                     62
+#define OP_NOP6                     63
+#define OP_NOP7                     64
+#define OP_NOP8                     65
+#define OP_NOP9                     66
+#define OP_NOPA                     67
+#define OP_NOPB                     68
+#define OP_NOPC                     69
+#define OP_NOPD                     70
+#define OP_NOPE                     71
+#define OP_NOPF                     72
+#define OP_MAXIDX                   72
 
 extern char *OpText[];
 

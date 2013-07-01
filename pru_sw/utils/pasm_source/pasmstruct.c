@@ -53,7 +53,7 @@
 //
 //---------------------------------------------------------------------------
 // Revision:
-//     15-Jun-12: 0.80 - Open source version
+//     21-Jun-13: 0.84 - Open source version
 ============================================================================*/
 
 #include <stdio.h>
@@ -942,7 +942,7 @@ static char *StructNameCheck( char *source )
     name[i] = 0;
     for( i=0; i<pas->Elements; i++ )
     {
-        if( !stricmp(name,pas->ElemName[i]) )
+        if( !strcmp(name,pas->ElemName[i]) )
             return(pas->MappedReg[i]);
     }
     return(0);
@@ -1011,7 +1011,7 @@ static int StructValueOperand( char *source, int CmdType, uint *pValue )
 
         for( i=0; i<pas->Elements; i++ )
         {
-            if( !stricmp(name2,pas->ElemName[i]) )
+            if( !strcmp(name2,pas->ElemName[i]) )
                 break;
         }
 
@@ -1047,7 +1047,7 @@ static int StructValueOperand( char *source, int CmdType, uint *pValue )
 
         for( i=0; i<pst->Elements; i++ )
         {
-            if( !stricmp(name2,pst->ElemName[i]) )
+            if( !strcmp(name2,pst->ElemName[i]) )
                 break;
         }
 

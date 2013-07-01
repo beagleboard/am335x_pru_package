@@ -55,7 +55,7 @@
 //
 //---------------------------------------------------------------------------
 // Revision:
-//     15-Jun-12: 0.80 - Open source version
+//     21-Jun-13: 0.84 - Open source version
 ============================================================================*/
 typedef unsigned int uint;
 
@@ -147,7 +147,7 @@ extern uint RetRegField;            /* Return register field */
 #define DEFAULT_RETREGVAL   30
 #define DEFAULT_RETREGFLD   FIELDTYPE_15_0
 
-#define SOURCEFILE_MAX 32
+#define SOURCEFILE_MAX      64
 extern SOURCEFILE sfArray[SOURCEFILE_MAX];
 extern unsigned int sfIndex;
 

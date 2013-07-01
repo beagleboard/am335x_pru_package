@@ -56,7 +56,7 @@
 //
 //---------------------------------------------------------------------------
 // Revision:
-//     15-Jun-12: 0.80 - Open source version
+//     21-Jun-13: 0.84 - Open source version
 ============================================================================*/
 
 #include <stdio.h>
@@ -75,13 +75,17 @@ char *OpText[] = {
     "XOR","NOT","MIN","MAX","CLR","SET","LDI","LBBO","LBCO","SBBO",
     "SBCO","LFC","STC","JAL","JMP","QBGT","QBLT","QBEQ","QBGE","QBLE",
     "QBNE","QBA","QBBS","QBBC","LMBD","CALL","WBC","WBS","MOV","MVIB",
-    "MVIW","MVID","SCAN","HALT","SLP", "RET", "ZERO" };
+    "MVIW","MVID","SCAN","HALT","SLP", "RET", "ZERO", "FILL", "XIN", "XOUT",
+    "XCHG","SXIN","SXOUT","SXCHG","LOOP","ILOOP","NOP0","NOP1","NOP2","NOP3",
+    "NOP4","NOP5","NOP6","NOP7","NOP8","NOP9","NOPA","NOPB","NOPC","NOPD",
+    "NOPE","NOPF"};
 
 /* Local Support Funtions */
 static int GetImValue( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa, uint low, uint high );
 static int GetConstant( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa );
 static int GetR0offset( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa );
 static int GetJmpOffset( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa );
+static int GetLoopOffset( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa );
 static int Offset2Reg( SOURCEFILE *ps, int num, PRU_ARG *pa, uint addr, uint size );
 
 /*
@@ -280,11 +284,29 @@ int ProcessOp( SOURCEFILE *ps, int TermCnt, char **pTerms )
     case OP_MIN:
     case OP_MAX:
     case OP_LMBD:
+    case OP_NOP0:
+    case OP_NOP1:
+    case OP_NOP2:
+    case OP_NOP3:
+    case OP_NOP4:
+    case OP_NOP5:
+    case OP_NOP6:
+    case OP_NOP7:
+    case OP_NOP8:
+    case OP_NOP9:
+    case OP_NOPA:
+    case OP_NOPB:
+    case OP_NOPC:
+    case OP_NOPD:
+    case OP_NOPE:
+    case OP_NOPF:
         /*
         // Instruction in the form of:
         //     OPCODE  Rdst, Rsrc, OP(255)
         */
         if( inst.Op==OP_LMBD && Core<CORE_V1 )
+            { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
+        if( inst.Op>=OP_NOP0 && inst.Op<=OP_NOPF && Core<CORE_V3 )
             { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
         if( TermCnt!=4  )
             { Report(ps,REP_ERROR,"Expected 3 operands"); return(0); }
@@ -312,7 +334,9 @@ PARSE_ARITHMETIC:
             inst.Arg[2].Value = 0;
         }
 CODE_ARITHMETIC:
-        if( inst.Op == OP_LMBD )
+        if( inst.Op>=OP_NOP0 && inst.Op<=OP_NOPF )
+            opcode = (0x50+inst.Op-OP_NOP0) << 25;
+        else if( inst.Op == OP_LMBD )
             opcode = 0x13 << 25;
         else if( inst.Op == OP_SCAN )
             opcode = 0x14 << 25;
@@ -545,7 +569,7 @@ CODE_MVI:
         if( Core<CORE_V1 )
             { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
         if( TermCnt==4 )
-            { Report(ps,REP_ERROR,"3 operand mode not supported on this PRU"); return(0); }
+            { Report(ps,REP_ERROR,"3 operand mode not supported on this core"); return(0); }
         else if( TermCnt!=3 )
             { Report(ps,REP_ERROR,"Expected 2 operands"); return(0); }
         else
@@ -608,7 +632,104 @@ CODE_MVI_PLUS:
             { Report(ps,REP_ERROR,"This form of MVIx illegal with specified core version"); return(0); }
         else
         {
+            int  idx;
+            uint argtype;
+            char termC;
+            unsigned int itype;
+
+            argtype = CheckTokenType(pTerms[1]);
+            itype = 0;
+            termC = 0;
+            idx   = 0;
+            if( (argtype & TOKENTYPE_FLG_REG_PTR) && !(argtype & TOKENTYPE_FLG_REG_ADDR) )
+            {
+                itype = 4;
+                idx   = 1;
+                if( argtype & TOKENTYPE_FLG_REG_POSTINC )
+                {
+                    itype = 8;
+                    termC = '+';
+                }
+                else if( argtype & TOKENTYPE_FLG_REG_PREDEC )
+                {
+                    itype = 12;
+                    idx   = 3;
+                }
+            }
+
+            if( argtype == (TOKENTYPE_FLG_REG_PTR|TOKENTYPE_FLG_REG_ADDR) )
+            {
+                if( !GetImValue( ps, 1, pTerms[1]+1, &(inst.Arg[0]), 0, 127 ) )
+                    return(0);
+                if( !Offset2Reg( ps, 1, &(inst.Arg[0]), inst.Arg[0].Value, utmp ) )
+                    return(0);
+            }
+            else
+            {
+                if( !GetRegister( ps, 1, pTerms[1]+idx, &(inst.Arg[0]), 0, termC ) )
+                    return(0);
+            }
+
+            argtype = CheckTokenType(pTerms[2]);
+            termC = 0;
+            idx   = 0;
+            if( (argtype & TOKENTYPE_FLG_REG_PTR) && !(argtype & TOKENTYPE_FLG_REG_ADDR) )
+            {
+                itype += 1;
+                idx   = 1;
+                if( argtype & TOKENTYPE_FLG_REG_POSTINC )
+                {
+                    itype += 1;
+                    termC = '+';
+                }
+                else if( argtype & TOKENTYPE_FLG_REG_PREDEC )
+                {
+                    itype += 2;
+                    idx   = 3;
+                }
+            }
+
+            if( argtype == (TOKENTYPE_FLG_REG_PTR|TOKENTYPE_FLG_REG_ADDR) )
+            {
+                if( !GetImValue( ps, 2, pTerms[2]+1, &(inst.Arg[1]), 0, 127 ) )
+                    return(0);
+                if( !Offset2Reg( ps, 2, &(inst.Arg[1]), inst.Arg[1].Value, utmp ) )
+                    return(0);
+            }
+            else
+            {
+                if( !GetRegister( ps, 2, pTerms[2]+idx, &(inst.Arg[1]), 0, termC ) )
+                    return(0);
+            }
+
+            if( TermCnt==4 )
+            {
+                if( !GetR0offset( ps, 3, pTerms[3], &(inst.Arg[2]) ) )
+                    return(0);
+            }
+
+            /* Validate pointers are R1.b0 to R1.b3 */
+            if( (itype>=4 && (inst.Arg[0].Value!=1 || inst.Arg[0].Field>FIELDTYPE_31_24)) ||
+                (itype%4 && (inst.Arg[1].Value!=1 || inst.Arg[1].Field>FIELDTYPE_31_24)) )
+                { Report(ps,REP_ERROR,"RegFile pointers must be R1.b0 through R1.b3"); return(0); }
+
+            if( itype==0 )
+                { Report(ps,REP_ERROR,"No indirection specified (use MOV)"); return(0); }
+
+            opcode = 0x16 << 25;
+            opcode |= itype << 21;
+            if( TermCnt==4 )
+            {
+                opcode |= 1 << 20;
+                opcode |= inst.Arg[2].Value << 18;
+            }
+            opcode |= (utmp/2) << 16;
+            opcode |= inst.Arg[0].Value;
+            opcode |= inst.Arg[0].Field << 5;
+            opcode |= inst.Arg[1].Value << 8;
+            opcode |= inst.Arg[1].Field << 13;
         }
+        GenOp( ps, TermCnt, pTerms, opcode );
         return(1);
 
     case OP_HALT:
@@ -773,6 +894,131 @@ BURST_OPCODE:
         opcode |= (utmp&0x01)<<7;
         GenOp( ps, TermCnt, pTerms, opcode );
         return(1);
+
+    case OP_SXIN:
+        opcode = (0x5D << 23) | (1 << 14);
+        goto CODE_XFR_V3;
+
+    case OP_SXOUT:
+        opcode = (0x5E << 23) | (1 << 14);
+        goto CODE_XFR_V3;
+
+    case OP_SXCHG:
+        opcode = (0x5F << 23) | (1 << 14);
+        goto CODE_XFR_V3;
+
+    case OP_XIN:
+        opcode = 0x5D << 23;
+        goto CODE_XFR;
+
+    case OP_XOUT:
+        opcode = 0x5E << 23;
+        goto CODE_XFR;
+
+    case OP_XCHG:
+        opcode = 0x5F << 23;
+        goto CODE_XFR;
+
+CODE_XFR_V3:
+        if( Core<CORE_V3 )
+            { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
+CODE_XFR:
+        /*
+        // Instruction in the form of:
+        //     OPCODE IM(511), Rdst, OP(124), n    -or-
+        //     OPCODE IM(511), Rdst, bn
+        */
+        if( Core<CORE_V2 )
+            { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
+        if( TermCnt != 4 )
+            { Report(ps,REP_ERROR,"Expected 3 operands"); return(0); }
+        if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 253 ) )
+            return(0);
+        if( CheckTokenType(pTerms[2]) & TOKENTYPE_FLG_REG_BASE )
+        {
+            if( !GetRegister( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 0 ) )
+                return(0);
+            if( inst.Arg[1].Value==31 )
+                { Report(ps,REP_ERROR,"Operand 2 R31 is illegal"); return(0); }
+        }
+        else
+        {
+            if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 123 ) )
+                return(0);
+        }
+        if( CheckTokenType(pTerms[3]) & TOKENTYPE_FLG_REG_BASE )
+        {
+            if( !GetR0offset( ps, 3, pTerms[3], &(inst.Arg[2]) ) )
+                return(0);
+        }
+        else
+        {
+            if( !GetImValue( ps, 3, pTerms[3], &(inst.Arg[2]), 1, 124 ) )
+                return(0);
+        }
+
+        if( inst.Arg[1].Type == ARGTYPE_IMMEDIATE )
+        {
+            opcode |= (inst.Arg[1].Value>>2) & 0x1F;
+            opcode |= (inst.Arg[1].Value&0x3) << 5;
+        }
+        else
+        {
+            opcode |= inst.Arg[1].Value;
+
+            if( !(Options & OPTION_BIGENDIAN) )
+            {
+                /*
+                // ** Little Endian Version **
+                */
+                switch( inst.Arg[1].Field )
+                {
+                case FIELDTYPE_15_8:
+                case FIELDTYPE_23_8:
+                    opcode |= 1<<5;
+                    break;
+                case FIELDTYPE_23_16:
+                case FIELDTYPE_31_16:
+                    opcode |= 2<<5;
+                    break;
+                case FIELDTYPE_31_24:
+                    opcode |= 3<<5;
+                    break;
+                }
+            }
+            else
+            {
+                /*
+                // ** Big Endian Version **
+                */
+                switch( inst.Arg[1].Field )
+                {
+                case FIELDTYPE_23_16:
+                case FIELDTYPE_23_8:
+                    opcode |= 1<<5;
+                    break;
+
+                case FIELDTYPE_15_0:
+                case FIELDTYPE_15_8:
+                    opcode |= 2<<5;
+                    break;
+
+                    case FIELDTYPE_7_0:
+                    opcode |= 3<<5;
+                    break;
+                }
+            }
+        }
+
+        opcode |= inst.Arg[0].Value << 15;
+        if( inst.Arg[2].Type == ARGTYPE_R0BYTE )
+            utmp = inst.Arg[2].Value + 124;
+        else
+            utmp = inst.Arg[2].Value - 1;
+        opcode |= utmp<<7;
+        GenOp( ps, TermCnt, pTerms, opcode );
+        return(1);
+
 
     case OP_LFC:
         /*
@@ -943,6 +1189,49 @@ CODE_JMP:
         else
         {
             opcode |= inst.Arg[1].Value << 8;
+            opcode |= 1<<24;
+        }
+        GenOp( ps, TermCnt, pTerms, opcode );
+        return(1);
+
+    case OP_ILOOP:
+        opcode = (3<<28) | (1<<15);
+        goto CODE_LOOP;
+
+    case OP_LOOP:
+        opcode = (3<<28);
+CODE_LOOP:
+        /*
+        // Instruction in the form of:
+        //     LOOP LoopDest, OP(255)
+        */
+        if( Core<CORE_V3 )
+            { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
+        if( TermCnt != 3 )
+            { Report(ps,REP_ERROR,"Expected 2 operands"); return(0); }
+        if( !GetLoopOffset( ps, 1, pTerms[1], &(inst.Arg[0]) ) )
+            return(0);
+        if( CheckTokenType(pTerms[2]) & TOKENTYPE_FLG_REG_BASE )
+        {
+            if( !GetRegister( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 0 ) )
+                return(0);
+        }
+        else
+        {
+            if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 256 ) )
+                return(0);
+            if( !(inst.Arg[1].Value) )
+                { Report(ps,REP_ERROR,"Null loop count"); return(0); }
+        }
+        opcode |= inst.Arg[0].Value & 0xFF;
+        if( inst.Arg[1].Type == ARGTYPE_REGISTER )
+        {
+            opcode |= inst.Arg[1].Value << 16;
+            opcode |= inst.Arg[1].Field << 21;
+        }
+        else
+        {
+            opcode |= (inst.Arg[1].Value-1) << 16;
             opcode |= 1<<24;
         }
         GenOp( ps, TermCnt, pTerms, opcode );
@@ -1127,6 +1416,37 @@ WAITBIT_OPCODE:
         goto CODE_QB;
 
 
+    case OP_FILL:
+        /*
+        // Instruction in the form of:
+        //     FILL  &Rdst,  #Im124
+        //     FILL  #Im123, #Im124
+        */
+        if( Core<CORE_V2 )
+            { Report(ps,REP_ERROR,"Instruction illegal with specified core version"); return(0); }
+        if( TermCnt != 3 )
+            { Report(ps,REP_ERROR,"Expected 2 operands"); return(0); }
+        if( !GetImValue( ps, 1, pTerms[1], &(inst.Arg[0]), 0, 123 ) )
+            return(0);
+        if( !GetImValue( ps, 2, pTerms[2], &(inst.Arg[1]), 0, 124 ) )
+            return(0);
+
+        if( (inst.Arg[0].Value + inst.Arg[1].Value)>124 )
+            { Report(ps,REP_ERROR,"Length exceeds register file length"); return(0); }
+        if( !inst.Arg[1].Value )
+            { Report(ps,REP_ERROR,"Zero length fill"); return(0); }
+
+        /* Implement with XIN */
+        opcode = 0x5D << 23;
+        opcode |= (inst.Arg[0].Value>>2) & 0x1F;
+        opcode |= (inst.Arg[0].Value&0x3) << 5;
+        opcode |= 254 << 15;
+        inst.Arg[1].Value--;
+        opcode |= inst.Arg[1].Value<<7;
+        GenOp( ps, TermCnt, pTerms, opcode );
+        return(1);
+
+
     case OP_ZERO:
         /*
         // Instruction in the form of:
@@ -1146,6 +1466,19 @@ WAITBIT_OPCODE:
             { Report(ps,REP_ERROR,"Clear length exceeds register file length"); return(0); }
         if( !inst.Arg[1].Value )
             { Report(ps,REP_ERROR,"Zero length clear"); return(0); }
+
+        if( Core>=CORE_V2 )
+        {
+            /* Implement with XIN */
+            opcode = 0x5D << 23;
+            opcode |= (inst.Arg[0].Value>>2) & 0x1F;
+            opcode |= (inst.Arg[0].Value&0x3) << 5;
+            opcode |= 255 << 15;
+            inst.Arg[1].Value--;
+            opcode |= inst.Arg[1].Value<<7;
+            GenOp( ps, TermCnt, pTerms, opcode );
+            return(1);
+        }
 
         while( inst.Arg[1].Value )
         {
@@ -1656,6 +1989,53 @@ static int GetJmpOffset( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa )
 
     return(1);
 }
+
+
+/*
+// GetLoopOffset
+//
+// Get 8 bit Loop Offset
+//
+// Parses the source string for a register and field
+//
+// ps      - Pointer to source file record
+// num     - source line number
+// src     - source string
+// pa      - Pointer to register structure
+//
+// Returns:
+//      1 : Success
+//      0 : Error
+*/
+static int GetLoopOffset( SOURCEFILE *ps, int num, char *src, PRU_ARG *pa )
+{
+    char tstr[TOKEN_MAX_LEN];
+    uint val;
+    int  idx;
+    int  jmpoff;
+
+    strcpy( tstr, src );
+    if( Expression(ps, tstr, &val, &idx)<0 )
+    {
+        Report(ps,REP_ERROR,"Operand %d error in expression",num);
+        return(0);
+    }
+
+    if( Pass==2 && (Options & OPTION_DEBUG) )
+        printf("%s(%5d) : EXP    : '%s' = %d\n", ps->SourceName,ps->CurrentLine,src,val);
+
+    jmpoff = ((int)val) - CodeOffset;
+    if( Pass==2 && (jmpoff<2 || jmpoff>255) )
+        { Report(ps,REP_ERROR,"Operand %d invalid loop termination point",num); return(0); }
+
+    /* Setup the record */
+    pa->Type  = ARGTYPE_OFFSET;
+    pa->Value = (uint)jmpoff;
+    pa->Field = 0;
+
+    return(1);
+}
+
 
 /*
 // Offset2Reg

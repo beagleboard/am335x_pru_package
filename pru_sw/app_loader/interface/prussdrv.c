@@ -466,6 +466,10 @@ int prussdrv_map_extmem(void **address)
 
 }
 
+unsigned int prussdrv_extmem_size(void)
+{
+    return prussdrv.extram_map_size;
+}
 
 int prussdrv_map_prumem(unsigned int pru_ram_id, void **address)
 {

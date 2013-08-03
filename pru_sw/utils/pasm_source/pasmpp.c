@@ -65,7 +65,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__)
 #include <malloc.h>
 #else
 #include <stdlib.h>

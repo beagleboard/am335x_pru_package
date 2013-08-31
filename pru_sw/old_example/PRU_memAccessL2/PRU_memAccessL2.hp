@@ -1,0 +1,71 @@
+// Source: PRU_memAccessL2.hp
+// Revision: 1.0
+//
+// PRU MEM1D Service Routine assembly constants. 
+
+#ifndef _PRU_memAccessL2_HP_
+#define _PRU_memAccessL2_HP_
+
+
+// ***************************************
+// *      Global Macro definitions       *
+// ***************************************
+
+#define CONST_PRUDRAM   C3
+#define CONST_HPI       C15
+#define CONST_DSPL2     C28
+#define CONST_L3RAM     C30
+#define CONST_DDR       C31
+
+// Address for the Constant table Programmable Pointer Register 0(CTPPR_0)	 		
+#define CTPPR_0         0x7028 
+// Address for the Constant table Programmable Pointer Register 1(CTPPR_1)	 		
+#define CTPPR_1         0x702C 	
+
+.macro  MOV32               
+.mparam dst, src
+    MOV     dst.w0, src & 0xFFFF
+    MOV     dst.w2, src >> 16
+.endm
+
+.macro  LD32
+.mparam dst,src
+    LBBO    dst,src,#0x00,4
+.endm
+
+.macro  LD16
+.mparam dst,src
+    LBBO    dst,src,#0x00,2
+.endm
+
+.macro  LD8
+.mparam dst,src
+    LBBO    dst,src,#0x00,1
+.endm
+
+.macro ST32
+.mparam src,dst
+    SBBO    src,dst,#0x00,4
+.endm
+
+.macro ST16
+.mparam src,dst
+    SBBO    src,dst,#0x00,2
+.endm
+
+.macro ST8
+.mparam src,dst
+    SBBO    src,dst,#0x00,1
+.endm
+
+
+// ***************************************
+// *    Global Structure Definitions     *
+// ***************************************
+
+
+// ***************************************
+// *     Global Register Assignments     *
+// ***************************************
+
+#endif // _PRU_memAccessL2_HP_

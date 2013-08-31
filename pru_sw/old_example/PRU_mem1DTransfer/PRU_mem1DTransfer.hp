@@ -1,0 +1,51 @@
+//
+// File: PRU_mem1DTransfer.hp
+// Revision: 1.0
+//
+// PRU MEM1D Service Routine assembly constants. 
+
+#ifndef _PRU_MEM1D_TRANSFER_HP_
+#define _PRU_MEM1D_TRANSFER_HP_
+
+// The MEM1D service routine facilitates simple 1D:1D transfer.
+// Parameter Table: 
+//
+// 31        24        16        8        0  
+//  ______________________________________
+// |                 SRC                  |
+// |______________________________________|
+// |                 DST                  |
+// |______________________________________|
+// |                 CNT                  |
+// |______________________________________| 
+//
+
+// ***************************************
+// *      Global Macro definitions       *
+// ***************************************
+
+#define CONST_PRUDRAM   C3
+
+
+// ***************************************
+// *    Global Structure Definitions     *
+// ***************************************
+
+.struct Mem1DParams
+    .u32    src
+    .u32    dst
+    .u32    cnt
+.ends
+
+
+// ***************************************
+// *     Global Register Assignments     *
+// ***************************************
+
+.assign Mem1DParams, R7, *, txParams
+
+#define mem1d_eblen     R0.b0  // mem1d effective burst length register
+#define mem1d_data      R14    // mem1d data register (R14-R21)
+
+
+#endif // _PRU_MEM1D_TRANSFER_HP_

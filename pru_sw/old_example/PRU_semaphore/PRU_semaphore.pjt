@@ -1,0 +1,36 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\PRU\trunk\examples\PRU_semaphore\"
+ProjectType=Executable
+CPUFamily=TMS320C67XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\host\common\src\pru.c"
+Source="PRU_semaphore.c"
+Source="..\common\example.cmd"
+
+["Debug" Settings]
+InitialBuildCmd="..\..\bin\windows\pasm -cdl -CPRU_Code PRU_semaphore.p";Run=Always
+
+["Release" Settings]
+InitialBuildCmd="..\..\bin\windows\pasm -c -CPRU_Code PRU_semaphore.p";Run=Always
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"$(Proj_dir)\..\..\host\common\include" -i"$(Proj_dir)" -d"_DEBUG" -mv6740
+
+["Compiler" Settings: "Release"]
+Options=-g -pdsw225 -o3 -fr"$(Proj_dir)\Release" -i"$(Proj_dir)\..\common\include" -i"$(Proj_dir)" -mv6740
+
+["Linker" Settings: "Debug"]
+Options=-c -m".\Debug\PRU_semaphore.map" -o".\Debug\PRU_semaphore.out" -w -x
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\PRU_semaphore.map" -o".\Release\PRU_semaphore.out" -w -x
+

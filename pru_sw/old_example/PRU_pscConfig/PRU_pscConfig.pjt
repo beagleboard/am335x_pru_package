@@ -1,0 +1,37 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="U:\GForge\pdsp_dmax_devel\trunk\examples\PRU_pscConfig\"
+ProjectType=Executable
+CPUFamily=TMS320C67XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\host\common\src\device.c"
+Source="..\..\host\common\src\pru.c"
+Source="PRU_pscConfig.c"
+Source="..\common\example.cmd"
+
+["Debug" Settings]
+InitialBuildCmd="..\..\bin\windows\pasm -cbl -CPRU_Code PRU_pscConfig.p";Run=Always
+
+["Release" Settings]
+InitialBuildCmd="..\..\bin\windows\pasm -cbl -CPRU_Code PRU_pscConfig.p";Run=Always
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"$(Proj_dir)\..\..\host\common\include" -i"$(Proj_dir)" -d"_DEBUG" -mv6740
+
+["Compiler" Settings: "Release"]
+Options=-g -pdsw225 -o3 -fr"$(Proj_dir)\Release" -i"$(Proj_dir)\..\..\host\common\include" -i"$(Proj_dir)" -mv6740
+
+["Linker" Settings: "Debug"]
+Options=-c -m".\Debug\PRU_pscConfig.map" -o".\Debug\PRU_pscConfig.out" -w -x
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\PRU_pscConfig.map" -o".\Release\PRU_pscConfig.out" -w -x
+

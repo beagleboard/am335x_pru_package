@@ -1,0 +1,44 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\PRU\pdsp_dmax_devel\trunk\examples\PRU_PRUtoPRU_Interrupt\"
+ProjectType=Executable
+CPUFamily=TMS320C64XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\host\common\src\pru.c"
+Source="PRU_PRUtoPRU_Interrupt.c"
+Source="..\common\example.cmd"
+
+["Debug" Settings]
+InitialBuildCmd="..\..\bin\windows\pasm -c -d -CPRU0_Code PRU_PRU0toPRU1_Interrupt.p";Run=Always
+InitialBuildCmd="..\..\bin\windows\pasm -c -d -CPRU1_Code PRU_PRU1toPRU0_Interrupt.p";Run=Always
+
+["Release" Settings]
+InitialBuildCmd="..\..\bin\windows\pasm -c -d -CPRU0_Code PRU_PRU0toPRU1_Interrupt.p";Run=Always
+InitialBuildCmd="..\..\bin\windows\pasm -c -d -CPRU1_Code PRU_PRU1toPRU0_Interrupt.p";Run=Always
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdv -pdsw225 -fr"$(Proj_dir)\Debug" -i"$(Proj_dir)\..\..\host\common\include" -i"$(Proj_dir)" -d"_DEBUG" --mem_model:data=far -mv6740
+
+["Compiler" Settings: "Release"]
+Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -i"$(Proj_dir)\..\..\host\common\include" -i"$(Proj_dir)" --mem_model:data=far -mv6740
+
+["Linker" Settings: "Debug"]
+Options=-c -m".\Debug\PRU_PRUtoPRU_Interrupt.map" -o".\Debug\PRU_PRUtoPRU_Interrupt.out" -w -x -l"rts64plus.lib"
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\PRU_PRUtoPRU_Interrupt.map" -o".\Release\PRU_PRUtoPRU_Interrupt.out" -w -x -l"rts64plus.lib"
+
+["..\common\pruRun.cmd" Settings: "Debug"]
+LinkOrder=1
+
+["..\common\pruRun.cmd" Settings: "Release"]
+LinkOrder=1
+

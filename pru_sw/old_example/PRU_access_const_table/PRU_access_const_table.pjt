@@ -1,0 +1,40 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="U:\GForge\pdsp_dmax_devel\trunk\examples\PRU_access_const_table\"
+ProjectType=Executable
+CPUFamily=TMS320C67XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\host\common\src\device.c"
+Source="..\..\host\common\src\pru.c"
+Source="PRU_access_const_table.c"
+Source="..\common\example.cmd"
+
+["Debug" Settings]
+InitialBuildCmd="..\..\bin\windows\pasm -c -CPRU_Code PRU_access_const_table.p";Run=Always
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"$(Proj_dir)\..\..\host\common\include" -i"$(Proj_dir)" -d"_DEBUG" -mv6740
+
+["Compiler" Settings: "Release"]
+Options=-g -pdsw225 -o3 -fr"$(Proj_dir)\Release" -i"$(Proj_dir)\..\..\host\common\include" -i"$(Proj_dir)" -mv6740
+
+["Linker" Settings: "Debug"]
+Options=-c -m".\Debug\PRU_access_const_table.map" -o".\Debug\PRU_access_const_table.out" -w -x
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\PRU_access_const_table.map" -o".\Release\PRU_access_const_table.out" -w -x
+
+["..\common\pruRun.cmd" Settings: "Debug"]
+LinkOrder=1
+
+["..\common\pruRun.cmd" Settings: "Release"]
+LinkOrder=1
+

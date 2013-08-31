@@ -1,0 +1,85 @@
+// Source: PRU_timer0Config.hp
+// Revision: 1.0
+//
+//  PRU_timer0Config service Routine assembly constants. 
+
+
+#ifndef _PRU_TIMER0CONFIG_HP_
+#define _PRU_TIMER0CONFIG_HP_
+
+
+// ***************************************
+// *      Global Macro definitions       *
+// ***************************************
+
+#define CONST_PRUSSINTC C0
+#define CONST_PRUDRAM   C3
+#define CONST_HPI       C15
+#define CONST_DSPL2     C28
+#define CONST_L3RAM     C30
+#define CONST_DDR       C31
+
+// Address for the Constant table Programmable Pointer Register 0(CTPPR_0) 
+#define CTPPR_0         0x7028 
+// Address for the Constant table Programmable Pointer Register 1(CTPPR_1) 
+#define CTPPR_1         0x702C 
+
+.macro  MOV32               
+.mparam dst, src
+    MOV     dst.w0, src & 0xFFFF
+    MOV     dst.w2, src >> 16
+.endm
+
+.macro  LD32
+.mparam dst,src
+    LBBO    dst,src,#0x00,4
+.endm
+
+.macro  LD16
+.mparam dst,src
+    LBBO    dst,src,#0x00,2
+.endm
+
+.macro  LD8
+.mparam dst,src
+    LBBO    dst,src,#0x00,1
+.endm
+
+.macro ST32
+.mparam src,dst
+    SBBO    src,dst,#0x00,4
+.endm
+
+.macro ST16
+.mparam src,dst
+    SBBO    src,dst,#0x00,2
+.endm
+
+.macro ST8
+.mparam src,dst
+    SBBO    src,dst,#0x00,1
+.endm
+
+#define TMR_0_REGS        0x01C20000
+#define TMR_TIM12_OFFSET  0x10
+#define TMR_PRD12_OFFSET  0x18
+#define TMR_TCR_OFFSET    0x20
+#define TMR_TGCR_OFFSET   0x24
+#define TMR_INTCTL_OFFSET 0x44
+#define TIME_CONST        0x5000
+
+
+// ***************************************
+// *    Global Structure Definitions     *
+// ***************************************
+
+
+// ***************************************
+// *     Global Register Assignments     *
+// ***************************************
+
+#define regPointer        r11
+#define regVal            r17
+
+
+#endif // _PRU_TIMER0CONFIG_HP_

@@ -1,0 +1,100 @@
+//
+// Source: PRU_edmaConfig.hp
+// Revision: 1.0
+//
+// PRU_DSPtoPRU_Interrupt Service Routine assembly constants. 
+
+#ifndef _PRU_EDMACONFIG_HP_
+#define _PRU_EDMACONFIG_HP_
+
+
+// ***************************************
+// *      Global Macro definitions       *
+// ***************************************
+
+#define CONST_PRUDRAM   C3
+#define CONST_HPI       C15
+#define CONST_DSPL2     C28
+#define CONST_L3RAM     C30
+#define CONST_DDR       C31
+
+.macro  MOV32               
+.mparam dst, src
+    MOV     dst.w0, src & 0xFFFF
+    MOV     dst.w2, src >> 16
+.endm
+
+.macro  LD32
+.mparam dst,src
+    LBBO    dst,src,#0x00,4
+.endm
+
+.macro  LD16
+.mparam dst,src
+    LBBO    dst,src,#0x00,2
+.endm
+
+.macro  LD8
+.mparam dst,src
+    LBBO    dst,src,#0x00,1
+.endm
+
+.macro ST32
+.mparam src,dst
+    SBBO    src,dst,#0x00,4
+.endm
+
+.macro ST16
+.mparam src,dst
+    SBBO    src,dst,#0x00,2
+.endm
+
+.macro ST8
+.mparam src,dst
+    SBBO    src,dst,#0x00,1
+.endm
+
+#define EDMA3CC_0_REGS      0x01C00000
+// This could be set to any free channel from 0-15
+#define EDMA3CC_0_GP0_EVT   6
+#define EDMA3CC_0_PARAM     0x01C04000
+
+#define ACNT                0x0001
+#define	BCNT            		0x0100
+#define	CCNT            		0x0001
+
+// ***************************************
+// *    Global Structure Definitions     *
+// ***************************************
+
+.struct Global
+    .u32 regPointer
+    .u32 regVal
+.ends
+
+.struct EDMA_PaRAM
+    .u32 opt
+    .u32 src
+    .u16 acnt
+    .u16 bcnt
+    .u32 dst
+    .u16 srcbidx
+    .u16 dstbidx
+    .u16 link
+    .u16 bcntrld
+    .u16 srccidx
+    .u16 dstcidx
+    .u16 ccnt
+    .u16 rsvd
+.ends
+
+
+// ***************************************
+// *     Global Register Assignments     *
+// ***************************************
+
+.assign Global, r2, *, global
+.assign EDMA_PaRAM, r4, *, param
+
+
+#endif // _PRU_EDMACONFIG_HP_

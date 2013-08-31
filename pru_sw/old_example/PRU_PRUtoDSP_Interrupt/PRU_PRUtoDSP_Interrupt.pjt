@@ -1,0 +1,34 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="U:\GForge\pdsp_dmax_devel\trunk\examples\PRU_PRUtoDSP_Interrupt\"
+ProjectType=Executable
+CPUFamily=TMS320C64XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\host\common\src\pru.c"
+Source="intvecs.asm"
+Source="PRU_PRUtoDSP_Interrupt.c"
+Source="..\common\example.cmd"
+
+["Debug" Settings]
+InitialBuildCmd="..\..\bin\windows\pasm -c -d -CPRU_Code PRU_PRUtoDSP_Interrupt.p";Run=Always
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdv -pdsw225 -fr"$(Proj_dir)\Debug" -i"$(Proj_dir)\..\..\host\common\include" -i"$(Proj_dir)" -d"_DEBUG" -mv6740 --mem_model:data=far
+
+["Compiler" Settings: "Release"]
+Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -i"$(Proj_dir)\..\..\host\common\include" -i"$(Proj_dir)" -mv6740 --mem_model:data=far
+
+["Linker" Settings: "Debug"]
+Options=-c -m".\Debug\PRU_PRUtoDSP_Interrupt.map" -o".\Debug\PRU_PRUtoDSP_Interrupt.out" -w -x -l"rts64plus.lib"
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\PRU_PRUtoDSP_Interrupt.map" -o".\Release\PRU_PRUtoDSP_Interrupt.out" -w -x -l"rts64plus.lib"
+

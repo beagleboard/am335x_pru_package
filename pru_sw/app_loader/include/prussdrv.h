@@ -49,7 +49,6 @@
 #define _PRUSSDRV_H
 
 #include <sys/types.h>
-#include <pthread.h>
 
 #if defined (__cplusplus)
 extern "C" {
@@ -87,7 +86,6 @@ extern "C" {
 #define PRU_EVTOUT_6            6
 #define PRU_EVTOUT_7            7
 
-    typedef void *(*prussdrv_function_handler) (void *);
     typedef struct __sysevt_to_channel_map {
         short sysevt;
         short channel;
@@ -191,10 +189,6 @@ extern "C" {
     int prussdrv_exit(void);
 
     int prussdrv_exec_program(int prunum, const char *filename);
-
-    int prussdrv_start_irqthread(unsigned int host_interrupt, int priority,
-                                 prussdrv_function_handler irqhandler);
-
 
 #if defined (__cplusplus)
 }

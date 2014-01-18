@@ -49,7 +49,6 @@
 
 #include <prussdrv.h>
 #include "__prussdrv.h"
-#include <pthread.h>
 #include <stdio.h>
 
 #ifdef __DEBUG
@@ -652,8 +651,6 @@ int prussdrv_exit()
     for (i = 0; i < NUM_PRU_HOSTIRQS; i++) {
         if (prussdrv.fd[i])
             close(prussdrv.fd[i]);
-        if (prussdrv.irq_thread[i])
-            pthread_join(prussdrv.irq_thread[i], NULL);
     }
     return 0;
 }
@@ -708,27 +705,4 @@ int prussdrv_exec_program(int prunum, const char *filename)
     prussdrv_pru_enable(prunum);
 
     return 0;
-}
-
-int prussdrv_start_irqthread(unsigned int host_interrupt, int priority,
-                             prussdrv_function_handler irqhandler)
-{
-    pthread_attr_t pthread_attr;
-    struct sched_param sched_param;
-    pthread_attr_init(&pthread_attr);
-    if (priority != 0) {
-        pthread_attr_setinheritsched(&pthread_attr,
-                                     PTHREAD_EXPLICIT_SCHED);
-        pthread_attr_setschedpolicy(&pthread_attr, SCHED_FIFO);
-        sched_param.sched_priority = priority;
-        pthread_attr_setschedparam(&pthread_attr, &sched_param);
-    }
-
-    pthread_create(&prussdrv.irq_thread[host_interrupt], &pthread_attr,
-                   irqhandler, NULL);
-
-    pthread_attr_destroy(&pthread_attr);
-
-    return 0;
-
 }

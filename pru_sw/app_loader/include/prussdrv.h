@@ -65,6 +65,9 @@ extern "C" {
 #define PRUSS0_PRU0_IRAM        2
 #define PRUSS0_PRU1_IRAM        3
 
+#define PRUSS_V1                1 // AM18XX
+#define PRUSS_V2                2 // AM33XX
+
 //Available in AM33xx series - begin
 #define PRUSS0_SHARED_DATARAM   4
 #define	PRUSS0_CFG              5
@@ -110,6 +113,12 @@ extern "C" {
     int prussdrv_init(void);
 
     int prussdrv_open(unsigned int pru_evtout_num);
+
+    /** Return version of PRU.  This must be called after prussdrv_open. */
+    int prussdrv_version();
+
+    /** Return string description of PRU version. */
+    const char* prussdrv_strversion(int version);
 
     int prussdrv_pru_reset(unsigned int prunum);
 

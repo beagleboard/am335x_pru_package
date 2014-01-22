@@ -98,7 +98,7 @@ int __prussdrv_memmap_init(void)
     switch (prussdrv.version) {
     case PRUSS_V1:
         {
-            printf("AM18XX\n");
+            printf(PRUSS_V1_STR "\n");
             prussdrv.pru0_dataram_phy_base = AM18XX_DATARAM0_PHYS_BASE;
             prussdrv.pru1_dataram_phy_base = AM18XX_DATARAM1_PHYS_BASE;
             prussdrv.intc_phy_base = AM18XX_INTC_PHYS_BASE;
@@ -112,7 +112,7 @@ int __prussdrv_memmap_init(void)
         break;
     case PRUSS_V2:
         {
-            printf("AM33XX\n");
+            printf(PRUSS_V2_STR "\n");
             prussdrv.pru0_dataram_phy_base = AM33XX_DATARAM0_PHYS_BASE;
             prussdrv.pru1_dataram_phy_base = AM33XX_DATARAM1_PHYS_BASE;
             prussdrv.intc_phy_base = AM33XX_INTC_PHYS_BASE;
@@ -133,7 +133,7 @@ int __prussdrv_memmap_init(void)
         }
         break;
     default:
-        printf("UNKNOWN\n");
+        printf(PRUSS_UNKNOWN_STR "\n");
     }
 
     prussdrv.pru1_dataram_base =
@@ -256,8 +256,20 @@ int prussdrv_open(unsigned int pru_evtout_num)
     }
 }
 
+int prussdrv_version() {
+    return prussdrv.version;
+}
 
-
+const char * prussdrv_strversion(int version) {
+    switch (version) {
+        case PRUSS_V1:
+            return PRUSS_V1_STR;
+        case PRUSS_V2:
+            return PRUSS_V2_STR;
+        default:
+            return PRUSS_UNKNOWN_STR;
+    }
+}
 
 int prussdrv_pru_reset(unsigned int prunum)
 {

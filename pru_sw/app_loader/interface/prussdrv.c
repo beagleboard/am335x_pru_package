@@ -243,12 +243,12 @@ int prussdrv_init(void)
 
 }
 
-int prussdrv_open(unsigned int pru_evtout_num)
+int prussdrv_open(unsigned int host_interrupt)
 {
     char name[PRUSS_UIO_PRAM_PATH_LEN];
-    if (!prussdrv.fd[pru_evtout_num]) {
-        sprintf(name, "/dev/uio%d", pru_evtout_num);
-        prussdrv.fd[pru_evtout_num] = open(name, O_RDWR | O_SYNC);
+    if (!prussdrv.fd[host_interrupt]) {
+        sprintf(name, "/dev/uio%d", host_interrupt);
+        prussdrv.fd[host_interrupt] = open(name, O_RDWR | O_SYNC);
         return __prussdrv_memmap_init();
     } else {
         return -1;
@@ -416,9 +416,45 @@ int prussdrv_pruintc_init(tpruss_intc_initdata * prussintc_init_data)
 
     pruintc_io[PRU_INTC_GER_REG >> 2] = 0x1;
 
+    // Stash a copy of the intc settings
+    memcpy( &prussdrv.intc_data, prussintc_init_data,
+            sizeof(prussdrv.intc_data) );
+
     return 0;
 }
 
+short prussdrv_get_event_to_channel_map( unsigned int eventnum )
+{
+    unsigned int i;
+    for (i = 0; i < NUM_PRU_SYS_EVTS &&
+                prussdrv.intc_data.sysevt_to_channel_map[i].sysevt  !=-1 &&
+                prussdrv.intc_data.sysevt_to_channel_map[i].channel !=-1; ++i) {
+        if ( eventnum == prussdrv.intc_data.sysevt_to_channel_map[i].sysevt )
+            return prussdrv.intc_data.sysevt_to_channel_map[i].channel;
+    }
+    return -1;
+}
+
+short prussdrv_get_channel_to_host_map( unsigned int channel )
+{
+    unsigned int i;
+    for (i = 0; i < NUM_PRU_CHANNELS &&
+                prussdrv.intc_data.channel_to_host_map[i].channel != -1 &&
+                prussdrv.intc_data.channel_to_host_map[i].host    != -1; ++i) {
+        if ( channel == prussdrv.intc_data.channel_to_host_map[i].channel )
+            /** -2 is because first two host interrupts are reserved
+             * for PRU0 and PRU1 */
+            return prussdrv.intc_data.channel_to_host_map[i].host - 2;
+    }
+    return -1;
+}
+
+short prussdrv_get_event_to_host_map( unsigned int eventnum )
+{
+    short ans = prussdrv_get_event_to_channel_map( eventnum );
+    if (ans < 0) return ans;
+    return prussdrv_get_channel_to_host_map( ans );
+}
 
 int prussdrv_pru_send_event(unsigned int eventnum)
 {
@@ -430,7 +466,7 @@ int prussdrv_pru_send_event(unsigned int eventnum)
     return 0;
 }
 
-int prussdrv_pru_wait_event(unsigned int pru_evtout_num)
+unsigned int prussdrv_pru_wait_event(unsigned int host_interrupt)
 {
     int event_count;
     unsigned int *pruintc_io = (unsigned int *) prussdrv.intc_base;
@@ -440,22 +476,22 @@ int prussdrv_pru_wait_event(unsigned int pru_evtout_num)
 
 }
 
-int prussdrv_pru_clear_event(unsigned int eventnum)
+int prussdrv_pru_clear_event(unsigned int sysevent)
 {
     unsigned int *pruintc_io = (unsigned int *) prussdrv.intc_base;
-    if (eventnum < 32)
-        pruintc_io[PRU_INTC_SECR1_REG >> 2] = 1 << eventnum;
+    if (sysevent < 32)
+        pruintc_io[PRU_INTC_SECR1_REG >> 2] = 1 << sysevent;
     else
-        pruintc_io[PRU_INTC_SECR2_REG >> 2] = 1 << (eventnum - 32);
+        pruintc_io[PRU_INTC_SECR2_REG >> 2] = 1 << (sysevent - 32);
     return 0;
 }
 
 int prussdrv_pru_send_wait_clear_event(unsigned int send_eventnum,
-                                       unsigned int pru_evtout_num,
+                                       unsigned int host_interrupt,
                                        unsigned int ack_eventnum)
 {
     prussdrv_pru_send_event(send_eventnum);
-    prussdrv_pru_wait_event(pru_evtout_num);
+    prussdrv_pru_wait_event(host_interrupt);
     prussdrv_pru_clear_event(ack_eventnum);
     return 0;
 
@@ -648,7 +684,7 @@ int prussdrv_exec_program(int prunum, char *filename)
     return 0;
 }
 
-int prussdrv_start_irqthread(unsigned int pru_evtout_num, int priority,
+int prussdrv_start_irqthread(unsigned int host_interrupt, int priority,
                              prussdrv_function_handler irqhandler)
 {
     pthread_attr_t pthread_attr;
@@ -662,7 +698,7 @@ int prussdrv_start_irqthread(unsigned int pru_evtout_num, int priority,
         pthread_attr_setschedparam(&pthread_attr, &sched_param);
     }
 
-    pthread_create(&prussdrv.irq_thread[pru_evtout_num], &pthread_attr,
+    pthread_create(&prussdrv.irq_thread[host_interrupt], &pthread_attr,
                    irqhandler, NULL);
 
     pthread_attr_destroy(&pthread_attr);

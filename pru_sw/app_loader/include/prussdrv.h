@@ -106,13 +106,13 @@ extern "C" {
         //Channel to Host map.Channels -Range: 0..9  HOSTs - Range:0..9
         //{-1, -1} indicates end of list
         tchannel_to_host_map channel_to_host_map[NUM_PRU_CHANNELS];
-        //10-bit mask - Enable Host0-Host9 {Host0/1:PRU0/1, Host2..9 : PRUEVT_OUT0..7)
+        //10-bit mask - Enable Host0-Host9 {Host0/1:PRU0/1, Host2..9 : PRUEVT_OUT0..7}
         unsigned int host_enable_bitmask;
     } tpruss_intc_initdata;
 
     int prussdrv_init(void);
 
-    int prussdrv_open(unsigned int pru_evtout_num);
+    int prussdrv_open(unsigned int host_interrupt);
 
     /** Return version of PRU.  This must be called after prussdrv_open. */
     int prussdrv_version();
@@ -133,6 +133,31 @@ extern "C" {
 
     int prussdrv_pruintc_init(tpruss_intc_initdata * prussintc_init_data);
 
+    /** Find and return the channel a specified event is mapped to.
+     * Note that this only searches for the first channel mapped and will not
+     * detect error cases where an event is mapped erroneously to multiple
+     * channels.
+     * @return channel-number to which a system event is mapped.
+     * @return -1 for no mapping found
+     */
+    short prussdrv_get_event_to_channel_map( unsigned int eventnum );
+
+    /** Find and return the host interrupt line a specified channel is mapped
+     * to.  Note that this only searches for the first host interrupt line
+     * mapped and will not detect error cases where a channel is mapped
+     * erroneously to multiple host interrupt lines.
+     * @return host-interrupt-line to which a channel is mapped.
+     * @return -1 for no mapping found
+     */
+    short prussdrv_get_channel_to_host_map( unsigned int channel );
+
+    /** Find and return the host interrupt line a specified event is mapped
+     * to.  This first finds the intermediate channel and then the host.
+     * @return host-interrupt-line to which a system event is mapped.
+     * @return -1 for no mapping found
+     */
+    short prussdrv_get_event_to_host_map( unsigned int eventnum );
+
     int prussdrv_map_l3mem(void **address);
 
     int prussdrv_map_extmem(void **address);
@@ -145,21 +170,24 @@ extern "C" {
 
     void *prussdrv_get_virt_addr(unsigned int phyaddr);
 
-    int prussdrv_pru_wait_event(unsigned int pru_evtout_num);
+    /** Wait for the specified host interrupt.
+     * @return the number of times the event has happened. */
+    unsigned int prussdrv_pru_wait_event(unsigned int host_interrupt);
 
     int prussdrv_pru_send_event(unsigned int eventnum);
 
-    int prussdrv_pru_clear_event(unsigned int eventnum);
+    /** Clear the specified event and re-enable the host interrupt. */
+    int prussdrv_pru_clear_event(unsigned int sysevent);
 
     int prussdrv_pru_send_wait_clear_event(unsigned int send_eventnum,
-                                           unsigned int pru_evtout_num,
+                                           unsigned int host_interrupt,
                                            unsigned int ack_eventnum);
 
     int prussdrv_exit(void);
 
     int prussdrv_exec_program(int prunum, char *filename);
 
-    int prussdrv_start_irqthread(unsigned int pru_evtout_num, int priority,
+    int prussdrv_start_irqthread(unsigned int host_interrupt, int priority,
                                  prussdrv_function_handler irqhandler);
 
 

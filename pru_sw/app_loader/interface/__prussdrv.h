@@ -237,6 +237,7 @@ typedef struct __prussdrv {
     unsigned int l3ram_map_size;
     unsigned int extram_phys_base;
     unsigned int extram_map_size;
+    tpruss_intc_initdata intc_data;
 } tprussdrv;
 
 

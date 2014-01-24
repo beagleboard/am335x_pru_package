@@ -1,0 +1,106 @@
+//
+// Source: PRU_pscConfig.hp
+// Revision: 1.0
+//
+// PRU PSC config.
+//
+// Copyright 2009, Texas Instruments.
+//
+
+#ifndef _PRU_PSC_CONFIG_HP_
+#define _PRU_PSC_CONFIG_HP_
+
+
+// ***************************************
+// *      Global Macro definitions       *
+// ***************************************
+
+#define CONST_PRUDRAM   C3
+#define CONST_HPI       C15
+#define CONST_DSPL2     C28
+#define CONST_L3RAM     C30
+#define CONST_DDR       C31
+
+.macro  MOV32               
+.mparam dst, src
+    MOV     dst.w0, src & 0xFFFF
+    MOV     dst.w2, src >> 16
+.endm
+
+.macro  LD32
+.mparam dst,src
+    LBBO    dst,src,#0x00,4
+.endm
+
+.macro  LD16
+.mparam dst,src
+    LBBO    dst,src,#0x00,2
+.endm
+
+.macro  LD8
+.mparam dst,src
+    LBBO    dst,src,#0x00,1
+.endm
+
+.macro ST32
+.mparam src,dst
+    SBBO    src,dst,#0x00,4
+.endm
+
+.macro ST16
+.mparam src,dst
+    SBBO    src,dst,#0x00,2
+.endm
+
+.macro ST8
+.mparam src,dst
+    SBBO    src,dst,#0x00,1
+.endm
+
+#define PSC0_ADDR       0x01C10000
+#define PSC1_ADDR       0x01E27000
+
+#define DSP_PSC         1
+#define DSP_MODULE      15
+#define DSP_PD          1
+
+#define PSC_ENABLE        0x03
+#define PSC_SWRSTDISABLE  0x00
+
+
+// ***************************************
+// *    Global Structure Definitions     *
+// ***************************************
+
+.struct Global
+    .u32 pscRegBase
+    .u16 count
+    .u16 offset
+    .u32 scratch
+.ends
+
+.struct PscRegs
+    .u32 PTCMD    // 0x120
+    .u32 PTSTAT   // 0x128
+    .u32 MDSTAT   // 0x800 + 0x4*module
+    .u32 MDCTL    // 0xA00 + 0x4*module
+.ends
+
+.struct PscCtlParams
+    .u8    state
+    .u8    module    
+    .u8    domain    
+    .u8    pscnum
+.ends
+
+
+// ***************************************
+// *     Global Register Assignments     *
+// ***************************************
+
+.assign PscRegs, R4, *, pscRegs
+.assign PscCtlParams, R8, *, pscParams
+.assign Global, R1, *, global
+
+
+#endif // _PRU_PSC_CONFIG_HP_

@@ -1,0 +1,129 @@
+// ***************************************
+// *      Global Macro definitions       *
+// ***************************************
+// This header file forms macro library that can be 
+// included in any *.p PASM assembly file.
+
+.macro  MOV32               
+.mparam dst, src
+    MOV     dst.w0, src & 0xFFFF
+    MOV     dst.w2, src >> 16
+.endm
+
+.macro  LD32
+.mparam dst,src
+    LBBO    dst,src,#0x00,4
+.endm
+
+.macro  LD16
+.mparam dst,src
+    LBBO    dst,src,#0x00,2
+.endm
+
+.macro  LD8
+.mparam dst,src
+    LBBO    dst,src,#0x00,1
+.endm
+
+.macro ST32
+.mparam src,dst
+    SBBO    src,dst,#0x00,4
+.endm
+
+.macro ST16
+.mparam src,dst
+    SBBO    src,dst,#0x00,2
+.endm
+
+.macro ST8
+.mparam src,dst
+    SBBO    src,dst,#0x00,1
+.endm
+
+// MPY: Constant Time Multiply Macro
+// Output: 
+//   dst - destination(Rn)
+// Inputs:
+//   src1 - source1 (Rn)
+//   src2 - source2 (Rn)
+//   cnt  - operand bit width (OP(16))
+// Cycles:
+//    4 + 5*cnt
+// Restrictions:
+//    dst!=src1 && dst!=src2
+// Usage:
+//   MPY r0, r1, r2, 8
+//   MPY r0, r1, r2, r3
+.macro MPY
+.mparam dst,src1,src2,cnt
+    MOV src2.b3,cnt                 // 1 cycle
+    LDI dst, 0                      // 1 cycle
+    LSL src1, src1, src2.b3         // 1 cycle
+LOOP_START:
+    SUB src2.b3, src2.b3, 1         // 1 cycle * cnt loops  
+    LSR src1, src1, 1               // 1 cycle * cnt loops
+    QBBS DO_ADD, src2, src2.b3      // 1 cycle * cnt loops
+    QBA SKIP_ADD                    // 0.5 cycle * cnt loops
+DO_ADD:
+    ADD dst, dst, src1              // 0.5 cycle * cnt loops
+SKIP_ADD:
+    QBLT LOOP_START, src2.b3, 0x00  // 1 cycle * cnt loops
+LOOP_END:
+    ADD src2,src2.w0,0              // 1 cycle
+.endm
+
+// OMPY: Optimal Time (non constant) Multiply Macro
+// Output: 
+//   dst - destination(Rn)
+// Inputs:
+//   src1 - source1 (Rn)
+//   src2 - source2 (Rn)
+//   cnt  - operand bit width (OP(16))
+// Cycles:
+//    4 + 4*cnt + (number of non-zero bits in src2)
+// Restrictions:
+//    dst!=src1 && dst!=src2
+// Usage:
+//   OMPY r0, r1, r2, 8
+//   OMPY r0, r1, r2, r3
+.macro OMPY
+.mparam dst,src1,src2,cnt
+    MOV src2.b3,cnt                 // 1 cycle
+    LDI dst, 0                      // 1 cycle
+    LSL src1, src1, src2.b3         // 1 cycle
+LOOP_START:
+    SUB src2.b3, src2.b3, 1         // 1 cycle * cnt loops  
+    LSR src1, src1, 1               // 1 cycle * cnt loops
+    QBBC SKIP_ADD, src2, src2.b3    // 1 cycle * cnt loops
+    ADD dst, dst, src1              // 1 cycle * (number of non-zero bits in src2)
+SKIP_ADD:
+    QBLT LOOP_START, src2.b3, 0x00  // 1 cycle * cnt loops
+LOOP_END:
+    ADD src2,src2.w0,0              // 1 cycle
+.endm
+
+// OMPY2: Optimal Time Multiply Macro #2
+// Output: 
+//   dst - destination(Rn)
+// Inputs:
+//   src1 - source1 (Rn)
+//   src2 - source2 (Rn)
+//   temp - scratch register (Rn)
+// Cycles:
+//    2 + 5*(number of non-zero bits in src2)
+// Restrictions:
+//   No register overlap
+// Usage:
+//   OMPY2 r0, r1, r2, r3
+.macro OMPY2
+.mparam dst, src1, src2, temp
+    MOV src2.w2, src2.w0
+    LDI dst, 0                      // 1 cycle    
+LOOP_START:
+    LMBD src2.b3, src2.w0, 1        // 1 cycle * (number of non-zero bits in src2)   
+    LSL temp, src1.w0, src2.b3      // 1 cycle * (number of non-zero bits in src2)
+    ADD dst, dst, temp              // 1 cycle * (number of non-zero bits in src2)
+    CLR src2.w0, src2.b3            // 1 cycle * (number of non-zero bits in src2)
+    QBNE LOOP_START, src2.b3, 32    // 1 cycle * (number of non-zero bits in src2)
+LOOP_END:    
+    MOV src2.w0, src2.w2            // 1 cycle

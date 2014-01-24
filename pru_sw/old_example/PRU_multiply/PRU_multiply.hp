@@ -1,0 +1,49 @@
+//
+// File: PRU_multiply.hp
+// Revision: 1.0
+//
+// PRU Multiply Service Routine assembly constants.
+
+#ifndef _PRU_MULTIPLY_HP_
+#define _PRU_MULTIPLY_HP_
+
+// The MULTIPLY service routine multiplies 2 16-bit numbers.
+// Parameter Table: 
+//
+// 31        24        16        8        0  
+//  ______________________________________
+// |                   |       SRC1       |
+// |___________________|__________________|
+// |                   |       SRC2       |
+// |___________________|__________________|
+// |               RESULT                 |
+// |______________________________________| 
+//
+
+// ***************************************
+// *      Global Macro definitions       *
+// ***************************************
+
+#define CONST_PRUDRAM   C3
+#include "../common/macros.hp"
+
+
+// ***************************************
+// *    Global Structure Definitions     *
+// ***************************************
+
+.struct  MultiplyParams
+    .u32    src1
+    .u32    src2
+    .u32    result
+.ends
+
+
+// ***************************************
+// *     Global Register Assignments     *
+// ***************************************
+
+.assign MultiplyParams, R7, *, mpyParams
+
+
+#endif // _PRU_MULTIPLY_HP_

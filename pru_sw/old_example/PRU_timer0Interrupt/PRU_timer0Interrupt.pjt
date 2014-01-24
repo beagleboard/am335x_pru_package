@@ -1,0 +1,40 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\pdsExamples\trunk\examples\PRU_timer0Interrupt\"
+ProjectType=Executable
+CPUFamily=TMS320C64XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Tool="XDC"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\host\common\src\pru.c"
+Source="..\..\host\common\src\util.c"
+Source="PRU_timer0Interrupt.c"
+Source="..\common\example.cmd"
+
+["Debug" Settings]
+InitialBuildCmd="..\..\bin\windows\pasm -c -d -CPRU_Code PRU_timer0Interrupt.p";Run=Always
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdv -pdsw225 -fr"$(Proj_dir)\Debug" -i"$(Proj_dir)\..\..\host\common\include" -i"$(Proj_dir)" -d"_DEBUG" -mv6740 --mem_model:data=far
+
+["Compiler" Settings: "Release"]
+Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -i"$(Proj_dir)\..\..\host\common\include" -i"$(Proj_dir)" -mv6740 --mem_model:data=far
+
+["Linker" Settings: "Debug"]
+Options=-c -m".\Debug\PRU_timer0Interrupt.map" -o".\Debug\PRU_timer0Interrupt.out" -w -x -l"rts64plus.lib"
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\PRU_timer0Interrupt.map" -o".\Release\PRU_timer0Interrupt.out" -w -x -l"rts64plus.lib"
+
+["OMAPL138.cmd" Settings: "Debug"]
+LinkOrder=1
+
+["OMAPL138.cmd" Settings: "Release"]
+LinkOrder=1

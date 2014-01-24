@@ -1,0 +1,101 @@
+// Source: PRU_timer0Interrupt.hp
+// Revision: 1.0
+//
+//  PRU_timer0Config service Routine assembly constants. 
+
+
+#ifndef _PRU_TIMER0INTERRUPT_HP_
+#define _PRU_TIMER0INTERRUPT_HP_
+
+
+// ***************************************
+// *      Global Macro definitions       *
+// ***************************************
+
+#define CONST_PRUSSINTC C0
+#define CONST_PRUDRAM   C3
+#define CONST_HPI       C15
+#define CONST_DSPL2     C28
+#define CONST_L3RAM     C30
+#define CONST_DDR       C31
+
+// Address for the Constant table Programmable Pointer Register 0(CTPPR_0) 
+#define CTPPR_0         0x7028 
+// Address for the Constant table Programmable Pointer Register 1(CTPPR_1) 
+#define CTPPR_1         0x702C 
+
+.macro  MOV32               
+.mparam dst, src
+    MOV     dst.w0, src & 0xFFFF
+    MOV     dst.w2, src >> 16
+.endm
+
+.macro  LD32
+.mparam dst,src
+    LBBO    dst,src,#0x00,4
+.endm
+
+.macro  LD16
+.mparam dst,src
+    LBBO    dst,src,#0x00,2
+.endm
+
+.macro  LD8
+.mparam dst,src
+    LBBO    dst,src,#0x00,1
+.endm
+
+.macro ST32
+.mparam src,dst
+    SBBO    src,dst,#0x00,4
+.endm
+
+.macro ST16
+.mparam src,dst
+    SBBO    src,dst,#0x00,2
+.endm
+
+.macro ST8
+.mparam src,dst
+    SBBO    src,dst,#0x00,1
+.endm
+
+#define GER_OFFSET        0x10
+#define HIESR_OFFSET      0x34
+#define SICR_OFFSET       0x24
+#define EISR_OFFSET       0x28
+#define SYS_EVT           3    // T64P0_TINT12_SYS_EVT
+#define HOST_NUM          0
+#define CHN_NUM           0
+
+#define INTC_REGS_BASE                0x00004000
+#define INTC_CHNMAP_REGS_OFFSET       0x0400
+#define INTC_HOSTMAP_REGS_OFFSET      0x0800
+#define INTC_HOSTINTPRIO_REGS_OFFSET  0x0900
+#define INTC_SYS_INT_REGS_OFFSET      0x0D00
+#define INTC_HOSTNEST_REGS_OFFSET     0x1100
+
+
+#define  DSP_FLAG_ADDR 0x00000000 // PRU0 DRAM
+
+#define         PT_MASK                 0x1F
+
+
+// ***************************************
+// *    Global Structure Definitions     *
+// ***************************************
+
+
+// ***************************************
+// *     Global Register Assignments     *
+// ***************************************
+
+#define jumpOffset        r8
+#define regPointer        r11
+#define regOffset         r12
+#define regVal            r17
+#define eventStatus       r31
+
+
+
+#endif // _PRU_TIMER0CONFIG_HP_

@@ -106,14 +106,14 @@ drv.prussdrv_get_virt_addr.restype  = POINTER(c_ubyte)
 
 pru_wait_event                      = drv.prussdrv_pru_wait_event
 drv.prussdrv_pru_wait_event.argtypes= [ c_uint ] # pru_evtout_num
-drv.prussdrv_pru_wait_event.restype = assert_success
+drv.prussdrv_pru_wait_event.restype = c_uint
 
 pru_send_event                      = drv.prussdrv_pru_send_event
 drv.prussdrv_pru_send_event.argtypes= [ c_uint ]
 drv.prussdrv_pru_send_event.restype = assert_success
 
 pru_clear_event                     = drv.prussdrv_pru_clear_event
-drv.prussdrv_pru_clear_event.argtypes= [ c_uint ] # system_event
+drv.prussdrv_pru_clear_event.argtypes= [ c_uint, c_uint ] #host-interrupt, sys-event
 drv.prussdrv_pru_clear_event.restype = assert_success
 
 pru_send_wait_clear_event           = drv.prussdrv_pru_send_wait_clear_event

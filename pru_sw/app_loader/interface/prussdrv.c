@@ -468,21 +468,25 @@ int prussdrv_pru_send_event(unsigned int eventnum)
 
 unsigned int prussdrv_pru_wait_event(unsigned int host_interrupt)
 {
-    int event_count;
-    unsigned int *pruintc_io = (unsigned int *) prussdrv.intc_base;
-    read(prussdrv.fd[pru_evtout_num], &event_count, sizeof(int));
-    pruintc_io[PRU_INTC_HIEISR_REG >> 2] = pru_evtout_num+2; 
-    return 0;
-
+    unsigned int event_count;
+    read(prussdrv.fd[host_interrupt], &event_count, sizeof(int));
+    return event_count;
 }
 
-int prussdrv_pru_clear_event(unsigned int sysevent)
+int prussdrv_pru_clear_event(unsigned int host_interrupt, unsigned int sysevent)
 {
     unsigned int *pruintc_io = (unsigned int *) prussdrv.intc_base;
     if (sysevent < 32)
         pruintc_io[PRU_INTC_SECR1_REG >> 2] = 1 << sysevent;
     else
         pruintc_io[PRU_INTC_SECR2_REG >> 2] = 1 << (sysevent - 32);
+
+    // Re-enable the host interrupt.  Note that we must do this _after_ the
+    // system event has been cleared so as to not re-tigger the interrupt line.
+    // See Section 6.4.9 of Reference manual about HIEISR register.
+    // The +2 is because the first two host interrupts are reserved for
+    // PRU0 and PRU1.
+    pruintc_io[PRU_INTC_HIEISR_REG >> 2] = host_interrupt+2;
     return 0;
 }
 
@@ -492,7 +496,7 @@ int prussdrv_pru_send_wait_clear_event(unsigned int send_eventnum,
 {
     prussdrv_pru_send_event(send_eventnum);
     prussdrv_pru_wait_event(host_interrupt);
-    prussdrv_pru_clear_event(ack_eventnum);
+    prussdrv_pru_clear_event(host_interrupt, ack_eventnum);
     return 0;
 
 }

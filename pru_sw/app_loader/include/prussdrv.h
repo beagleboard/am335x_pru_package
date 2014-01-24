@@ -177,7 +177,8 @@ extern "C" {
     int prussdrv_pru_send_event(unsigned int eventnum);
 
     /** Clear the specified event and re-enable the host interrupt. */
-    int prussdrv_pru_clear_event(unsigned int sysevent);
+    int prussdrv_pru_clear_event(unsigned int host_interrupt,
+                                 unsigned int sysevent);
 
     int prussdrv_pru_send_wait_clear_event(unsigned int send_eventnum,
                                            unsigned int host_interrupt,

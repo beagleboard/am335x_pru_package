@@ -5,3 +5,5 @@ from constants import *
 import errors
 import clib
 from clib import *
+import interrupt
+from interrupt import InterruptHandler

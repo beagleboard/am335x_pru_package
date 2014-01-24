@@ -133,6 +133,8 @@ drv.prussdrv_exec_program.restype   = assert_success
 
 # NOTE:  This function cannot work if the callback is a python function (and the
 # non-pthread capable Cython implementation of python is used).
+# See prussdrv.InterruptHandler for a valid way to use Python as a callback for
+# an interrupt handler.
 start_irqthread                     = drv.prussdrv_start_irqthread
 drv.prussdrv_start_irqthread.argtypes= [ c_uint,# pru_evtout_num
                                          c_int, # priority

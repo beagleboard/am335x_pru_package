@@ -65,8 +65,9 @@
 
 #define	PAGE_SIZE                     4096
 
-#define PRUSS_V1                    1
-#define PRUSS_V2                    2
+#define PRUSS_V1_STR                  "AM18XX"
+#define PRUSS_V2_STR                  "AM33XX"
+#define PRUSS_UNKNOWN_STR             "UNKNOWN"
 
 #define AM33XX_PRUSS_INTC_REV         0x4E82A900
 #define AM18XX_PRUSS_INTC_REV         0x4E825900
@@ -236,6 +237,7 @@ typedef struct __prussdrv {
     unsigned int l3ram_map_size;
     unsigned int extram_phys_base;
     unsigned int extram_map_size;
+    tpruss_intc_initdata intc_data;
 } tprussdrv;
 
 

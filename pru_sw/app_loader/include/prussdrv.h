@@ -128,6 +128,8 @@ extern "C" {
 
     int prussdrv_map_extmem(void **address);
 
+    unsigned int prussdrv_extmem_size(void);
+
     int prussdrv_map_prumem(unsigned int pru_ram_id, void **address);
 
     int prussdrv_map_peripheral_io(unsigned int per_id, void **address);

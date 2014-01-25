@@ -668,6 +668,7 @@ int prussdrv_exec_program(int prunum, char *filename)
     fPtr = fopen(filename, "rb");
     if (fPtr == NULL) {
         DEBUG_PRINTF("File %s open failed\n", filename);
+	return -1;
     } else {
         DEBUG_PRINTF("File %s open passed\n", filename);
     }
@@ -686,6 +687,8 @@ int prussdrv_exec_program(int prunum, char *filename)
     if (fileSize !=
         fread((unsigned char *) fileDataArray, 1, fileSize, fPtr)) {
         DEBUG_PRINTF("WARNING: File Size mismatch\n");
+	fclose(fPtr);
+	return -1;
     }
 
     fclose(fPtr);

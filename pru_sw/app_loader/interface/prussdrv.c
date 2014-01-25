@@ -3,35 +3,35 @@
  *
  * User space driver for PRUSS
  *
- * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/ 
- * 
- * 
- *  Redistribution and use in source and binary forms, with or without 
- *  modification, are permitted provided that the following conditions 
+ * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
  *  are met:
  *
- *    Redistributions of source code must retain the above copyright 
+ *    Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *
  *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the 
- *    documentation and/or other materials provided with the   
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
  *    distribution.
  *
  *    Neither the name of Texas Instruments Incorporated nor the names of
  *    its contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
  *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
 */
@@ -50,6 +50,13 @@
 #include <prussdrv.h>
 #include "__prussdrv.h"
 #include <pthread.h>
+#include <stdio.h>
+
+#ifdef __DEBUG
+#define DEBUG_PRINTF(FORMAT, ...) fprintf(stderr, FORMAT, ## __VA_ARGS__)
+#else
+#define DEBUG_PRINTF(FORMAT, ...)
+#endif
 
 #define PRUSS_UIO_PRAM_PATH_LEN 128
 #define PRUSS_UIO_PARAM_VAL_LEN 20
@@ -98,7 +105,7 @@ int __prussdrv_memmap_init(void)
     switch (prussdrv.version) {
     case PRUSS_V1:
         {
-            printf(PRUSS_V1_STR "\n");
+            DEBUG_PRINTF(PRUSS_V1_STR "\n");
             prussdrv.pru0_dataram_phy_base = AM18XX_DATARAM0_PHYS_BASE;
             prussdrv.pru1_dataram_phy_base = AM18XX_DATARAM1_PHYS_BASE;
             prussdrv.intc_phy_base = AM18XX_INTC_PHYS_BASE;
@@ -112,7 +119,7 @@ int __prussdrv_memmap_init(void)
         break;
     case PRUSS_V2:
         {
-            printf(PRUSS_V2_STR "\n");
+            DEBUG_PRINTF(PRUSS_V2_STR "\n");
             prussdrv.pru0_dataram_phy_base = AM33XX_DATARAM0_PHYS_BASE;
             prussdrv.pru1_dataram_phy_base = AM33XX_DATARAM1_PHYS_BASE;
             prussdrv.intc_phy_base = AM33XX_INTC_PHYS_BASE;
@@ -133,7 +140,7 @@ int __prussdrv_memmap_init(void)
         }
         break;
     default:
-        printf(PRUSS_UNKNOWN_STR "\n");
+        DEBUG_PRINTF(PRUSS_UNKNOWN_STR "\n");
     }
 
     prussdrv.pru1_dataram_base =
@@ -399,8 +406,8 @@ int prussdrv_pruintc_init(tpruss_intc_initdata * prussintc_init_data)
                 mask2 +
                 (1 << (prussintc_init_data->sysevts_enabled[i] - 32));
         } else {
-            printf("Error: SYS_EVT%d out of range\n",
-                   prussintc_init_data->sysevts_enabled[i]);
+            DEBUG_PRINTF("Error: SYS_EVT%d out of range\n",
+			 prussintc_init_data->sysevts_enabled[i]);
             return -1;
         }
     }
@@ -660,16 +667,16 @@ int prussdrv_exec_program(int prunum, char *filename)
     // Open an File from the hard drive
     fPtr = fopen(filename, "rb");
     if (fPtr == NULL) {
-        printf("File %s open failed\n", filename);
+        DEBUG_PRINTF("File %s open failed\n", filename);
     } else {
-        printf("File %s open passed\n", filename);
+        DEBUG_PRINTF("File %s open passed\n", filename);
     }
     // Read file size
     fseek(fPtr, 0, SEEK_END);
     fileSize = ftell(fPtr);
 
     if (fileSize == 0) {
-        printf("File read failed.. Closing program\n");
+        DEBUG_PRINTF("File read failed.. Closing program\n");
         fclose(fPtr);
         return -1;
     }
@@ -678,12 +685,12 @@ int prussdrv_exec_program(int prunum, char *filename)
 
     if (fileSize !=
         fread((unsigned char *) fileDataArray, 1, fileSize, fPtr)) {
-        printf("WARNING: File Size mismatch\n");
+        DEBUG_PRINTF("WARNING: File Size mismatch\n");
     }
 
     fclose(fPtr);
 
-    // Make sure PRU sub system is first disabled/reset  
+    // Make sure PRU sub system is first disabled/reset
     prussdrv_pru_disable(prunum);
     prussdrv_pru_write_memory(pru_ram_id, 0,
                               (unsigned int *) fileDataArray, fileSize);

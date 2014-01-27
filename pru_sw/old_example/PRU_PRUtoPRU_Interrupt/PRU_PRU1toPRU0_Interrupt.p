@@ -1,8 +1,8 @@
 //=============================================================================
-// File: PRU_PRU1toPRU0_Interrupt.p 
+// File: PRU_PRU1toPRU0_Interrupt.p
 // Desc: PRU example to show PRU to PRU interrupts
 // Vers: 1.0
-//                             
+//
 //  Copyright (c) 2009 Texas instruments,Incorporated
 //  All rights reserved
 //
@@ -17,8 +17,8 @@
 // ***************************************
 // *       Local Macro definitions       *
 // ***************************************
-#define SYS_EVT         33 
-#define SYS_EVT_PRU0    32    
+#define SYS_EVT         33
+#define SYS_EVT_PRU0    32
 #define HOST_NUM        1
 #define CHN_NUM         1
 
@@ -32,7 +32,7 @@ POLL:
 FUNC:
     // Clear the status of the interrupt
     LDI	regVal.w2,	0x0000
-    LDI	regVal.w0,	SYS_EVT_PRU0    
+    LDI	regVal.w0,	SYS_EVT_PRU0
     SBCO	regVal,	CONST_PRUSSINTC,	0x24,        4
 
     MOV32     regVal, 0x0A
@@ -40,10 +40,10 @@ FUNC:
 
     // Initialize pointer to INTC registers
     MOV32     regOffset, 0x00000000
-    
+
     //Clear SYS_EVT32
     MOV32     r31, #00
-       
+
     // Global enable the all host interrupts
     LDI       regVal.w0, 0x0001
     SBCO      regVal, CONST_PRUSSINTC, GER_OFFSET, 2
@@ -75,5 +75,5 @@ FUNC:
     //Generate SYS_EVT32
     MOV32     r31, SYS_EVT
 
-DONE: 
+DONE:
     HALT

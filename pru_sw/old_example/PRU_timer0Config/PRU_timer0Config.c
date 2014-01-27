@@ -2,7 +2,7 @@
  * PRU_timer0Config
  *
  * This example code demonstrates Timer0 configuration by the PRU.  The
- * DSP is programmed to load the PRU example code and to detect the 
+ * DSP is programmed to load the PRU example code and to detect the
  * Timer0 interrupt.
  *********************************************************************/
 
@@ -88,16 +88,16 @@ void main()
 {
   printf("Starting PRU %s example.\r\n",exampleName);
 
-  // Make sure PRU sub system is first disabled/reset  
-  PRU_disable();  
+  // Make sure PRU sub system is first disabled/reset
+  PRU_disable();
 
   printf("\tINFO: Loading example.\r\n");
   PRU_load(PRU_NUM, (Uint32*)PRU_Code, (sizeof(PRU_Code)/sizeof(Uint32)));
-  
+
   printf("\tINFO: Initializing example.\r\n");
   // Configure the DSP Interrupt Controller
   LOCAL_exampleInit();
-  
+
   printf("\tINFO: Executing example.\r\n");
   PRU_run(PRU_NUM);
 
@@ -110,7 +110,7 @@ void main()
   {
     printf("\tINFO: PRU halt failed.\r\n");
   }
-  
+
   // Check to see if the example produced desired result
   if ( LOCAL_examplePassed(PRU_NUM) )
   {

@@ -1,13 +1,13 @@
 //=============================================================================
-// File: PRU_timer0Config.p 
+// File: PRU_timer0Config.p
 // Desc: PRU example to configure the TIMER0 peripheral
 // Vers: 1.0
-//                             
+//
 //  Copyright (c) 2009 Texas instruments,Incorporated
 //  All rights reserved
 //
 //=============================================================================
-// Example showing configuration of Timer0 in 32-bit unchained 
+// Example showing configuration of Timer0 in 32-bit unchained
 // mode by PRU.
 //=============================================================================
 

@@ -44,7 +44,7 @@
 // *
 
 // *****************************************************************************/
-// file:   PRU_PRU0toPRU1_Interrupt.p 
+// file:   PRU_PRU0toPRU1_Interrupt.p
 //
 // brief:  PRU example to show PRU to PRU interrupts.
 //
@@ -68,7 +68,7 @@
 // ***************************************
 
 #define SYS_EVT         PRU0_PRU1_INTERRUPT
-#define SYS_EVT_PRU1    PRU1_PRU0_INTERRUPT    
+#define SYS_EVT_PRU1    PRU1_PRU0_INTERRUPT
 
 
 PRU0_TO_PRU1_INTERRUPT:
@@ -92,20 +92,20 @@ POLL:
     WBS       eventStatus, #30
 
 DONE:
-    // Configure the programmable pointer register for PRU0 by setting c31_pointer[31:16] 
+    // Configure the programmable pointer register for PRU0 by setting c31_pointer[31:16]
     // field to 0x0000.  This will make C31 point to 0x80001000 (DDR memory).
     MOV       r0, 0x00000000
     MOV       r1, CTPPR_1
     ST32      r0, r1
-	
+
     MOV       regVal, 0x0B
     SBCO      regVal, CONST_DDR, 0x04, 4
 
     // Clear the status of the interrupt
     LDI	      regVal.w2,	0x0000
     LDI	      regVal.w0,	SYS_EVT_PRU1
-    SBCO      regVal,	CONST_PRUSSINTC,	SICR_OFFSET,        4 
-	
+    SBCO      regVal,	CONST_PRUSSINTC,	SICR_OFFSET,        4
+
     // Send notification to Host for program completion
 #ifdef AM33XX
     MOV       r31.b0, PRU0_ARM_INTERRUPT+16

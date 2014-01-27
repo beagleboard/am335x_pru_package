@@ -75,7 +75,7 @@ String exampleName = "PRU_timer0Interrupt";
 void main()
 {
   CSL_TmrRegsOvly timer0Regs = (CSL_TmrRegsOvly)CSL_TMR_0_REGS;
-  
+
   printf("Starting %s example.\r\n",exampleName);
 
 	// Make sure PRU is first disabled/reset
@@ -83,7 +83,7 @@ void main()
 
 	printf("\tINFO: Loading example.\r\n");
   PRU_load(PRU_NUM, (Uint32*)PRU_Code, (sizeof(PRU_Code)/sizeof(Uint32)));
-  
+
   printf("\tINFO: Initializing example.\r\n");
   // Configure Timer0
   LOCAL_exampleInit(PRU_NUM);
@@ -106,7 +106,7 @@ void main()
   {
     printf("\tINFO: PRU halt failed.\r\n");
   }
-  
+
   // Check to see if the example produced desired result
   if ( LOCAL_examplePassed(PRU_NUM) )
   {
@@ -163,7 +163,7 @@ static Bool LOCAL_examplePassed(Uint8 pruNum)
 
   /* Wait for PRU to acknowledge completion. */
 	while ( pruDram[0] == 0xFFFFFFFF );
-  
+
   return TRUE;
 
 }

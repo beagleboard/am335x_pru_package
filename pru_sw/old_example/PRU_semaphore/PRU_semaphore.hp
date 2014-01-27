@@ -2,7 +2,7 @@
 // Source: PRU_semahore.hp
 // Revision: 1.0
 //
-// PRU Semaphore example constants. 
+// PRU Semaphore example constants.
 
 #ifndef _PRU_SEMAPHORE_HP_
 #define _PRU_SEMAPHORE_HP_
@@ -17,12 +17,12 @@
 #define CONST_DSPL2     C28
 #define CONST_L3RAM     C30
 #define CONST_DDR       C31
-// Address for the Constant table Programmable Pointer Register 0(CTPPR_0)	 		
-#define CTPPR_0         0x7028 
-// Address for the Constant table Programmable Pointer Register 1(CTPPR_1)	 		
-#define CTPPR_1         0x702C 	
+// Address for the Constant table Programmable Pointer Register 0(CTPPR_0)
+#define CTPPR_0         0x7028
+// Address for the Constant table Programmable Pointer Register 1(CTPPR_1)
+#define CTPPR_1         0x702C
 
-.macro  MOV32               
+.macro  MOV32
 .mparam dst, src
     MOV     dst.w0, src & 0xFFFF
     MOV     dst.w2, src >> 16

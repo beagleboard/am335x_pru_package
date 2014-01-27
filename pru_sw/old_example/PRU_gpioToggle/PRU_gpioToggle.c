@@ -83,9 +83,9 @@ void main()
   {
     printf("\tINFO: PRU halt failed.\r\n");
   }
-  
+
   printf("Example completed successfully.");
-  
+
   // Disable the PRUSS when done
   PRU_disable();
 }

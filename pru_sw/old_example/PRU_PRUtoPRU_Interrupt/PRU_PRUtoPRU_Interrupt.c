@@ -2,7 +2,7 @@
 /* PRU_PRUtoPRU_Interrupt.c --PRU Example to demonstrate DSP interrupting PRU   */
 /*                            to perform some event handling function.          */
 /* Rev 0.0.1   May 29th 2009                                                    */
-/* Initial version of the file                                                  */    
+/* Initial version of the file                                                  */
 /*                                                                              */
 /* -----------------------------------------------------------------------      */
 /*            Copyright (c) 2009 Texas Instruments, Incorporated.               */
@@ -14,12 +14,12 @@
  *
  * This example illustrates how two PRUs can communicate between each other
  * by interrupting each other during a process. In this example code the PRU0
- * generates a system event 32 by writing into its R31 register which sends an 
- * interrupt to PRU1 which is polling for it. On receiving the interrupt the PRU1 
- * performs certain functionality and sets an external flag. The PRU1 completes its 
+ * generates a system event 32 by writing into its R31 register which sends an
+ * interrupt to PRU1 which is polling for it. On receiving the interrupt the PRU1
+ * performs certain functionality and sets an external flag. The PRU1 completes its
  * task and interrupts PRU0 once the task is done by writing into its R31 register
- * The PRU0 polls for the interrupt and acknowledges the completion of task 
- * by setting a flag   
+ * The PRU0 polls for the interrupt and acknowledges the completion of task
+ * by setting a flag
  *********************************************************************/
 
 
@@ -93,30 +93,30 @@ Uint8 tmrIntReceived = 0;
 void main()
 {
   printf("Starting PRU %s example.\r\n",exampleName);
-  
-  // Make sure PRU sub system is first disabled/reset  
+
+  // Make sure PRU sub system is first disabled/reset
   PRU_disable();
 
   // Enable and load the code to the specified PRU
   printf("\tINFO: Loading PRU0 core instruction memory.\n");
   PRU_load(CSL_PRUCORE_0, (Uint32*)PRU0_Code, (sizeof(PRU0_Code)/sizeof(Uint32)));
-    
+
   // Enable and load the code to the specified PRU
   printf("\tINFO: Loading PRU1 core instruction memory.\n");
   PRU_load(CSL_PRUCORE_1, (Uint32*)PRU1_Code, (sizeof(PRU1_Code)/sizeof(Uint32)));
-  
+
   printf("\tINFO: Initializing example.\r\n");
   // Initialize the Flag locations of PRU0 and PRU1
   LOCAL_exampleInit();
-  
+
   // Enable and Start PRU1
   printf("\tINFO: Executing loaded PRU1 program.\n");
   PRU_run(CSL_PRUCORE_1);
-  
+
 	// Enable and Start PRU0
   printf("\tINFO: Executing loaded PRU0 program.\n");
   PRU_run(CSL_PRUCORE_0);
-  
+
   // Wait for PRU0 to halt
   if ( PRU_waitForHalt(CSL_PRUCORE_0, -1) == E_PASS)
   {
@@ -137,8 +137,8 @@ void main()
     printf("\tINFO: PRU1 halt failed.\r\n");
   }
 
-  
-  // Check to see if the example produced desired result      
+
+  // Check to see if the example produced desired result
   if ( LOCAL_examplePassed(CSL_PRUCORE_1) )
   {
     printf("%s example executed succesfully.\n", exampleName);
@@ -147,7 +147,7 @@ void main()
   {
     printf("%s example failed.\n", exampleName);
   }
-  
+
   // Disable the PRUSS when done
   PRU_disable();
 }
@@ -164,11 +164,11 @@ static void LOCAL_exampleInit ()
 
   // Initialize memory pointer to start of External DDR memory
   ptrflag = (Uint32 *)&EXTERNAL_RAM_START;
- 
-  //FLush the flag locations of PRU0 an PRU1 
+
+  //FLush the flag locations of PRU0 an PRU1
   ptrflag[0] =0x00;
   ptrflag[1] =0x00;
-    
+
 }
 /*
 * Example Result verification routine
@@ -176,15 +176,15 @@ static void LOCAL_exampleInit ()
 static Bool LOCAL_examplePassed ( Uint8 pruNum )
 {
   Uint32  *ptrflag;
-  Uint8 result_0; 
+  Uint8 result_0;
   Uint8 result_1;
 
   ptrflag = (Uint32 *)&EXTERNAL_RAM_START;
-    
+
   //Read in the first example done flags
   result_0 =ptrflag[0];
   result_1 =ptrflag[1];
-  //check if Example completed 
+  //check if Example completed
   return ((result_0 == FLAG1) & (result_1 == FLAG2) ) ;
 }
 

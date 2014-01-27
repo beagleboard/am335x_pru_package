@@ -46,7 +46,7 @@
 // *****************************************************************************/
 // file:   PRU_PRUtoPRU_Interrupt.hp
 //
-// brief:  PRU_PRUtoPRU_Interrupt Service Routine assembly constants. 
+// brief:  PRU_PRUtoPRU_Interrupt Service Routine assembly constants.
 //
 //
 //  (C) Copyright 2012, Texas Instruments, Inc
@@ -87,9 +87,9 @@
 // Address for the Constant table Programmable Pointer Register 0(CTPPR_0)
 #define CTBIR_1         0x22024
 
-// Address for the Constant table Programmable Pointer Register 0(CTPPR_0)      
+// Address for the Constant table Programmable Pointer Register 0(CTPPR_0)
 #define CTPPR_0         0x22028
-// Address for the Constant table Programmable Pointer Register 1(CTPPR_1)      
+// Address for the Constant table Programmable Pointer Register 1(CTPPR_1)
 #define CTPPR_1         0x2202C
 
 #else

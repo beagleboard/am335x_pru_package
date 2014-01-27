@@ -2,7 +2,7 @@
 // Source: PRU_edmaConfig.hp
 // Revision: 1.0
 //
-// PRU_DSPtoPRU_Interrupt Service Routine assembly constants. 
+// PRU_DSPtoPRU_Interrupt Service Routine assembly constants.
 
 #ifndef _PRU_EDMACONFIG_HP_
 #define _PRU_EDMACONFIG_HP_
@@ -18,7 +18,7 @@
 #define CONST_L3RAM     C30
 #define CONST_DDR       C31
 
-.macro  MOV32               
+.macro  MOV32
 .mparam dst, src
     MOV     dst.w0, src & 0xFFFF
     MOV     dst.w2, src >> 16

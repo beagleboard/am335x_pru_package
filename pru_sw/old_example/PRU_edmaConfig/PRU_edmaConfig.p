@@ -1,5 +1,5 @@
 //=============================================================================
-// File: PRU_edmaConfig.p 
+// File: PRU_edmaConfig.p
 // Desc: PRU configuring EDMA for data transfer
 // Vers: 1.0
 //
@@ -8,13 +8,13 @@
 //
 //=============================================================================
 //  PRU Example to demonstrate DSP interrupting PRU to export event handling
-//  
+//
 //  In this example code demonstrates Timer0 configured by the DSP.The
-//  DSP enables the timer interrupt and waits for interrupt once the interrupt 
-//  is received,it exports the event handling to the PRU by setting a flag 
-//  that the PRU is polling. The PRU performs Event handling like reseting 
-//  the timer and performing a functionality and the DSP is informed of the 
-//  serviced interrupt by reseting the flag 
+//  DSP enables the timer interrupt and waits for interrupt once the interrupt
+//  is received,it exports the event handling to the PRU by setting a flag
+//  that the PRU is polling. The PRU performs Event handling like reseting
+//  the timer and performing a functionality and the DSP is informed of the
+//  serviced interrupt by reseting the flag
 //=============================================================================
 
 .origin 0
@@ -58,7 +58,7 @@ EDMA_CONFIG:
     // Enable event
     LDI       global.regPointer.w0,	0x1030  //EESR
     LDI       global.regVal.w0,	1 << EDMA3CC_0_GP0_EVT
-    ST16      global.regVal, global.regPointer 
+    ST16      global.regVal, global.regPointer
 
     // Setup PaRAM for transfer
     LDI       r15,(EDMA3CC_0_GP0_EVT << 12)
@@ -75,7 +75,7 @@ EDMA_CONFIG:
     MOV       param.srccidx, 0x0000
     MOV       param.dstcidx, 0x0000
     MOV       param.ccnt, CCNT
-    
+
     // Store PaRAM data
     MOV32     global.regPointer, EDMA3CC_0_PARAM + (EDMA3CC_0_GP0_EVT * 0x20)
     SBBO      param, global.regPointer,	0x00, SIZE(param)

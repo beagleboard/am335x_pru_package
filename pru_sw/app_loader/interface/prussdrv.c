@@ -315,7 +315,7 @@ int prussdrv_pru_disable(unsigned int prunum)
 
 int prussdrv_pru_write_memory(unsigned int pru_ram_id,
                               unsigned int wordoffset,
-                              unsigned int *memarea,
+                              const unsigned int *memarea,
                               unsigned int bytelength)
 {
     unsigned int *pruramarea, i, wordlength;
@@ -351,7 +351,7 @@ int prussdrv_pru_write_memory(unsigned int pru_ram_id,
 }
 
 
-int prussdrv_pruintc_init(tpruss_intc_initdata * prussintc_init_data)
+int prussdrv_pruintc_init(const tpruss_intc_initdata *prussintc_init_data)
 {
     unsigned int *pruintc_io = (unsigned int *) prussdrv.intc_base;
     unsigned int i, mask1, mask2;
@@ -575,7 +575,7 @@ int prussdrv_map_peripheral_io(unsigned int per_id, void **address)
     return 0;
 }
 
-unsigned int prussdrv_get_phys_addr(void *address)
+unsigned int prussdrv_get_phys_addr(const void *address)
 {
     unsigned int retaddr = 0;
     if ((address >= prussdrv.pru0_dataram_base)
@@ -643,7 +643,7 @@ int prussdrv_exit()
     return 0;
 }
 
-int prussdrv_exec_program(int prunum, char *filename)
+int prussdrv_exec_program(int prunum, const char *filename)
 {
     FILE *fPtr;
     unsigned char fileDataArray[PRUSS_MAX_IRAM_SIZE];

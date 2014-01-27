@@ -128,10 +128,10 @@ extern "C" {
 
     int prussdrv_pru_write_memory(unsigned int pru_ram_id,
                                   unsigned int wordoffset,
-                                  unsigned int *memarea,
+                                  const unsigned int *memarea,
                                   unsigned int bytelength);
 
-    int prussdrv_pruintc_init(tpruss_intc_initdata * prussintc_init_data);
+    int prussdrv_pruintc_init(const tpruss_intc_initdata *prussintc_init_data);
 
     /** Find and return the channel a specified event is mapped to.
      * Note that this only searches for the first channel mapped and will not
@@ -168,7 +168,7 @@ extern "C" {
 
     int prussdrv_map_peripheral_io(unsigned int per_id, void **address);
 
-    unsigned int prussdrv_get_phys_addr(void *address);
+    unsigned int prussdrv_get_phys_addr(const void *address);
 
     void *prussdrv_get_virt_addr(unsigned int phyaddr);
 
@@ -188,7 +188,7 @@ extern "C" {
 
     int prussdrv_exit(void);
 
-    int prussdrv_exec_program(int prunum, char *filename);
+    int prussdrv_exec_program(int prunum, const char *filename);
 
     int prussdrv_start_irqthread(unsigned int host_interrupt, int priority,
                                  prussdrv_function_handler irqhandler);

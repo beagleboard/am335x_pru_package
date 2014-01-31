@@ -1,6 +1,7 @@
 ROOTDIR = ..
 TARGET = libprussdrv
 CROSS_COMPILE?=arm-arago-linux-gnueabi-
+PREFIX?=/usr/local
 
 CC = $(CROSS_COMPILE)gcc
 AR = $(CROSS_COMPILE)ar
@@ -26,6 +27,7 @@ SOURCES = $(wildcard *.c)
 HEADERS = $(wildcard *.h)
 
 TARGETHEADERS = $(addprefix $(INCLUDEDIR)/, $(HEADERS))
+INSTALL_HDRS = $(wildcard $(INCLUDEDIR)/*.h)
 
 DBGOBJFILES = $(SOURCES:%.c=debug/%.o) 
 RELOBJFILES = $(SOURCES:%.c=release/%.o) 
@@ -36,7 +38,12 @@ PIC_RELOBJFILES = $(SOURCES:%.c=release/%_PIC.o)
 
 all:	debug release sodebug sorelease
 
-install:
+install: release
+	@mkdir -p $(PREFIX)/lib
+	@cp $(LIBDIR)/* $(PREFIX)/lib
+	@mkdir -p $(PREFIX)/include
+	@cp $(INSTALL_HDRS) $(PREFIX)/include
+	@chmod a-x $(INSTALL_HDRS)
 
 release:	$(RELTARGET) 
 #release:	$(RELTARGET) $(TARGETHEADERS)

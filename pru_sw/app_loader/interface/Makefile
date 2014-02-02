@@ -39,11 +39,10 @@ PIC_RELOBJFILES = $(SOURCES:%.c=release/%_PIC.o)
 all:	debug release sodebug sorelease
 
 install: release
-	@mkdir -p $(PREFIX)/lib
-	@cp $(LIBDIR)/* $(PREFIX)/lib
-	@mkdir -p $(PREFIX)/include
-	@cp $(INSTALL_HDRS) $(PREFIX)/include
-	@chmod a-x $(INSTALL_HDRS)
+	install -m 0755 $(PREFIX)/lib
+	install -m 0755 $(PREFIX)/include
+	install -m 0644 $(LIBDIR)/* $(PREFIX)/lib
+	install -m 0644 $(INSTALL_HDRS) $(PREFIX)/include
 
 release:	$(RELTARGET) 
 #release:	$(RELTARGET) $(TARGETHEADERS)

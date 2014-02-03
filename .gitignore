@@ -1,1 +1,11 @@
 *.pyc
+
+pru_sw/app_loader/interface/debug/
+pru_sw/app_loader/interface/release/
+pru_sw/app_loader/lib/
+pru_sw/utils/pasm
+pru_sw/utils/pasm_2
+
+pru_sw/example_apps/*/obj
+pru_sw/example_apps/bin/
+

@@ -2,14 +2,14 @@
  * PRU_edmaConfig
  *
  * This example code demonstrates EDMA configuration by the PRU.  The
- * DSP is programmed to load the PRU example code and to detect the 
+ * DSP is programmed to load the PRU example code and to detect the
  * EDMA interrupt.
  *********************************************************************/
 
 /************************************************************
 * Include Files                                             *
 ************************************************************/
- 
+
 // Standard header files
 #include <stdlib.h>
 #include <stdio.h>
@@ -84,25 +84,25 @@ Uint8 edmaIntReceived = 0;
 
 void main()
 {
-  printf("Starting %s example.\r\n",exampleName);  
+  printf("Starting %s example.\r\n",exampleName);
 
   // Make sure PRU is first disabled/reset
   PRU_disable();
-  
+
   // Enable and load the code to the specified pru
   printf("\tINFO: Loading example.\r\n");
-  PRU_load(PRU_NUM, (Uint32*)PRU_Code, (sizeof(PRU_Code)/sizeof(Uint32)));  
-  
+  PRU_load(PRU_NUM, (Uint32*)PRU_Code, (sizeof(PRU_Code)/sizeof(Uint32)));
+
   printf("\tINFO: Initializing example.\r\n");
-  LOCAL_exampleInit(PRU_NUM);  
+  LOCAL_exampleInit(PRU_NUM);
 
   printf("\tINFO: Executing example.\r\n");
   PRU_run(PRU_NUM);
-  
+
   // Wait for EDMA CC0 interrupt.
   while ( !edmaIntReceived );
-  printf("\tINFO: EDMA interrupt received.\r\n");  
-  
+  printf("\tINFO: EDMA interrupt received.\r\n");
+
   // Wait for the PRU to call the HALT command
   if (PRU_waitForHalt(PRU_NUM,-1) == E_PASS)
   {
@@ -122,7 +122,7 @@ void main()
   {
     printf("Example failed.");
   }
-  
+
   // Disable the PRUSS when done
   PRU_disable();
 }
@@ -137,11 +137,11 @@ static void LOCAL_exampleInit(Uint8 pruNum)
   Uint32 i;
 
   Uint32 *pruDataMem;
-  
+
   // Turn on the EDMA CC and TCs
   DEVICE_LPSCTransition(CSL_PSC_0, CSL_PSC_CC0, 0, CSL_PSC_MDCTL_NEXT_ENABLE);
   DEVICE_LPSCTransition(CSL_PSC_0, CSL_PSC_TC0, 0, CSL_PSC_MDCTL_NEXT_ENABLE);
-  DEVICE_LPSCTransition(CSL_PSC_0, CSL_PSC_TC1, 0, CSL_PSC_MDCTL_NEXT_ENABLE);  
+  DEVICE_LPSCTransition(CSL_PSC_0, CSL_PSC_TC1, 0, CSL_PSC_MDCTL_NEXT_ENABLE);
 
   // Initialize memory pointer
   if (pruNum == 0)
@@ -151,19 +151,19 @@ static void LOCAL_exampleInit(Uint8 pruNum)
   else if (pruNum == 1)
   {
     pruDataMem = (Uint32 *) PRU1_DATA_RAM_START;
-  }  
+  }
 
   // Put src and dst addresses into PRU data memory so PRU code can read them
   pruDataMem[0] = (Uint32) srcBuf;
   pruDataMem[1] = (Uint32) dstBuf;
-  
+
 	// Init src and dst buffers
   for (i = 0; i < sizeof(srcBuf); i++)
   {
     srcBuf[i] = rand() & 0xFF;
     dstBuf[i] = 0;
   }
-  
+
   // Clear EDMA CC0 interrupt
   CSL_FINST(intcRegs->EVTCLR[0], DSPINTC_EVTCLR_EC8, SET);
 
@@ -186,7 +186,7 @@ static void LOCAL_exampleInit(Uint8 pruNum)
 static Bool LOCAL_examplePassed()
 {
   Uint32 i;
-  
+
   /* Check data. */
   for (i = 0; i < sizeof(srcBuf); i++)
   {

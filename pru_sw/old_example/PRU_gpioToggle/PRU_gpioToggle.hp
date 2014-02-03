@@ -2,7 +2,7 @@
 // Source: PRU_gpioToggle.hp
 // Revision: 1.1
 //
-// PRU_gpioToggle assembly constants/macros. 
+// PRU_gpioToggle assembly constants/macros.
 
 #ifndef _PRU_GPIOTOGGLE_HP_
 #define _PRU_GPIOTOGGLE_HP_

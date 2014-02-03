@@ -21,7 +21,7 @@
 #define CONST_L3RAM     C30
 #define CONST_DDR       C31
 
-.macro  MOV32               
+.macro  MOV32
 .mparam dst, src
     MOV     dst.w0, src & 0xFFFF
     MOV     dst.w2, src >> 16
@@ -88,8 +88,8 @@
 
 .struct PscCtlParams
     .u8    state
-    .u8    module    
-    .u8    domain    
+    .u8    module
+    .u8    domain
     .u8    pscnum
 .ends
 

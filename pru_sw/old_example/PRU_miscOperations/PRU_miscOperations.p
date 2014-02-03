@@ -1,5 +1,5 @@
 //=============================================================================
-// File: PRU_miscOperations.p 
+// File: PRU_miscOperations.p
 // Desc: PRU Example to miscellaneous operations
 // Vers: 1.0
 //
@@ -7,21 +7,21 @@
 //  All rights reserved
 //
 //=============================================================================
-//  PRU Example to miscellaneous operations like use of masks to extract bits, 
+//  PRU Example to miscellaneous operations like use of masks to extract bits,
 //  bubble sorting,thresholding
 //
-//  This example illustrates 
-//  
-//  (a)extraction of 4bit values of a 32 bit number using masks 
-//  and bit shift operations. In the example a 32 bit value is placed in source location 
-//  in L3 memory. The PRU reads the source data and extracts 8 four bit datas of a 32 bit number 
+//  This example illustrates
+//
+//  (a)extraction of 4bit values of a 32 bit number using masks
+//  and bit shift operations. In the example a 32 bit value is placed in source location
+//  in L3 memory. The PRU reads the source data and extracts 8 four bit datas of a 32 bit number
 //  and stores the extracted 4 bits(byte rounded) in PRU1 Data memory.
 //
-//  (b) The array of extracted bits is used as the initial array to demonstrate 
-//  implementation of bubble sort algorithm and the result of the algorithm is stored 
+//  (b) The array of extracted bits is used as the initial array to demonstrate
+//  implementation of bubble sort algorithm and the result of the algorithm is stored
 //  in the DDR memory.
 //
-//  (c) The sorted array is then thresholded by applying a cut-off value and converted to 
+//  (c) The sorted array is then thresholded by applying a cut-off value and converted to
 //  an array of zeros and ones. The subsequent thresholded result is stored in PRU0 Data memory
 //=============================================================================
 
@@ -81,13 +81,13 @@ LOOP:
     LDI       offset, #00
 
 
-    // (C) Thresholding the sorted  values 
+    // (C) Thresholding the sorted  values
 THRESHOLD:
     QBLE      END, offset, N_extracts
     LBCO      r0.b0, CONST_DDR, offset, 1
     QBGT      LOW, r0.b0, threshold
 
-HIGH: 
+HIGH:
     LDI       r0.b0, #01
     SBCO      r0.b0, CONST_PRU0DRAM, offset, 1
     ADD       offset, offset, 1

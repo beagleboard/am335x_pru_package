@@ -44,7 +44,7 @@
 // *
 
 // *****************************************************************************/
-// file:   PRU_PRU1toPRU0_Interrupt.p 
+// file:   PRU_PRU1toPRU0_Interrupt.p
 //
 // brief:  PRU example to show PRU to PRU interrupts.
 //
@@ -66,8 +66,8 @@
 // *       Local Macro definitions       *
 // ***************************************
 
-#define SYS_EVT         PRU1_PRU0_INTERRUPT 
-#define SYS_EVT_PRU0    PRU0_PRU1_INTERRUPT    
+#define SYS_EVT         PRU1_PRU0_INTERRUPT
+#define SYS_EVT_PRU0    PRU0_PRU1_INTERRUPT
 
 PRU1_TO_PRU0_INTERRUPT:
 POLL:
@@ -77,22 +77,22 @@ POLL:
 FUNC:
     // Clear the status of the interrupt
     LDI	        regVal.w2,	0x0000
-    LDI	        regVal.w0,	SYS_EVT_PRU0    
+    LDI	        regVal.w0,	SYS_EVT_PRU0
     SBCO	regVal,	CONST_PRUSSINTC,	SICR_OFFSET,        4
 
-    // Configure the programmable pointer register for PRU1 by setting c31_pointer[15:0] 
+    // Configure the programmable pointer register for PRU1 by setting c31_pointer[15:0]
     // field to 0x0000.  This will make C31 point to offset 0x0000 of the DDR memory.
 
     MOV       r0, 0x00000000
     MOV       r1, CTPPR_1
     ST32      r0, r1
-	
+
     MOV       regVal, 0x0A
     SBCO      regVal, CONST_DDR, 0x00, 4
 
     // Initialize pointer to INTC registers
     MOV       regOffset, 0x00000000
-    
+
     //Generate SYS_EVT
 #ifdef AM33XX
     MOV       r31.b0, SYS_EVT+16

@@ -1,5 +1,5 @@
 //=============================================================================
-// File: PRU_memAccessPRUDataRam.p 
+// File: PRU_memAccessPRUDataRam.p
 // Desc: PRU access of internal Data Ram
 // Vers: 1.0
 //
@@ -7,12 +7,12 @@
 //  All rights reserved
 //
 //=============================================================================
-//  PRU Example to access PRU local data Memory 
+//  PRU Example to access PRU local data Memory
 //
-//  the following example illustrates PRU access of the local memory 
-//  using local address using the register pointed base address and 
-//  also illustrates use of global address pointed by entries in constant 
-//  table to access Local data RAM  
+//  the following example illustrates PRU access of the local memory
+//  using local address using the register pointed base address and
+//  also illustrates use of global address pointed by entries in constant
+//  table to access Local data RAM
 //=============================================================================
 
 .origin 0
@@ -36,7 +36,7 @@ MEMACCESSPRUDATARAM:
 
     LBCO      r4, CONST_PRUDRAM, 4, 4 //Load 4 bytes from memory location c3(PRU0/1 Local Data)+4 into r4 using constant table
 
-    // Add r3 and r4 
+    // Add r3 and r4
     ADD       r3, r3, r4
 
     //Store result in into memory location c3(PRU0/1 Local Data)+8 using constant table
@@ -44,7 +44,7 @@ MEMACCESSPRUDATARAM:
     HALT
 
 //===================================================================================
-// End of file PRU_memAccessPRUDataRam.p 
+// End of file PRU_memAccessPRUDataRam.p
 //
 //  Copyright (c) 2009 Texas instruments,Incorporated
 //  All rights reserved

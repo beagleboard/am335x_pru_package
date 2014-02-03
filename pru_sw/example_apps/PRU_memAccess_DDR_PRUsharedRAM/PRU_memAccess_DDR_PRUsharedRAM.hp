@@ -47,7 +47,7 @@
 // *****************************************************************************/
 // file:   PRU_memAccess_DDR_PRUsharedRAM.hp
 //
-// brief:  PRU_memAccess_DDR_PRUsharedRAM assembly constants. 
+// brief:  PRU_memAccess_DDR_PRUsharedRAM assembly constants.
 //
 //
 //  (C) Copyright 2012, Texas Instruments, Inc
@@ -80,11 +80,11 @@
 // Address for the Constant table Block Index Register (CTBIR)
 #define CTBIR          0x22020
 
-// Address for the Constant table Programmable Pointer Register 0(CTPPR_0)	
-#define CTPPR_0         0x22028 
+// Address for the Constant table Programmable Pointer Register 0(CTPPR_0)
+#define CTPPR_0         0x22028
 
-// Address for the Constant table Programmable Pointer Register 1(CTPPR_1)	
-#define CTPPR_1         0x2202C 	
+// Address for the Constant table Programmable Pointer Register 1(CTPPR_1)
+#define CTPPR_1         0x2202C
 
 
 .macro  LD32

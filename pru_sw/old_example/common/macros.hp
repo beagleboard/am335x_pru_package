@@ -1,10 +1,10 @@
 // ***************************************
 // *      Global Macro definitions       *
 // ***************************************
-// This header file forms macro library that can be 
+// This header file forms macro library that can be
 // included in any *.p PASM assembly file.
 
-.macro  MOV32               
+.macro  MOV32
 .mparam dst, src
     MOV     dst.w0, src & 0xFFFF
     MOV     dst.w2, src >> 16
@@ -41,7 +41,7 @@
 .endm
 
 // MPY: Constant Time Multiply Macro
-// Output: 
+// Output:
 //   dst - destination(Rn)
 // Inputs:
 //   src1 - source1 (Rn)
@@ -60,7 +60,7 @@
     LDI dst, 0                      // 1 cycle
     LSL src1, src1, src2.b3         // 1 cycle
 LOOP_START:
-    SUB src2.b3, src2.b3, 1         // 1 cycle * cnt loops  
+    SUB src2.b3, src2.b3, 1         // 1 cycle * cnt loops
     LSR src1, src1, 1               // 1 cycle * cnt loops
     QBBS DO_ADD, src2, src2.b3      // 1 cycle * cnt loops
     QBA SKIP_ADD                    // 0.5 cycle * cnt loops
@@ -73,7 +73,7 @@ LOOP_END:
 .endm
 
 // OMPY: Optimal Time (non constant) Multiply Macro
-// Output: 
+// Output:
 //   dst - destination(Rn)
 // Inputs:
 //   src1 - source1 (Rn)
@@ -92,7 +92,7 @@ LOOP_END:
     LDI dst, 0                      // 1 cycle
     LSL src1, src1, src2.b3         // 1 cycle
 LOOP_START:
-    SUB src2.b3, src2.b3, 1         // 1 cycle * cnt loops  
+    SUB src2.b3, src2.b3, 1         // 1 cycle * cnt loops
     LSR src1, src1, 1               // 1 cycle * cnt loops
     QBBC SKIP_ADD, src2, src2.b3    // 1 cycle * cnt loops
     ADD dst, dst, src1              // 1 cycle * (number of non-zero bits in src2)
@@ -103,7 +103,7 @@ LOOP_END:
 .endm
 
 // OMPY2: Optimal Time Multiply Macro #2
-// Output: 
+// Output:
 //   dst - destination(Rn)
 // Inputs:
 //   src1 - source1 (Rn)
@@ -118,12 +118,12 @@ LOOP_END:
 .macro OMPY2
 .mparam dst, src1, src2, temp
     MOV src2.w2, src2.w0
-    LDI dst, 0                      // 1 cycle    
+    LDI dst, 0                      // 1 cycle
 LOOP_START:
-    LMBD src2.b3, src2.w0, 1        // 1 cycle * (number of non-zero bits in src2)   
+    LMBD src2.b3, src2.w0, 1        // 1 cycle * (number of non-zero bits in src2)
     LSL temp, src1.w0, src2.b3      // 1 cycle * (number of non-zero bits in src2)
     ADD dst, dst, temp              // 1 cycle * (number of non-zero bits in src2)
     CLR src2.w0, src2.b3            // 1 cycle * (number of non-zero bits in src2)
     QBNE LOOP_START, src2.b3, 32    // 1 cycle * (number of non-zero bits in src2)
-LOOP_END:    
+LOOP_END:
     MOV src2.w0, src2.w2            // 1 cycle

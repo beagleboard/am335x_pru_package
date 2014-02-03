@@ -9,7 +9,7 @@ Original description was:
 Texas Instruments PRU Software Development Package is a collection of examples and required tools for developing software to leverage the Programmable Realtime Unit Subsystem (PRUSS) of the OMAP-L138, C6748 and C6746 SoC devices. The PRUSS contains two simple programmable execution cores (the PRUs) which use their own simple RISC instruction set. This tools package contains an assembler for writing the code for the PRUs and system examples showing how to load and execute that code. The examples also demonstrate the PRU capabilities to interact with and control the system and its resources.
 
 This directory contains a collection of examples.  Each example consists
-of PRU code and a CCS project used to build, load, and test the PRU 
+of PRU code and a CCS project used to build, load, and test the PRU
 example code from the C674x DSP.
 
 

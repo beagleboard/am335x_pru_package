@@ -1,8 +1,8 @@
 //=============================================================================
-// File: PRU_timer0Interrupt.p 
+// File: PRU_timer0Interrupt.p
 // Desc: PRU example to show interrupt processing from the TIMER0 interrupt
 // Vers: 1.0
-//                             
+//
 //  Copyright (c) 2009 Texas instruments,Incorporated
 //  All rights reserved
 //
@@ -23,7 +23,7 @@ TIMER0INTERRUPT:
     MOV32     regOffset, 0x00000000
     // Clear SYS_EVT
     MOV32     r31, 0x00000000
-    
+
     // Global enable of all host interrupts
     LDI       regVal.w0, 0x0001
     SBCO      regVal, CONST_PRUSSINTC, GER_OFFSET, 2

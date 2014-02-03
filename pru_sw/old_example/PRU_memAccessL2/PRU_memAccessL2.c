@@ -2,7 +2,7 @@
 /* PRU_memAccessL2.c -- PRU Example to demonstrate accessing DSP L2 RAM    */
 /*                                                                         */
 /* Rev 0.0.1   May 29th 2009                                               */
-/* Initial version of the file                                             */    
+/* Initial version of the file                                             */
 /*                                                                         */
 /* ----------------------------------------------------------------------- */
 /*            Copyright (c) 2009 Texas Instruments, Incorporated.          */
@@ -11,10 +11,10 @@
 /************************************************************
 DESCRIPTION:
 This example demonstrates how values can be loaded into the L2 memory
-by configuring the PRU Constant Table Programmable Pointer Register 0. 
+by configuring the PRU Constant Table Programmable Pointer Register 0.
 
 *************************************************************/
-    
+
 // Standard header files
 #include <stdlib.h>
 #include <stdio.h>
@@ -77,21 +77,21 @@ Int32 main (void)
 {
   printf("Starting %s example.\r\n",exampleName);
 
-  // Make sure PRU sub system is first disabled/reset  
+  // Make sure PRU sub system is first disabled/reset
   PRU_disable();
-  
+
   // Enable and load the code to the specified pru
   printf("\tINFO: Loading example.\r\n");
   PRU_load(PRU_NUM0, (Uint32*)PRU_Code, (sizeof(PRU_Code)/sizeof(Uint32)));
-  
-  // Memory 0x11810000-0x11810018 are used for 
+
+  // Memory 0x11810000-0x11810018 are used for
   //this demonstration and hence the pointer(L2_RAM_START) is hard coded
   printf("\tINFO: Initializing example.\r\n");
   LOCAL_exampleInit(PRU_NUM0);
 
   printf("\tINFO: Executing example.\r\n");
   PRU_run(PRU_NUM0);
-  
+
   // Wait for the PRU to call the HALT command
   if (PRU_waitForHalt(PRU_NUM0,-1) == E_PASS)
   {
@@ -112,20 +112,20 @@ Int32 main (void)
   }
 
   // Disable the PRUSS when done
-  PRU_disable();	
-  
+  PRU_disable();
+
   // Enable and load the code to the specified pru
   printf("\tINFO: Loading example.\r\n");
   PRU_load(PRU_NUM1, (Uint32*)PRU_Code, (sizeof(PRU_Code)/sizeof(int)));
-  
-  // Memory 0x11810000-0x11810018 are used for 
+
+  // Memory 0x11810000-0x11810018 are used for
   // this demonstration and hence the pointer(L2_RAM_START) is hard coded
   printf("\tINFO: Initializing example.\r\n");
   LOCAL_exampleInit(PRU_NUM1);
 
   printf("\tINFO: Executing example.\r\n");
   PRU_run(PRU_NUM1);
-  
+
   // Wait for the PRU to call the HALT command
   if (PRU_waitForHalt(PRU_NUM1,-1) == E_PASS)
   {
@@ -135,7 +135,7 @@ Int32 main (void)
   {
     printf("\tINFO: PRU1 halt failed.\r\n");
   }
-  
+
   // Verify the Successful execution of the example
   if ( LOCAL_examplePassed(PRU_NUM1) )
   {
@@ -147,7 +147,7 @@ Int32 main (void)
   }
 
   // Disable the PRUSS when done
-  PRU_disable();	
+  PRU_disable();
 
   return 0;
 }
@@ -160,10 +160,10 @@ Int32 main (void)
 static void LOCAL_exampleInit ( Uint8 pruNum )
 {
   Uint32 *memPtr;
-  
+
   //Initialize pointer to L2 data memory
   memPtr = (Uint32 *) 0x11810000;
-  
+
   // Flush the values in the PRU data memory locations
   memPtr[3] = 0x00;
   memPtr[4] = 0x00;
@@ -173,7 +173,7 @@ static void LOCAL_exampleInit ( Uint8 pruNum )
 static Bool LOCAL_examplePassed ( Uint8 pruNum )
 {
   Uint32 *memPtr;
-  
+
   //Initialize pointer to L2 data memory
   memPtr = (Uint32 *) 0x11810000;
 

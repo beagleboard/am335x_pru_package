@@ -9,7 +9,7 @@ LDFLAGS+=-L$(LIBDIR_APP_LOADER) -lprussdrv -lpthread
 OBJDIR=obj
 TARGET=$(BINDIR)/PRU_memAccessPRUDataRam
 
-_DEPS = 
+_DEPS =
 DEPS = $(patsubst %,$(INCDIR_APP_LOADER)/%,$(_DEPS))
 
 _OBJ = PRU_memAccessPRUDataRam.o
@@ -18,7 +18,7 @@ OBJ = $(patsubst %,$(OBJDIR)/%,$(_OBJ))
 
 $(OBJDIR)/%.o: %.c $(DEPS)
 	@mkdir -p obj
-	$(CROSS_COMPILE)gcc $(CFLAGS) -c -o $@ $< 
+	$(CROSS_COMPILE)gcc $(CFLAGS) -c -o $@ $<
 
 $(TARGET): $(OBJ)
 	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ $^ $(LDFLAGS)

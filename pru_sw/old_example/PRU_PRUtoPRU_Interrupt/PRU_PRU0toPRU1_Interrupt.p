@@ -1,8 +1,8 @@
 //=============================================================================
-// File: PRU_PRU0toPRU1_Interrupt.p 
+// File: PRU_PRU0toPRU1_Interrupt.p
 // Desc: PRU example to show PRU to PRU interrupts
 // Vers: 1.0
-//                             
+//
 //  Copyright (c) 2009 Texas instruments,Incorporated
 //  All rights reserved
 //
@@ -18,7 +18,7 @@
 // *       Local Macro definitions       *
 // ***************************************
 #define SYS_EVT         32
-#define SYS_EVT_PRU1    33    
+#define SYS_EVT_PRU1    33
 #define HOST_NUM        0
 #define CHN_NUM         0
 
@@ -71,6 +71,6 @@ DONE:
     // Clear the status of the interrupt
     LDI	regVal.w2,	0x0000
     LDI	regVal.w0,	SYS_EVT_PRU1
-    SBCO	regVal,	CONST_PRUSSINTC,	0x24,        4 
+    SBCO	regVal,	CONST_PRUSSINTC,	0x24,        4
 
     HALT

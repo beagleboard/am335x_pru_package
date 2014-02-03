@@ -2,22 +2,22 @@
 // File: PRU_mem1DTransfer.hp
 // Revision: 1.0
 //
-// PRU MEM1D Service Routine assembly constants. 
+// PRU MEM1D Service Routine assembly constants.
 
 #ifndef _PRU_MEM1D_TRANSFER_HP_
 #define _PRU_MEM1D_TRANSFER_HP_
 
 // The MEM1D service routine facilitates simple 1D:1D transfer.
-// Parameter Table: 
+// Parameter Table:
 //
-// 31        24        16        8        0  
+// 31        24        16        8        0
 //  ______________________________________
 // |                 SRC                  |
 // |______________________________________|
 // |                 DST                  |
 // |______________________________________|
 // |                 CNT                  |
-// |______________________________________| 
+// |______________________________________|
 //
 
 // ***************************************

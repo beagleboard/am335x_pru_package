@@ -1,5 +1,5 @@
 This directory contains a collection of examples.  Each example consists
-of PRU code and a CCS project used to build, load, and test the PRU 
+of PRU code and a CCS project used to build, load, and test the PRU
 example code from the C674x DSP.
 
 |--\examples

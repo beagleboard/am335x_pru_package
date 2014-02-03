@@ -1,5 +1,5 @@
 //=============================================================================
-// File: PRU_mem1DTransfer.p 
+// File: PRU_mem1DTransfer.p
 // Desc: Simple 1-D memory transfer.
 // Vers: 1.0
 //
@@ -12,15 +12,15 @@
 
 
 // The MEM1D service routine facilitates simple 1D:1D transfer.
-// Parameter Table: 
+// Parameter Table:
 //
-// 31________24________16________8________0  
+// 31________24________16________8________0
 // |                 SRC                  |
 // |______________________________________|
 // |                 DST                  |
 // |______________________________________|
 // |                 CNT                  |
-// |______________________________________| 
+// |______________________________________|
 //
 
 .origin 0
@@ -40,10 +40,10 @@ MEM1D_COPY:
     LDI       mem1d_eblen, #0x20
 
     // Load the data from source in registers R14-R21
-    LBBO      mem1d_data, txParams.src, #0x00, b0 
+    LBBO      mem1d_data, txParams.src, #0x00, b0
 
     // Store the data to destination
-    SBBO      mem1d_data, txParams.dst, #0x00, b0 
+    SBBO      mem1d_data, txParams.dst, #0x00, b0
 
     // Calculate the remaining count
     SUB       txParams.cnt, txParams.cnt, mem1d_eblen
@@ -51,7 +51,7 @@ MEM1D_COPY:
     // Update the source and destination registers
     ADD       txParams.src, txParams.src, mem1d_eblen
     ADD       txParams.dst, txParams.dst, mem1d_eblen
-    
+
     // Store the current state back to PARAM
     SBCO      txParams.src, C3, #0x00, 12
 
@@ -61,7 +61,7 @@ MEM1D_COPY:
     // Perform the burst again
     QBA       MEM1D_COPY
 
-MEM1D_EXIT:  
+MEM1D_EXIT:
     HALT
-   
-    
+
+

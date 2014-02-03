@@ -44,7 +44,7 @@
 // *
 
 // *****************************************************************************/
-// file:   PRU_memAccessPRUDataRam.p 
+// file:   PRU_memAccessPRUDataRam.p
 //
 // brief:  PRU access of internal Data Ram.
 //
@@ -62,7 +62,7 @@
 #include "PRU_memAccessPRUDataRam.hp"
 
 MEMACCESSPRUDATARAM:
-      
+
 #ifdef AM33XX
 
     // Configure the block index register for PRU0 by setting c24_blk_index[7:0] and
@@ -88,13 +88,13 @@ MEMACCESSPRUDATARAM:
 
     LBCO      r4, CONST_PRUDRAM, 4, 4 //Load 4 bytes from memory location c3(PRU0/1 Local Data)+4 into r4 using constant table
 
-    // Add r3 and r4 
+    // Add r3 and r4
     ADD       r3, r3, r4
 
     //Store result in into memory location c3(PRU0/1 Local Data)+8 using constant table
     SBCO      r3, CONST_PRUDRAM, 8, 4
-        
-#ifdef AM33XX	
+
+#ifdef AM33XX
 
     // Send notification to Host for program completion
     MOV R31.b0, PRU0_ARM_INTERRUPT+16

@@ -8,7 +8,7 @@ AR = $(CROSS_COMPILE)ar
 INCLUDEDIR = ../include
 LIBDIR	   = ../lib
 
-C_FLAGS += -I. -Wall -I$(INCLUDEDIR) 
+C_FLAGS += -I. -Wall -I$(INCLUDEDIR)
 
 COMPILE.c = $(CC) $(C_FLAGS) $(CPP_FLAGS) -c
 AR.c	  = $(AR) rc
@@ -27,8 +27,8 @@ HEADERS = $(wildcard *.h)
 
 TARGETHEADERS = $(addprefix $(INCLUDEDIR)/, $(HEADERS))
 
-DBGOBJFILES = $(SOURCES:%.c=debug/%.o) 
-RELOBJFILES = $(SOURCES:%.c=release/%.o) 
+DBGOBJFILES = $(SOURCES:%.c=debug/%.o)
+RELOBJFILES = $(SOURCES:%.c=release/%.o)
 PIC_DBGOBJFILES = $(SOURCES:%.c=debug/%_PIC.o)
 PIC_RELOBJFILES = $(SOURCES:%.c=release/%_PIC.o)
 
@@ -38,7 +38,7 @@ all:	debug release sodebug sorelease
 
 install:
 
-release:	$(RELTARGET) 
+release:	$(RELTARGET)
 #release:	$(RELTARGET) $(TARGETHEADERS)
 
 sorelease:	$(SORELTARGET)
@@ -63,7 +63,7 @@ $(SODBGTARGET):	$(PIC_DBGOBJFILES)
 	@mkdir -p $(ROOTDIR)/lib
 	$(LINK.c) -o $@ $(PIC_DBGOBJFILES)
 
-$(DBGTARGET):	$(DBGOBJFILES) 
+$(DBGTARGET):	$(DBGOBJFILES)
 	@mkdir -p $(ROOTDIR)/lib
 	$(AR.c) $@ $(DBGOBJFILES)
 

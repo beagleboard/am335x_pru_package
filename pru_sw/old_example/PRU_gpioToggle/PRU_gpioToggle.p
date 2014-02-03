@@ -1,5 +1,5 @@
 //=============================================================================
-// File: PRU_gpioToggle.p 
+// File: PRU_gpioToggle.p
 // Desc: PRU toggling direct connected GPIOs
 // Vers: 1.1
 //
@@ -14,7 +14,7 @@
 .entrypoint GPIO_TOGGLE
 
 #include "PRU_gpioToggle.hp"
-	
+
 GPIO_TOGGLE:
     LDI       global.count,	GPIO_BIT
     LDI       global.delay,	0x0

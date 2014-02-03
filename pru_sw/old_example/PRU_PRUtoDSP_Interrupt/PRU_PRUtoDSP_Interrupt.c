@@ -2,7 +2,7 @@
 /*PRU_PRUtoDSP_Interrupt.c --PRU Example to demonstrate PRU Interrupting DSP    */
 /*                                                                              */
 /* Rev 0.0.1   May 29th 2009                                                    */
-/* Initial version of the file                                                  */    
+/* Initial version of the file                                                  */
 /*                                                                              */
 /* -----------------------------------------------------------------------      */
 /*            Copyright (c) 2009 Texas Instruments, Incorporated.               */
@@ -13,17 +13,17 @@
 /*********************************************************************
  * PRU_PRUtoDSP_Interrupt.c
  *
- * This example code demonstrates the PRU interrupting the DSP by generating 
- * internal system events that are mapped to host2-host9 ports to generate events 
- * PRUSS_EVTOUT0-PRUSS_EVTOUT7 for the DSP.These events are mapped  on the DSP 
- * as events 6,17,22,35,39,44,50 respectively.By hooking these events to one of 
+ * This example code demonstrates the PRU interrupting the DSP by generating
+ * internal system events that are mapped to host2-host9 ports to generate events
+ * PRUSS_EVTOUT0-PRUSS_EVTOUT7 for the DSP.These events are mapped  on the DSP
+ * as events 6,17,22,35,39,44,50 respectively.By hooking these events to one of
  * the DSP interrupts the PRU is given the capabilty of interrupting the DSP.
- * 
- * DSP is programmed to load the PRU example code and to detect the 
+ *
+ * DSP is programmed to load the PRU example code and to detect the
  * PRU interrupt.
  *********************************************************************/
 
- 
+
 /************************************************************
 * Include Files                                             *
 ************************************************************/
@@ -95,16 +95,16 @@ interrupt void PRUSS_EVTOUT0_isr()
 void main()
 {
   printf("Starting %s example.\r\n", exampleName);
-  
-  // Make sure PRU sub system is first disabled/reset  
+
+  // Make sure PRU sub system is first disabled/reset
   PRU_disable();
-  
+
   // Enable and load the code to the specified pru
   printf("\tINFO: Loading example.\r\n");
   PRU_load(PRU_NUM, (Uint32*)PRU_Code, (sizeof(PRU_Code)/sizeof(Uint32)));
-  
+
   printf("\tINFO: Initializing example.\r\n");
-  LOCAL_exampleInit();  
+  LOCAL_exampleInit();
 
   printf("\tINFO: Executing example.\r\n");
   PRU_run(PRU_NUM);
@@ -118,7 +118,7 @@ void main()
   {
     printf("\tINFO: PRU halt failed.\r\n");
   }
- 
+
   // Check to see if the example produced desired result
   if ( LOCAL_examplePassed(PRU_NUM) )
   {
@@ -138,7 +138,7 @@ void main()
   Local Function Definitions
 ***********************************************************/
 
-/* 
+/*
  * DSP interrupt controller configuration.
  */
 static void LOCAL_exampleInit()
@@ -163,22 +163,22 @@ static void LOCAL_exampleInit()
 }
 
 static Bool LOCAL_examplePassed()
-{ 
+{
   Uint32 *memPtr;
 
   memPtr = (Uint32 *)EXTERNAL_RAM_START;
- 
+
   // Wait for PRUSS_EVTOUT0 interrupt.
   while ( !PRU_IntReceived );
   if (memPtr[1] == 0x0B)
   {
-    printf("\tINFO: PRU interrupt received!\n"); 
-  } 
+    printf("\tINFO: PRU interrupt received!\n");
+  }
   else
   {
-    printf("\tINFO: PRU interrupt received!\n"); 
+    printf("\tINFO: PRU interrupt received!\n");
   }
-   
+
   return TRUE;
 }
 

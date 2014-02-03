@@ -1,35 +1,35 @@
 /*
  * PRU_PRUtoPRU_Interrupt.c
  *
- * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/ 
- * 
- * 
- *  Redistribution and use in source and binary forms, with or without 
- *  modification, are permitted provided that the following conditions 
+ * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
  *  are met:
  *
- *    Redistributions of source code must retain the above copyright 
+ *    Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *
  *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the 
- *    documentation and/or other materials provided with the   
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
  *    distribution.
  *
  *    Neither the name of Texas Instruments Incorporated nor the names of
  *    its contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
  *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
 */
@@ -46,19 +46,19 @@
 /*****************************************************************************
 * PRU_PRUtoPRU_Interrupt.c
 *
-* This example illustrates how two PRUs can communicate between each other by 
-* interrupting each other during a process. In this example code, the PRU0 
-* configures the PRU INTC registers and connects system event 32 to channel 0 
-* which in turn is hooked to the host port 0. The PRU0 then generates a system 
-* event 32 by writing into its R31 register which sends an interrupt to PRU1 
-* which is polling for it. On receiving the interrupt, the PRU1 performs 
-* certain functionality and sets an external flag in DDR memory. The PRU1 
-* completes its task and interrupts PRU0 once the task is done using system 
-* event 33 by first mapping this system event number to channel 1 and channel 
-* 1 to host 1 and then writing into its R31 register. The PRU0 polls for the 
-* interrupt and acknowledges the completion of task by setting another flag 
-* in DDR memory. The ARM checks the flag values in DDR memory to verify the 
-* example was successful. 
+* This example illustrates how two PRUs can communicate between each other by
+* interrupting each other during a process. In this example code, the PRU0
+* configures the PRU INTC registers and connects system event 32 to channel 0
+* which in turn is hooked to the host port 0. The PRU0 then generates a system
+* event 32 by writing into its R31 register which sends an interrupt to PRU1
+* which is polling for it. On receiving the interrupt, the PRU1 performs
+* certain functionality and sets an external flag in DDR memory. The PRU1
+* completes its task and interrupts PRU0 once the task is done using system
+* event 33 by first mapping this system event number to channel 1 and channel
+* 1 to host 1 and then writing into its R31 register. The PRU0 polls for the
+* interrupt and acknowledges the completion of task by setting another flag
+* in DDR memory. The ARM checks the flag values in DDR memory to verify the
+* example was successful.
 *
 *****************************************************************************/
 
@@ -77,7 +77,7 @@
 
 // Driver header file
 #include <prussdrv.h>
-#include <pruss_intc_mapping.h>	 
+#include <pruss_intc_mapping.h>
 
 /*****************************************************************************
 * Local Macro Declarations                                                   *
@@ -136,8 +136,8 @@ int main(void)
 
     printf("\nINFO: Starting %s example.\r\n","PRU_PRUtoPRU_Interrupt");
     /* Initialize the PRU */
-    prussdrv_init ();		
-    
+    prussdrv_init ();
+
     /* Open PRU Interrupt */
     ret = prussdrv_open(PRU_EVTOUT_0);
     if (ret)
@@ -145,7 +145,7 @@ int main(void)
         printf("prussdrv_open open failed\n");
         return (ret);
     }
-    
+
     /* Open PRU Interrupt */
     ret = prussdrv_open(PRU_EVTOUT_1);
     if (ret)
@@ -153,7 +153,7 @@ int main(void)
         printf("prussdrv_open open failed\n");
         return (ret);
     }
-    
+
     /* Get the interrupt initialized */
     prussdrv_pruintc_init(&pruss_intc_initdata);
 
@@ -166,8 +166,8 @@ int main(void)
     prussdrv_exec_program (PRU_NUM0, "./PRU_PRU0toPRU1_Interrupt.bin");
     printf("\t\tINFO: Executing example on PRU1.\r\n");
     prussdrv_exec_program (PRU_NUM1, "./PRU_PRU1toPRU0_Interrupt.bin");
-   
- 
+
+
     /* Wait until PRU0 has finished execution */
     printf("\tINFO: Waiting for HALT command.\r\n");
     prussdrv_pru_wait_event (PRU_EVTOUT_0);
@@ -196,8 +196,8 @@ int main(void)
     prussdrv_exit ();
     munmap(ddrMem, 0x0FFFFFFF);
     close(mem_fd);
-    
-    return(0); 
+
+    return(0);
 }
 /*****************************************************************************
 * Local Function Definitions                                                 *
@@ -205,15 +205,15 @@ int main(void)
 
 static int LOCAL_exampleInit ()
 {
-    void *DDR_regaddr;   
-   
+    void *DDR_regaddr;
+
     /* open the device */
     mem_fd = open("/dev/mem", O_RDWR);
     if (mem_fd < 0) {
         printf("Failed to open /dev/mem (%s)\n", strerror(errno));
         return -1;
-    }   
-  
+    }
+
     /* map the memory */
     ddrMem = mmap(0, 0x0FFFFFFF, PROT_WRITE | PROT_READ, MAP_SHARED, mem_fd, DDR_BASEADDR);
     if (ddrMem == NULL) {
@@ -221,30 +221,30 @@ static int LOCAL_exampleInit ()
         close(mem_fd);
         return -1;
     }
-  
-    //FLush the flag locations of PRU0 and PRU1 
+
+    //FLush the flag locations of PRU0 and PRU1
     DDR_regaddr = ddrMem;
     *(unsigned long*) DDR_regaddr = 0x00;
-  
+
     DDR_regaddr = ddrMem + 0x000000004;
     *(unsigned long*) DDR_regaddr = 0x00;
 
     return(0);
-   
+
 }
 
 static unsigned short LOCAL_examplePassed ( unsigned short pruNum )
 {
     unsigned long result_0, result_1;
-    void *DDR_regaddr;   
- 
+    void *DDR_regaddr;
+
     //Read in the first example done flags
     DDR_regaddr = ddrMem;
     result_0 = *(unsigned long*) DDR_regaddr;
-   
+
     DDR_regaddr = ddrMem + 0x000000004;
     result_1 = *(unsigned long*) DDR_regaddr;
-  
-    //check if Example completed 
+
+    //check if Example completed
     return ((result_0 == FLAG1) & (result_1 == FLAG2) ) ;
 }

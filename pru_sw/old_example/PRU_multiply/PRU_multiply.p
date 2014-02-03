@@ -1,5 +1,5 @@
 //=============================================================================
-// File: PRU_multiply.p 
+// File: PRU_multiply.p
 // Desc: Simple 16bx16b=32b multiply using macro.
 // Vers: 1.0
 //
@@ -12,16 +12,16 @@
 
 
 // The MULTIPLY service routine facilitates simple 1D:1D transfer.
-// Parameter Table: 
+// Parameter Table:
 //
-// 31        24        16        8        0  
+// 31        24        16        8        0
 //  ______________________________________
 // |                SRC1                  |
 // |______________________________________|
 // |                SRC2                  |
 // |______________________________________|
 // |               RESULT                 |
-// |______________________________________| 
+// |______________________________________|
 //
 
 .origin 0
@@ -35,11 +35,11 @@ MULTIPLY:
 //    MOV32     mpyParams.src1, 0x000001AA
 //    MOV32     mpyParams.src2, 0x00000100
     MPY       mpyParams.result, mpyParams.src1, mpyParams.src2, 16
-    
+
     // Store the current state back to PARAM
     SBCO      mpyParams.result, CONST_PRUDRAM, OFFSET(mpyParams.result), SIZE(mpyParams.result)
 
-MULTIPLY_EXIT:  
+MULTIPLY_EXIT:
     HALT
-   
-    
+
+

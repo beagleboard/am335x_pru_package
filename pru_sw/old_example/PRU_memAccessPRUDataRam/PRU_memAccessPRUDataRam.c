@@ -2,7 +2,7 @@
 /* PRU_memAccessPRUDataRam.c --PRU Example to demonstrate accessing PRU DataRAM */
 /*                                                                              */
 /* Rev 0.0.1   May 29th 2009                                                    */
-/* Initial version of the file                                                  */    
+/* Initial version of the file                                                  */
 /*                                                                              */
 /* -----------------------------------------------------------------------      */
 /*            Copyright (c) 2009 Texas Instruments, Incorporated.               */
@@ -11,13 +11,13 @@
 
 /*******************************************************************
 
-  This example demonstrates how values can be stored and read into  
+  This example demonstrates how values can be stored and read into
   the PRU DataRAM memory using register pointing adress or by use of
   constant tables.
-  The example loads 0x0010f012 into the 2nd meory location using local 
-  PRU local addressing adds 0x0000567A and stores the result into the 
+  The example loads 0x0010f012 into the 2nd meory location using local
+  PRU local addressing adds 0x0000567A and stores the result into the
   3rd memory location using constant table global addressing
-   
+
 ********************************************************************/
 
 /************************************************************
@@ -82,20 +82,20 @@ String exampleName = "PRU_memAccessPRUDataRam";
 Int32 main (void)
 {
   printf("Starting PRU %s example.\r\n",exampleName);
-  
-  // Make sure PRU sub system is first disabled/reset  
+
+  // Make sure PRU sub system is first disabled/reset
   PRU_disable();
-  
+
   // Enable and load the code to the specified pru
   printf("\tINFO: Loading example.\r\n");
   PRU_load(PRU_NUM, (Uint32*)PRU_Code, (sizeof(PRU_Code)/sizeof(int)));
-  
+
   printf("\tINFO: Initializing example.\r\n");
   LOCAL_exampleInit(PRU_NUM);
 
   printf("\tINFO: Executing example.\r\n");
   PRU_run(PRU_NUM);
-  
+
   // Wait for the PRU to call the HALT command
   if (PRU_waitForHalt(PRU_NUM,-1) == E_PASS)
   {
@@ -105,7 +105,7 @@ Int32 main (void)
   {
     printf("\tINFO: PRU halt failed.\r\n");
   }
-  
+
   // Verify the Successful execution of the example
   if ( LOCAL_examplePassed(PRU_NUM) )
   {
@@ -115,10 +115,10 @@ Int32 main (void)
   {
     printf("Example failed.\n");
   }
-  
+
   // Disable the PRUSS when done
   PRU_disable();
-  
+
   return 0;
 }
 
@@ -136,11 +136,11 @@ static void LOCAL_exampleInit ( Uint8 pruNum )
   else if (pruNum == 1)
   {
     pruDataMem = (Uint32 *) PRU1_DATA_RAM_START;
-  }  
+  }
   // Flush the values in the PRU data memory locations
   pruDataMem[1] = 0x00;
   pruDataMem[2] = 0x00;
-  
+
 }
 
 static Bool LOCAL_examplePassed ( Uint8 pruNum )
@@ -156,7 +156,7 @@ static Bool LOCAL_examplePassed ( Uint8 pruNum )
   else if (pruNum == 1)
   {
     pruDataMem = (Uint32 *) PRU1_DATA_RAM_START;
-  }  
+  }
   //Read Resulting values placed in PRU data memory
   result_1 = pruDataMem[1];
   result_2 = pruDataMem[2];
@@ -173,5 +173,5 @@ static Bool LOCAL_examplePassed ( Uint8 pruNum )
 /*                           All Rights Reserved.                          */
 /* ======================================================================= */
 
- 
+
 

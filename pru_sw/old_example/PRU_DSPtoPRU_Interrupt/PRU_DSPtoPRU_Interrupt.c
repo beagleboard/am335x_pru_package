@@ -2,7 +2,7 @@
 /* PRU_DSPtoPRU_Interrupt.c --PRU Example to demonstrate DSP interrupting PRU   */
 /*                            to perform some event handling function.          */
 /* Rev 0.0.1   May 29th 2009                                                    */
-/* Initial version of the file                                                  */    
+/* Initial version of the file                                                  */
 /*                                                                              */
 /* -----------------------------------------------------------------------      */
 /*            Copyright (c) 2009 Texas Instruments, Incorporated.               */
@@ -13,14 +13,14 @@
  * PRU_DSPtoPRU_Interrupt.c
  *
  * In this example code the Timer0 configured by the DSP.The
- * DSP enables the timer interrupt and waits for interrupt once the interrupt 
- * is received,it exports the event handling to the PRU by generating a system 
+ * DSP enables the timer interrupt and waits for interrupt once the interrupt
+ * is received,it exports the event handling to the PRU by generating a system
  * event that the PRU is polling by writing into the SRSR2 registers.
- * The PRU performs Event handling functions like reseting the timer 
- * and performing some other functionality .Once it completes the event handling, 
- * it informs the the DSP that the interrupt was serviced interrupt by writing 
+ * The PRU performs Event handling functions like reseting the timer
+ * and performing some other functionality .Once it completes the event handling,
+ * it informs the the DSP that the interrupt was serviced interrupt by writing
  * in a memory location which is verified by the code to check if the example
- * executed successfully.  
+ * executed successfully.
  *********************************************************************/
 
 /************************************************************
@@ -95,18 +95,18 @@ void main()
 
   printf("Starting %s example.\r\n",exampleName);
 
-  // Make sure PRU sub system is first disabled/reset  
+  // Make sure PRU sub system is first disabled/reset
   PRU_disable();
 
   // Enable and load the code to the specified pru
   printf("\tINFO: Loading example.\r\n");
-  PRU_load(PRU_NUM, (Uint32*)PRU_Code, (sizeof(PRU_Code)/sizeof(Uint32)));  
+  PRU_load(PRU_NUM, (Uint32*)PRU_Code, (sizeof(PRU_Code)/sizeof(Uint32)));
 
-  printf("\tINFO: Initializing example.\r\n");  
+  printf("\tINFO: Initializing example.\r\n");
   LOCAL_exampleInit(PRU_NUM);
-  
+
   printf("\tINFO: Executing example.\r\n");
-  PRU_run(PRU_NUM);  
+  PRU_run(PRU_NUM);
 
   // Configure Timer0
   timer0Regs->TGCR &= ~0x00000003;    // place timer in reset
@@ -119,17 +119,17 @@ void main()
 
   // Configure the DSP Interrupt Controller
   LOCAL_configureDspIntc();
-  
+
   // Enable Timer0 in one-shot mode
   timer0Regs->TCR = 0x00000040;
 
   // Wait for Timer 0 interrupt.
-  printf("\tINFO: Waiting for Timer0 Interrupt.\r\n");  
+  printf("\tINFO: Waiting for Timer0 Interrupt.\r\n");
   while ( !tmrIntReceived );
 
   printf("\tINFO: Timer0 interrupt received by DSP, signaling PRU.\n");
   LOCAL_exampleFinalize();
- 
+
   // Wait for the PRU to call the HALT command
   if (PRU_waitForHalt(PRU_NUM,-1) == E_PASS)
   {
@@ -151,7 +151,7 @@ void main()
   }
 
   /* Make sure PRU disabled/reset */
-  PRU_disable(); 
+  PRU_disable();
 }
 
 
@@ -159,7 +159,7 @@ void main()
 * Local Function Definitions                                *
 ************************************************************/
 
-/* 
+/*
  * DSP interrupt controller configuration.
  */
 static void LOCAL_configureDspIntc()
@@ -200,14 +200,14 @@ static void LOCAL_exampleInit ( )
 {
   Uint32 *memPtr;
   CSL_PruintcRegsOvly hPruIntc = (CSL_PruintcRegsOvly) CSL_PRUINTC_0_REGS;
-  
+
   // Make sure interrupt is cleared
   hPruIntc->STATCLRINT1 = 0x00000001;
 
   // Initialize memory pointer to start of External DDR memory
   memPtr = (Uint32 *)&EXTERNAL_RAM_START;
- 
-  //Store Addend and offsets in external memory locations 
+
+  //Store Addend and offsets in external memory locations
   memPtr[0] = SCORE;
 }
 
@@ -220,17 +220,17 @@ static Bool LOCAL_examplePassed ( )
 
   // Initialize memory pointer to start of External DDR memory
   memPtr = (Uint32 *)&EXTERNAL_RAM_START;
-        
-  // Read in the example done flag to check if the example completed 
+
+  // Read in the example done flag to check if the example completed
   // successfully
   return (memPtr[0] == (SCORE-1));
 }
 
 static void LOCAL_exampleFinalize(  )
-{ 
+{
   CSL_PruintcRegsOvly hPruIntc = (CSL_PruintcRegsOvly) CSL_PRUINTC_0_REGS;
-  
-  hPruIntc->STATSETINT1 = 0x00000001;   
+
+  hPruIntc->STATSETINT1 = 0x00000001;
 }
 
 

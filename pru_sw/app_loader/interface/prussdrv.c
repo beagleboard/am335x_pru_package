@@ -480,6 +480,14 @@ unsigned int prussdrv_pru_wait_event(unsigned int host_interrupt)
     return event_count;
 }
 
+int prussdrv_pru_event_fd(unsigned int host_interrupt)
+{
+    if (host_interrupt < NUM_PRU_HOSTIRQS)
+        return prussdrv.fd[host_interrupt];
+    else
+        return -1;
+}
+
 int prussdrv_pru_clear_event(unsigned int host_interrupt, unsigned int sysevent)
 {
     unsigned int *pruintc_io = (unsigned int *) prussdrv.intc_base;

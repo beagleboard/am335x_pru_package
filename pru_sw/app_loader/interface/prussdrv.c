@@ -663,14 +663,6 @@ int prussdrv_exec_program(int prunum, const char *filename)
     FILE *fPtr;
     unsigned char fileDataArray[PRUSS_MAX_IRAM_SIZE];
     int fileSize = 0;
-    unsigned int pru_ram_id;
-
-    if (prunum == 0)
-        pru_ram_id = PRUSS0_PRU0_IRAM;
-    else if (prunum == 1)
-        pru_ram_id = PRUSS0_PRU1_IRAM;
-    else
-        return -1;
 
     // Open an File from the hard drive
     fPtr = fopen(filename, "rb");
@@ -701,10 +693,23 @@ int prussdrv_exec_program(int prunum, const char *filename)
 
     fclose(fPtr);
 
+    return prussdrv_exec_code(prunum, (const unsigned int *) fileDataArray, fileSize);
+}
+
+int prussdrv_exec_code(int prunum, const unsigned int *code, int codelen)
+{
+    unsigned int pru_ram_id;
+
+    if (prunum == 0)
+        pru_ram_id = PRUSS0_PRU0_IRAM;
+    else if (prunum == 1)
+        pru_ram_id = PRUSS0_PRU1_IRAM;
+    else
+        return -1;
+
     // Make sure PRU sub system is first disabled/reset
     prussdrv_pru_disable(prunum);
-    prussdrv_pru_write_memory(pru_ram_id, 0,
-                              (unsigned int *) fileDataArray, fileSize);
+    prussdrv_pru_write_memory(pru_ram_id, 0, code, codelen);
     prussdrv_pru_enable(prunum);
 
     return 0;

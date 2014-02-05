@@ -39,8 +39,8 @@ PIC_RELOBJFILES = $(SOURCES:%.c=release/%_PIC.o)
 all:	debug release sodebug sorelease
 
 install: release
-	install -m 0755 $(PREFIX)/lib
-	install -m 0755 $(PREFIX)/include
+	install -m 0755 -d $(PREFIX)/lib
+	install -m 0755 -d $(PREFIX)/include
 	install -m 0644 $(LIBDIR)/* $(PREFIX)/lib
 	install -m 0644 $(INSTALL_HDRS) $(PREFIX)/include
 
@@ -96,4 +96,3 @@ $(TARGETHEADERS): $(HEADERS)
 
 clean:
 	-rm -rf release debug *~ ../lib/*
-

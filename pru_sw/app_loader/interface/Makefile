@@ -24,10 +24,10 @@ DBGCFLAGS = -g -O0 -D__DEBUG
 RELCFLAGS = -O3 -mtune=cortex-a8 -march=armv7-a
 
 SOURCES = $(wildcard *.c)
-HEADERS = $(wildcard *.h)
 
-TARGETHEADERS = $(addprefix $(INCLUDEDIR)/, $(HEADERS))
-INSTALL_HDRS = $(wildcard $(INCLUDEDIR)/*.h)
+PUBLIC_HDRS = $(wildcard $(INCLUDEDIR)/*.h)
+PRIVATE_HDRS = $(wildcard *.h)
+HEADERS = $(PUBLIC_HDRS) $(PRIVATE_HDRS)
 
 DBGOBJFILES = $(SOURCES:%.c=debug/%.o)
 RELOBJFILES = $(SOURCES:%.c=release/%.o)
@@ -42,20 +42,15 @@ install: release
 	install -m 0755 -d $(PREFIX)/lib
 	install -m 0755 -d $(PREFIX)/include
 	install -m 0644 $(LIBDIR)/* $(PREFIX)/lib
-	install -m 0644 $(INSTALL_HDRS) $(PREFIX)/include
+	install -m 0644 $(PUBLIC_HDRS) $(PREFIX)/include
 
 release:	$(RELTARGET)
-#release:	$(RELTARGET) $(TARGETHEADERS)
 
 sorelease:	$(SORELTARGET)
-#sorelease:	$(SORELTARGET) $(TARGETHEADERS)
 
 sodebug:	$(SODBGTARGET)
-#sodebug:	$(SODBGTARGET) $(TARGETHEADERS)
 
 debug:		$(DBGTARGET)
-#debug:		$(DBGTARGET) $(TARGETHEADERS)
-
 
 $(RELTARGET):	$(RELOBJFILES)
 	@mkdir -p $(ROOTDIR)/lib
@@ -88,11 +83,6 @@ $(DBGOBJFILES):	debug/%.o: %.c $(HEADERS)
 $(PIC_DBGOBJFILES):	debug/%_PIC.o: %.c $(HEADERS)
 	@mkdir -p debug
 	$(COMPILE.c) -fPIC $(DBGCFLAGS) -o $@ $<
-
-$(TARGETHEADERS): $(HEADERS)
-	@echo Installing headers...
-	@install -d $(INCLUDEDIR)
-	@install -c $< $@
 
 clean:
 	-rm -rf release debug *~ ../lib/*

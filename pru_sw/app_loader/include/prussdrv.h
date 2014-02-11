@@ -195,6 +195,7 @@ extern "C" {
     int prussdrv_start_irqthread(unsigned int host_interrupt, int priority,
                                  prussdrv_function_handler irqhandler);
 
+    int prussdrv_exec_code(int prunum, const unsigned int *code, int codelen);
 
 #if defined (__cplusplus)
 }

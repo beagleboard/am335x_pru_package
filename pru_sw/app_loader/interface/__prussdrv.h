@@ -204,7 +204,6 @@ typedef struct __prussdrv {
     void *pru1_iram_base;
     void *l3ram_base;
     void *extram_base;
-    pthread_t irq_thread[NUM_PRU_HOSTIRQS];
     int mmap_fd;
     void *pruss_sharedram_base;
     void *pruss_cfg_base;

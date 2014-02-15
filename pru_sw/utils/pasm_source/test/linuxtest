@@ -1,0 +1,9 @@
+#!/bin/sh
+for g in "-O3" "-g"; do
+  gcc $g -Wall -D_UNIX_ ../path_utils.c path_utils.c -o path_utils
+  echo "testing with $g"
+  ./path_utils
+  rm ./path_utils
+done;
+
+

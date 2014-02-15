@@ -72,6 +72,7 @@
 #endif
 #include <ctype.h>
 #include "pasm.h"
+#include "path_utils.h"
 
 /* Local Strcuture Types */
 
@@ -125,10 +126,11 @@ uint    ccStateFlags[CC_MAX_DEPTH];
 //
 // Returns 1 on success, 0 on error
 */
-SOURCEFILE *InitSourceFile( SOURCEFILE *pParent, char *filename )
+SOURCEFILE *InitSourceFile( SOURCEFILE *pParent, char *filename,
+                            int use_include_path )
 {
     SOURCEFILE *ps;
-    int i,j,k;
+    int i;
     char SourceName[SOURCE_NAME];
     char SourceBaseDir[SOURCE_BASE_DIR];
 
@@ -139,72 +141,36 @@ SOURCEFILE *InitSourceFile( SOURCEFILE *pParent, char *filename )
         return(0);
     }
 
-    /*
-    // Create a base directory for this file
-    //
-    // The base directory is used for any #include contained in the source
-    */
-    strcpy( SourceBaseDir, "./" );
-    i=0;
-    j=-1;
-    k=0;
-    while( filename[i] )
-    {
-        if( filename[i]==':' )
+    if ( use_include_path )
+        if ( !is_definite(filename) )
         {
-            if(k)
+            switch ( get_absolute( filename, SOURCE_BASE_DIR ) )
             {
-                Report(pParent,REP_FATAL,"Illegal source file name '%s'",filename);
-                goto FILEOP_ERROR;
+                case -1:
+                  Report(pParent,REP_FATAL,
+                         "Could not find '%s' in include paths",filename);
+                  goto FILEOP_ERROR;
+                case 1:
+                  Report(pParent,REP_FATAL,
+                         "Absolute pathname too long in [include-dirs]/'%s'",
+                         filename);
+                  goto FILEOP_ERROR;
             }
-            j=i;
-            k=1;
         }
-        if( filename[i]=='/' || filename[i]=='\\' )
-            j=i;
-        i++;
-    }
-    if( j>=(SOURCE_BASE_DIR-4) )
+    /* I don't imagine these test should ever fail at this point, but... */
+    if ( get_dirname(filename, SourceBaseDir, SOURCE_BASE_DIR) )
     {
-        Report(pParent,REP_FATAL,"Pathname too long in '%s'",filename);
+        Report(pParent,REP_FATAL,"Dirname too long in '%s'",filename);
         goto FILEOP_ERROR;
     }
-    if( j>0 )
+    if ( get_basename(filename, SourceName, SOURCE_NAME) )
     {
-        if(k)
-        {
-            memcpy( SourceBaseDir, filename, j+1 );
-            SourceBaseDir[j+1]='.';
-            SourceBaseDir[j+2]='/';
-            SourceBaseDir[j+3]=0;
-        }
-        else
-        {
-            if((filename[0]=='.' && filename[1]=='/') || filename[0]=='/' || filename[0]=='\\')
-            {
-                memcpy( SourceBaseDir, filename, j );
-                SourceBaseDir[j]='/';
-                SourceBaseDir[j+1]=0;
-            }
-            else
-            {
-                memcpy( SourceBaseDir+2, filename, j );
-                SourceBaseDir[j+2]='/';
-                SourceBaseDir[j+3]=0;
-            }
-        }
+        Report(pParent,REP_FATAL,"base filename too long in '%s'",filename);
+        goto FILEOP_ERROR;
     }
+
     if( Options & OPTION_DEBUG )
         printf("Base source directory: '%s'\n",SourceBaseDir);
-
-    /* Create the "friendly" filename for output messages */
-    i=strlen(filename)-j;
-    if( i>SOURCE_NAME )
-    {
-        Report(pParent,REP_FATAL,"Basename too long in '%s'",filename);
-        goto FILEOP_ERROR;
-    }
-    memcpy( SourceName, filename+j+1, i );
 
     /*
     // See if this file was used before, or allocate a new record
@@ -810,7 +776,7 @@ static int LoadInclude( SOURCEFILE *ps, char *Src )
         { Report(ps,REP_ERROR,"Null filename in #include"); return(0); }
 
     /* Open the new file */
-    if( !(psNew=InitSourceFile(ps, NewFileName)) )
+    if( !(psNew=InitSourceFile(ps, NewFileName, term == '>')) )
         return(0);
 
     /* Process the new file */

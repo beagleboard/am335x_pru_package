@@ -426,7 +426,7 @@ int ProcessSourceFile( SOURCEFILE *ps );
 //
 // Returns 1 on success, 0 on error
 */
-int ProcessSourceLine( SOURCEFILE *ps, int length, char *src );
+int ProcessSourceLine( SOURCEFILE *ps, int length, char *src, int MaxLen );
 
 /*
 // ParseSourceLine

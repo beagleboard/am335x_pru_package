@@ -82,8 +82,32 @@ typedef struct _EQUATE {
     struct _EQUATE  *pNext;         /* Next in EQUATE list */
     int             Busy;           /* Is this record busy? */
     char            name[EQUATE_NAME_LEN];
-    char            data[EQUATE_DATA_LEN];
+    size_t          data_len;
+    char            *data;
 } EQUATE;
+
+static EQUATE * allocEQUATE()
+{
+    EQUATE * p = (EQUATE*)malloc( sizeof(EQUATE) );
+    memset(p, 0, sizeof(EQUATE));
+    p->data = (char*) malloc( EQUATE_DATA_LEN );
+    p->data_len = EQUATE_DATA_LEN;
+    return p;
+}
+
+static void freeEQUATE( EQUATE * p )
+{
+    free( p->data );
+    free( p );
+}
+
+static void reallocEQUATE( EQUATE * p, const size_t len )
+{
+    if ( p->data_len >= len )
+        return;
+    p->data = (char*)realloc( p->data, len );
+    p->data_len = len;
+}
 
 /* Local Support Funtions */
 static int ReadCharacter( SOURCEFILE *ps );
@@ -178,8 +202,8 @@ SOURCEFILE *InitSourceFile( SOURCEFILE *pParent, char *filename,
     for( i=0; i<(int)sfIndex; i++ )
     {
         if( !sfArray[i].InUse &&
-                !strcmp(SourceName, sfArray[i].SourceName) &&
-                !strcmp(SourceBaseDir, sfArray[i].SourceBaseDir) )
+            !strcmp(SourceName, sfArray[i].SourceName) &&
+            !strcmp(SourceBaseDir, sfArray[i].SourceBaseDir) )
             break;
     }
 
@@ -260,25 +284,27 @@ void CloseSourceFile( SOURCEFILE *ps )
 //
 // Returns length of line, 0 on EOF, -1 on Error
 */
-#define RAW_SOURCE_MAX  255
+#define RAW_SOURCE_MAX  16384
+#define _RETURN(i) { free(Src); return (i); }
 int GetSourceLine( SOURCEFILE *ps, char *Dst, int MaxLen )
 {
-    char c,Src[RAW_SOURCE_MAX],word[TOKEN_MAX_LEN];
-    int  i,idx;
-    int  len,eof;
+    char  c,word[TOKEN_MAX_LEN];
+    char* Src = (char*)malloc(RAW_SOURCE_MAX);
+    int   i,idx;
+    int   len,eof;
 
 NEXT_LINE:
     do
     {
         if( !GetTextLine(ps, Src, RAW_SOURCE_MAX, &len, &eof) )
-            return(-1);
+            _RETURN(-1);
     } while( !len && !eof );
 
     if( !len && eof )
     {
         if( ps->ccDepthIn != ccDepth )
-            { Report(ps,REP_ERROR,"#endif mismatch in file"); return(0); }
-        return(0);
+            { Report(ps,REP_ERROR,"#endif mismatch in file"); _RETURN(0); }
+        _RETURN(0);
     }
 
     /*
@@ -289,7 +315,7 @@ NEXT_LINE:
         idx = 1;
         c = Src[idx++];
         if( (c<'A'||c>'Z') && (c<'a'||c>'z') )
-            { Report(ps,REP_ERROR,"Expected {a-z} after #"); return(-1); }
+            { Report(ps,REP_ERROR,"Expected {a-z} after #"); _RETURN(-1); }
         i=0;
         word[i++]=c;
         while( i<(TOKEN_MAX_LEN-1) )
@@ -308,25 +334,25 @@ NEXT_LINE:
         if( !stricmp( word, "ifdef" ) )
         {
             if( !IfDefProcess( ps, Src+idx, 1 ) )
-                return(-1);
+                _RETURN(-1);
             goto NEXT_LINE;
         }
         if( !stricmp( word, "ifndef" ) )
         {
             if( !IfDefProcess( ps, Src+idx, 0 ) )
-                return(-1);
+                _RETURN(-1);
             goto NEXT_LINE;
         }
         if( !stricmp( word, "else" ) )
         {
             if( !ElseProcess( ps, Src+idx ) )
-                return(-1);
+                _RETURN(-1);
             goto NEXT_LINE;
         }
         if( !stricmp( word, "endif" ) )
         {
             if( !EndifProcess( ps, Src+idx ) )
-                return(-1);
+                _RETURN(-1);
             goto NEXT_LINE;
         }
 
@@ -351,7 +377,7 @@ NEXT_LINE:
         if( !stricmp( word, "include" ) )
         {
             if( !LoadInclude( ps, Src+idx ) )
-                return(-1);
+                _RETURN(-1);
             goto NEXT_LINE;
         }
         if( !stricmp( word, "define" ) )
@@ -365,7 +391,7 @@ NEXT_LINE:
             goto NEXT_LINE;
         }
         Report(ps,REP_ERROR,"Unknown # directive");
-        return(-1);
+        _RETURN(-1);
     }
 
     /*
@@ -377,11 +403,12 @@ NEXT_LINE:
 
     idx = 0;
     if( !ParseSource( ps, Src, Dst, &idx, MaxLen ) )
-        return(0);
+        _RETURN(0);
 
     Dst[idx] = 0;
-    return(idx);
+    _RETURN(idx);
 }
+#undef _RETURN
 
 /*
 // ppCleanup
@@ -420,7 +447,7 @@ int EquateCreate( SOURCEFILE *ps, char *Name, char *Value )
         { Report(ps,REP_ERROR,"Equate data '%s' too long",Value); return(-1); }
 
     /* Allocate a new record */
-    pd = malloc(sizeof(EQUATE));
+    pd = allocEQUATE();
     if( !pd )
         { Report(ps,REP_ERROR,"Memory allocation failed"); return(-1); }
 
@@ -508,7 +535,7 @@ static int GetTextLine( SOURCEFILE *ps, char *Dst, int MaxLen, int *pLength, int
 {
     int c;
     int  idx;
-    int  commentFlag,quoteFlag;
+    int  commentFlag,quoteFlag, continueFlag;
 
     /* Remove leading white space */
     do
@@ -522,6 +549,7 @@ static int GetTextLine( SOURCEFILE *ps, char *Dst, int MaxLen, int *pLength, int
     idx=0;
     commentFlag=0;
     quoteFlag=0;
+    continueFlag=0;
     for(;;)
     {
         /* Process quotes and comments */
@@ -539,11 +567,40 @@ static int GetTextLine( SOURCEFILE *ps, char *Dst, int MaxLen, int *pLength, int
                 c = ReadCharacter( ps );
             break;
         }
+        else if( commentFlag && c=='*' )
+        {
+            if( idx>0 )
+                --idx;
+            while ( 1 )
+            {
+                while( c!=-1 && c!='*' )
+                    c = ReadCharacter( ps );
+                c = ReadCharacter( ps );
+                if ( c == '/' )
+                    break;
+            }
+            c = ReadCharacter( ps );
+            commentFlag = 0;
+            continue; // Just skip the comment as if it weren't there
+        }
+        else if ( continueFlag && c=='\n' )
+        {
+            if( idx>0 )
+                --idx;
+            c = ReadCharacter( ps );
+            continueFlag = 0;
+            continue; // Just skip the endline as if it weren't there
+        }
 
         if( c=='/' )
             commentFlag=1;
         else
             commentFlag=0;
+
+        if ( c == '\\' )
+            continueFlag = 1;
+        else
+            continueFlag = 0;
 
         /* If this character terminated the line, break now */
         if( c==0 || c==-1 || c==0xa )
@@ -551,7 +608,10 @@ static int GetTextLine( SOURCEFILE *ps, char *Dst, int MaxLen, int *pLength, int
 
         /* We didn't consume this charater */
         if( idx<(MaxLen-1) )
-            Dst[idx++]=c;
+        {
+            if ( !(continueFlag && c == '\n' ) )
+              Dst[idx++]=c;
+        }
         else
             { Report(ps,REP_ERROR,"Line too long"); return(0); }
 
@@ -731,6 +791,8 @@ static int LoadInclude( SOURCEFILE *ps, char *Src )
         term = '"';
         strcpy( NewFileName, ps->SourceBaseDir );
         idx = strlen(NewFileName);
+        NewFileName[idx++] = '/';
+        NewFileName[idx] = '\0';
     }
     else if( c=='<' )
     {
@@ -805,7 +867,7 @@ static int EquateProcess( SOURCEFILE *ps, char *Src )
     int  idx,srcIdx;
 
     /* Allocate a new record */
-    pd = malloc(sizeof(EQUATE));
+    pd = allocEQUATE();
     if( !pd )
         { Report(ps,REP_ERROR,"Memory allocation failed"); return(0); }
 
@@ -819,7 +881,7 @@ static int EquateProcess( SOURCEFILE *ps, char *Src )
 
     /* Character must be a legal label */
     if( !LabelChar(c,1) )
-        { Report(ps,REP_ERROR,"Illegal label"); free(pd); return(0); }
+        { Report(ps,REP_ERROR,"Illegal label"); freeEQUATE(pd); return(0); }
 
     /* The name can only be delimited by a white space */
     /* Note: We now allow a NULL for a #define with no value */
@@ -831,16 +893,16 @@ static int EquateProcess( SOURCEFILE *ps, char *Src )
         if( !c || c==' ' || c==0x9 )
             break;
         if( !LabelChar(c,0) )
-            { Report(ps,REP_ERROR,"Illegal #define"); free(pd); return(0); }
+            { Report(ps,REP_ERROR,"Illegal #define"); freeEQUATE(pd); return(0); }
         if( idx >= (EQUATE_NAME_LEN-1) )
-            { Report(ps,REP_ERROR,"Label too long"); free(pd); return(0); }
+            { Report(ps,REP_ERROR,"Label too long"); freeEQUATE(pd); return(0); }
     }
     pd->name[idx]=0;
 
     /* Make sure this name is OK to use */
     if( !CheckName(ps,pd->name) )
     {
-        free(pd);
+        freeEQUATE(pd);
         return(0);
     }
 
@@ -855,7 +917,11 @@ static int EquateProcess( SOURCEFILE *ps, char *Src )
     if( !c )
         strcpy( pd->data, "1" );
     else
-        strcpy( pd->data, Src+srcIdx-1 );
+    {
+        size_t len = strlen( Src + srcIdx-1 ) + 1; // +1 for \000
+        reallocEQUATE( pd, len );
+        memcpy( pd->data, Src+srcIdx-1, len );
+    }
 
     /* Check for dedefinition, but ignore exact duplicates */
     if( (pdTmp = EquateFind(pd->name)) != 0 )
@@ -863,7 +929,7 @@ static int EquateProcess( SOURCEFILE *ps, char *Src )
         idx = strcmp( pd->data, pdTmp->data );
         if( !idx )
         {
-            free(pd);
+            freeEQUATE(pd);
             return(1);
         }
         EquateDestroy(pdTmp);
@@ -981,7 +1047,7 @@ static void EquateDestroy( EQUATE *peq )
     if( peq->pNext )
         peq->pNext->pPrev = peq->pPrev;
 
-    free(peq);
+    freeEQUATE(peq);
 }
 
 

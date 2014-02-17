@@ -721,11 +721,11 @@ USAGE:
 //
 // Returns 1 on success, 0 on error
 */
-#define MAX_SOURCE_LINE 256
+#define MAX_SOURCE_LINE 8192
 int ProcessSourceFile( SOURCEFILE *ps )
 {
-    char    src[MAX_SOURCE_LINE];
     int     i;
+    char*   src = (char*)malloc(MAX_SOURCE_LINE);
 
     for(;;)
     {
@@ -736,12 +736,18 @@ int ProcessSourceFile( SOURCEFILE *ps )
         /* Get a line of source code */
         i = GetSourceLine( ps, src, MAX_SOURCE_LINE );
         if( !i )
+        {
+            free(src);
             return(1);
+        }
         if( i<0 )
             continue;
 
-        if( !ProcessSourceLine(ps, i, src) && Pass==2 )
+        if( !ProcessSourceLine(ps, i, src, MAX_SOURCE_LINE) && Pass==2 )
+        {
+            free(src);
             return(0);
+        }
     }
 }
 
@@ -753,7 +759,7 @@ int ProcessSourceFile( SOURCEFILE *ps )
 //
 // Returns 1 on success, 0 on error
 */
-int ProcessSourceLine( SOURCEFILE *ps, int length, char *src )
+int ProcessSourceLine( SOURCEFILE *ps, int length, char *src, int MaxLen )
 {
     char    *pParams[MAX_TOKENS];
     SRCLINE sl;
@@ -804,7 +810,7 @@ REPEAT:
         {
             src[0] = 0;
 
-            rc = DotCommand(ps,sl.Terms,pParams,src,MAX_SOURCE_LINE);
+            rc = DotCommand(ps,sl.Terms,pParams,src,MaxLen);
             if( rc<0 )
                 return(0);
             if( !rc )

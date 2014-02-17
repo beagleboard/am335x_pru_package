@@ -310,7 +310,7 @@ SUBTEXTDONE:
         i=strlen(src);
         if(i)
         {
-            if( !ProcessSourceLine(ps, i, src) )
+            if( !ProcessSourceLine(ps, i, src, MAX_SOURCE_LINE) )
             {
                 Report(ps,REP_ERROR,"(While expanding code line %d of macro '%s')",(cidx+1),pm->Name);
                 pm->InUse=0;

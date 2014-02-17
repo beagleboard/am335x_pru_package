@@ -426,7 +426,7 @@ int ProcessSourceFile( SOURCEFILE *ps );
 //
 // Returns 1 on success, 0 on error
 */
-int ProcessSourceLine( SOURCEFILE *ps, int length, char *src );
+int ProcessSourceLine( SOURCEFILE *ps, int length, char *src, int MaxLen );
 
 /*
 // ParseSourceLine
@@ -540,7 +540,8 @@ int Expression( SOURCEFILE *ps, char *s, uint *pResult, int *pIndex );
 //
 // Returns 1 on success, 0 on error
 */
-SOURCEFILE *InitSourceFile( SOURCEFILE *pParent, char *filename );
+SOURCEFILE *InitSourceFile( SOURCEFILE *pParent, char *filename, int
+                            use_include_path );
 
 /*
 // CloseSourceFile

@@ -72,6 +72,7 @@
 #include <ctype.h>
 #include "pasm.h"
 #include "pasmdbg.h"
+#include "path_utils.h"
 
 /*
 // Multiple Core Revision Support
@@ -183,7 +184,7 @@ int main(int argc, char *argv[])
     if( argc<2 )
     {
 USAGE:
-        printf("Usage: %s [-V#EBbcmLldz] [-Dname=value] [-Cname] InFile [OutFileBase]\n\n",argv[0]);
+        printf("Usage: %s [-V#EBbcmLldz] [-Idir] [-Dname=value] [-Cname] InFile [OutFileBase]\n\n",argv[0]);
         printf("    V# - Specify core version (V0,V1,V2,V3). (Default is V1)\n");
         printf("    E  - Assemble for big endian core\n");
         printf("    B  - Create big endian binary output (*.bib)\n");
@@ -194,6 +195,9 @@ USAGE:
         printf("    l  - Create raw listing file (*.lst)\n");
         printf("    d  - Create pView debug file (*.dbg)\n");
         printf("    z  - Enable debug messages\n");
+        printf("    I  - Add the diretory dir to search path for \n"
+               "         #include <filename> type of directives (where \n"
+               "         angled brackets are used instead of quotes).\n");
         printf("\n    D  - Set equate 'name' to 1 using '-Dname', or to any\n");
         printf("         value using '-Dname=value'\n");
         printf("    C  - Name the C array in 'C array' binary output\n");
@@ -225,7 +229,12 @@ USAGE:
             flags++;
             while( *flags )
             {
-                if( *flags == 'D' )
+                if( *flags == 'I' )
+                {
+                    add_include_dir(++flags);
+                    break;
+                }
+                else if( *flags == 'D' )
                 {
                     flags++;
                     if( cmdLineEquates==MAX_CMD_EQUATE )
@@ -362,7 +371,7 @@ USAGE:
     }
 
     /* Test opening the main source file */
-    if( !(mainsource=InitSourceFile(0,infile)) )
+    if( !(mainsource=InitSourceFile(0,infile,0)) )
         return(RET_ERROR);
 
     /* Setup outfile base */
@@ -417,7 +426,7 @@ USAGE:
         DotInitialize(Pass);
 
         /* Process the main source file */
-        if( !(mainsource=InitSourceFile(0,infile)) )
+        if( !(mainsource=InitSourceFile(0,infile,0)) )
             break;
         ProcessSourceFile( mainsource );
         CloseSourceFile( mainsource );
@@ -712,11 +721,11 @@ USAGE:
 //
 // Returns 1 on success, 0 on error
 */
-#define MAX_SOURCE_LINE 256
+#define MAX_SOURCE_LINE 8192
 int ProcessSourceFile( SOURCEFILE *ps )
 {
-    char    src[MAX_SOURCE_LINE];
     int     i;
+    char*   src = (char*)malloc(MAX_SOURCE_LINE);
 
     for(;;)
     {
@@ -727,12 +736,18 @@ int ProcessSourceFile( SOURCEFILE *ps )
         /* Get a line of source code */
         i = GetSourceLine( ps, src, MAX_SOURCE_LINE );
         if( !i )
+        {
+            free(src);
             return(1);
+        }
         if( i<0 )
             continue;
 
-        if( !ProcessSourceLine(ps, i, src) && Pass==2 )
+        if( !ProcessSourceLine(ps, i, src, MAX_SOURCE_LINE) && Pass==2 )
+        {
+            free(src);
             return(0);
+        }
     }
 }
 
@@ -744,7 +759,7 @@ int ProcessSourceFile( SOURCEFILE *ps )
 //
 // Returns 1 on success, 0 on error
 */
-int ProcessSourceLine( SOURCEFILE *ps, int length, char *src )
+int ProcessSourceLine( SOURCEFILE *ps, int length, char *src, int MaxLen )
 {
     char    *pParams[MAX_TOKENS];
     SRCLINE sl;
@@ -795,7 +810,7 @@ REPEAT:
         {
             src[0] = 0;
 
-            rc = DotCommand(ps,sl.Terms,pParams,src,MAX_SOURCE_LINE);
+            rc = DotCommand(ps,sl.Terms,pParams,src,MaxLen);
             if( rc<0 )
                 return(0);
             if( !rc )

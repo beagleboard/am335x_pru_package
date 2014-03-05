@@ -5,6 +5,7 @@
 
 #define LOG(FORMAT, ...) fprintf(stderr, FORMAT, ## __VA_ARGS__)
 
+#define SCRATCH_SZ 256
 
 int test_is_definite()
 {
@@ -53,9 +54,9 @@ int test_is_definite()
 
 int test_get_dirname()
 {
-    static const size_t sz = 256;
+    static const size_t sz = SCRATCH_SZ;
     int errors = 0;
-    char scratch[sz];
+    char scratch[SCRATCH_SZ];
 
     #ifdef _UNIX_
     scratch[0] = '\0';
@@ -107,9 +108,9 @@ int test_get_dirname()
 
 int test_get_basename()
 {
-    static const size_t sz = 256;
+    static const size_t sz = SCRATCH_SZ;
     int errors = 0;
-    char scratch[sz];
+    char scratch[SCRATCH_SZ];
 
     #ifdef _UNIX_
     scratch[0] = '\0';
@@ -161,11 +162,11 @@ int test_get_basename()
 
 int test_get_absolute__add_include_dir()
 {
-    static const size_t sz = 256;
+    static const size_t sz = SCRATCH_SZ;
     int errors = 0;
-    char scratch[sz];
+    char scratch[SCRATCH_SZ];
 
-    strcpy( scratch, "path_utils.c" );
+    strcpy( scratch, "path_utils_test.c" );
     if ( get_absolute( scratch, sz ) != -1 )
     {
         LOG("get_absolute: file should not have been found ['%s']'\n", scratch);
@@ -199,16 +200,51 @@ int test_get_absolute__add_include_dir()
 
 int main()
 {
+    int failed = 0;
     if ( test_is_definite() == 0 )
+        {
         LOG("is_definite passed!\n");
-
+        }
+    else
+        {
+        failed = 1;
+        LOG("is_definite FAILED!\n");
+        }
+        
     if ( test_get_dirname() == 0 )
+        {
         LOG("get_dirname passed!\n");
+        }
+    else
+        {
+        failed = 1;
+        LOG("get_dirname FAILED!\n");
+        }
 
     if ( test_get_basename() == 0 )
+        {
         LOG("get_basename passed!\n");
+        }
+    else
+        {
+        failed = 1;
+        LOG("get_basename FAILED!\n");
+        }
 
     if ( test_get_absolute__add_include_dir() == 0 )
+        {
         LOG("get_absolute__add_include_dir passed!\n");
-    return 0;
+        }
+    else
+        {
+        failed = 1;
+        LOG("get_absolute__add_include_dir FAILED!\n");
+        }
+        
+    if( failed )
+        {
+        LOG( "path_utils.c test failed!\n" );
+        }
+        
+    return failed;
 }

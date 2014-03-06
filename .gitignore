@@ -9,3 +9,4 @@ pru_sw/utils/pasm_2
 pru_sw/example_apps/*/obj
 pru_sw/example_apps/bin/
 
+*.pdb

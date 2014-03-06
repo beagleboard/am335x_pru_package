@@ -49,14 +49,20 @@
 // File     : path_utils.c
 //
 // Description:
-//     File path utilities to make things eaiser...
+//     File path utilities to make things easier...
 //
 ============================================================================*/
 
 #include "path_utils.h"
 
 #include <string.h>
+#ifdef _MSC_VER
+#include <io.h>
+#define access _access
+#define R_OK 4
+#else
 #include <unistd.h> // for access(...)
+#endif
 #include <stdlib.h>   // for _splitpath, _makepath, malloc/realloc
 
 #ifdef _UNIX_
@@ -91,7 +97,8 @@ int add_include_dir( const char * dirname )
 
 int get_absolute( char * filename, const size_t sz )
 {
-    int i, dlen = 0, flen = strnlen(filename, sz-1), retval = -1;
+    int retval = -1;
+    size_t i, dlen = 0, flen = strnlen(filename, sz-1);
     char * scratch = (char *) malloc( sz );
     for (i = 0; i < num_include_dirs; ++i )
     {
@@ -133,7 +140,12 @@ int is_definite( const char * filename )
 
 int get_dirname( const char * filename, char * dir, const size_t sz)
 {
+    #ifdef _UNIX_
     char * p = NULL;
+    #else
+    char drive[_MAX_DRIVE];
+    char dir_only[_MAX_DIR];
+    #endif
     size_t f_len = strlen(filename);
     if ( f_len >= sz )
         return -1;
@@ -148,10 +160,24 @@ int get_dirname( const char * filename, char * dir, const size_t sz)
         strcpy( dir, p );
 
     #else // assume windows(?)
-    char drive[_MAX_DRIVE];
-    char dir_only[_MAX_DIR];
     _splitpath( filename, drive, dir_only, NULL, NULL );
+    /*------------------------------------------------------------------------
+    LJN: POSIX dirname() returns a . when the path is empty
+    ------------------------------------------------------------------------*/
+    if( strlen( dir_only ) == 0 )
+        {
+        strcpy( dir_only, "." );
+        }
     _makepath( dir, drive, dir_only, NULL, NULL );
+
+    /*------------------------------------------------------------------------
+    LJN: POSIX dirname() does not end the path with a / or \
+    ------------------------------------------------------------------------*/
+    if( ( dir[ strlen( dir ) - 1 ] == '/'  )
+     || ( dir[ strlen( dir ) - 1 ] == '\\' ) )
+        {
+        dir[ strlen( dir ) - 1 ] = '\0';
+        }
     #endif
 
     return 0;
@@ -159,8 +185,14 @@ int get_dirname( const char * filename, char * dir, const size_t sz)
 
 int get_basename( const char * filename, char * base, const size_t sz)
 {
+    #ifdef _UNIX_
     char * tmp;
     char * p;
+    #else // assume windows(?)
+    char fname[_MAX_FNAME];
+    char ext[_MAX_EXT];
+    #endif
+    
     size_t f_len = strlen(filename);
     if ( f_len >= sz )
         return -1;
@@ -179,8 +211,6 @@ int get_basename( const char * filename, char * base, const size_t sz)
     free(tmp);
 
     #else // assume windows(?)
-    char fname[_MAX_FNAME];
-    char ext[_MAX_EXT];
     _splitpath( filename, NULL, NULL, fname, ext );
     _makepath( base, NULL, NULL, fname, ext );
     #endif

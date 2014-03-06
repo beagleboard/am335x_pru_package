@@ -195,7 +195,7 @@ USAGE:
         printf("    l  - Create raw listing file (*.lst)\n");
         printf("    d  - Create pView debug file (*.dbg)\n");
         printf("    z  - Enable debug messages\n");
-        printf("    I  - Add the diretory dir to search path for \n"
+        printf("    I  - Add the directory dir to search path for \n"
                "         #include <filename> type of directives (where \n"
                "         angled brackets are used instead of quotes).\n");
         printf("\n    D  - Set equate 'name' to 1 using '-Dname', or to any\n");
@@ -1320,7 +1320,7 @@ static int ListFile( FILE *pfOut, SOURCEFILE *ps )
     if( !count )
     {
         // No code section
-        fprintf(pfOut,"(No Ouput Generated)\n\n");
+        fprintf(pfOut,"(No Output Generated)\n\n");
 
         for(;;)
         {

@@ -59,6 +59,7 @@
 //---------------------------------------------------------------------------
 // Revision:
 //     21-Jun-13: 0.84 - Open source version
+//     03-Mar-15: 0.85 - Modified to build using Visual Studio 2008
 ============================================================================*/
 
 #include <stdio.h>
@@ -100,7 +101,7 @@
 /* ---------- Local Macro Definitions ----------- */
 
 #define PROCESSOR_NAME_STRING ("PRU")
-#define VERSION_STRING        ("0.84")
+#define VERSION_STRING        ("0.85")
 
 #define MAXFILE               (256)     /* Max file length for output files */
 #define MAX_PROGRAM           (16384)   /* Max instruction count */

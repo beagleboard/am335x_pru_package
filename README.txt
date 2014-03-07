@@ -29,6 +29,6 @@ PRU software (pru_sw):
       prussdrv.c
 
    Example applications:
-      PRU_memAccess_DDR_PRUsharedRAM
+      PRU_memAcc_DDR_sharedRAM
       PRU_memAccessPRUDataRam
       PRU_PRUtoPRUInterrupt

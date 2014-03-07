@@ -44,7 +44,7 @@
  */
 
 /******************************************************************************
-* PRU_memAccess_DDR_PRUsharedRAM.c
+* PRU_memAcc_DDR_sharedRAM.c
 *
 * The PRU reads three values from external DDR memory and stores these values
 * in shared PRU RAM using the programmable constant table entries.  The example
@@ -132,7 +132,7 @@ int main (void)
     unsigned int ret;
     tpruss_intc_initdata pruss_intc_initdata = PRUSS_INTC_INITDATA;
 
-    printf("\nINFO: Starting %s example.\r\n", "PRU_memAccess_DDR_PRUsharedRAM");
+    printf("\nINFO: Starting %s example.\r\n", "PRU_memAcc_DDR_sharedRAM");
     /* Initialize the PRU */
     prussdrv_init ();
 
@@ -153,7 +153,7 @@ int main (void)
 
     /* Execute example on PRU */
     printf("\tINFO: Executing example.\r\n");
-    prussdrv_exec_program (PRU_NUM, "./PRU_memAccess_DDR_PRUsharedRAM.bin");
+    prussdrv_exec_program (PRU_NUM, "./PRU_memAcc_DDR_sharedRAM.bin");
 
     /* Wait until PRU0 has finished execution */
     printf("\tINFO: Waiting for HALT command.\r\n");

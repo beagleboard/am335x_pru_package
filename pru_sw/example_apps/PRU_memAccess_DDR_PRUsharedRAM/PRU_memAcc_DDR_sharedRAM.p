@@ -1,5 +1,5 @@
 // *
-// * PRU_memAccess_DDR_PRUsharedRAM.p
+// * PRU_memAcc_DDR_sharedRAM.p
 // *
 // * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
 // *
@@ -45,7 +45,7 @@
 
 
 // *****************************************************************************/
-// file:   PRU_memAccess_DDR_PRUsharedRAM.p
+// file:   PRU_memAcc_DDR_sharedRAM.p
 //
 // brief:  PRU Example to access DDR and PRU shared Memory.
 //
@@ -61,7 +61,7 @@
 .origin 0
 .entrypoint MEMACCESS_DDR_PRUSHAREDRAM
 
-#include "PRU_memAccess_DDR_PRUsharedRAM.hp"
+#include "PRU_memAcc_DDR_sharedRAM.hp"
 
 MEMACCESS_DDR_PRUSHAREDRAM:
 

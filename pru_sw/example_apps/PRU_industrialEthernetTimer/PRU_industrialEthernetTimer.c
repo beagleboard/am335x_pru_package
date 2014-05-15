@@ -1,195 +1,67 @@
-/*
- * PRU_memAccessPRUDataRam.c
+/* @file PRU_industrialEthernetTimer.h
+ * @brief A am335x routine to load in the PRU a binary file to
+ *       test the Industrial Ethernet Timer (32-bit)
  *
- * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
- *
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *    Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the
- *    distribution.
- *
- *    Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
-*/
-
-/*
- * ============================================================================
- * Copyright (c) Texas Instruments Inc 2010-12
- *
- * Use of this software is controlled by the terms and conditions found in the
- * license agreement under which this software has been supplied or provided.
- * ============================================================================
+ * @author Igor Borges Tavares (igorborgest@gmail.com)
+ * @bug No know bugs.
  */
 
-/*****************************************************************************
-* PRU_memAccessPRUDataRam.c
-*
-* The PRU reads and stores values into the PRU Data RAM memory. PRU Data RAM
-* memory has an address in both the local data memory map and global memory
-* map. The example accesses the local Data RAM using both the local address
-* through a register pointed base address and the global address pointed by
-* entries in the constant table.
-*
-******************************************************************************/
-
-
-/*****************************************************************************
-* Include Files                                                              *
-*****************************************************************************/
-
 #include <stdio.h>
-
-// Driver header file
-#include <prussdrv.h>
+#include "prussdrv.h"
 #include <pruss_intc_mapping.h>
 
-/*****************************************************************************
-* Explicit External Declarations                                             *
-*****************************************************************************/
+// Delay in microseconds that PRU will expect to trigger the interruption in
+// the Cortex main processor
+#define DELAY_US 10000000u // Max. value = 21474836 us
 
-/*****************************************************************************
-* Local Macro Declarations                                                   *
-*****************************************************************************/
+// Convertion of the DELAY_US in PRU timer ticks
+// PRU timer tick frequency = 200 MHz
+// PRU timer tick period    =   5 ns
+// Number of ticks (TICKS)  = (DELAY_US * 1000) / 5
+#define TICKS ((DELAY_US / 5u) * 1000u)
 
-#define PRU_NUM 	0
-#define ADDEND1		0x0010F012u
-#define ADDEND2		0x0000567Au
+// PRU number can be 0 or 1
+#define PRU_NUM 1
+// Path to binary that will be load in PRU
+#define PRU_BINARY "./obj/PRU_industrialEthernetTimer.bin"
 
-#define AM33XX
+// Local function
+static void write_pru_shared_mem ( void);
 
-/*****************************************************************************
-* Local Typedef Declarations                                                 *
-*****************************************************************************/
-
-
-/*****************************************************************************
-* Local Function Declarations                                                *
-*****************************************************************************/
-
-static int LOCAL_exampleInit ( unsigned short pruNum );
-static unsigned short LOCAL_examplePassed ( unsigned short pruNum );
-
-/*****************************************************************************
-* Local Variable Definitions                                                 *
-*****************************************************************************/
-
-
-/*****************************************************************************
-* Intertupt Service Routines                                                 *
-*****************************************************************************/
-
-
-/*****************************************************************************
-* Global Variable Definitions                                                *
-*****************************************************************************/
-
-static void *pruDataMem;
-static unsigned int *pruDataMem_int;
-
-/*****************************************************************************
-* Global Function Definitions                                                *
-*****************************************************************************/
-
-int main (void)
+int main(void)
 {
-    unsigned int ret;
-    tpruss_intc_initdata pruss_intc_initdata = PRUSS_INTC_INITDATA;
+        unsigned int ret;
+        tpruss_intc_initdata pruss_intc_initdata = PRUSS_INTC_INITDATA;
 
-    printf("\nINFO: Starting %s example.\r\n", "PRU_memAccessPRUDataRam");
-    /* Initialize the PRU */
-    prussdrv_init ();
-
-    /* Open PRU Interrupt */
-    ret = prussdrv_open(PRU_EVTOUT_0);
-    if (ret)
-    {
-        printf("prussdrv_open open failed\n");
-        return (ret);
-    }
-
-    /* Get the interrupt initialized */
-    prussdrv_pruintc_init(&pruss_intc_initdata);
-
-    /* Initialize example */
-    printf("\tINFO: Initializing example.\r\n");
-    LOCAL_exampleInit(PRU_NUM);
-
-    /* Execute example on PRU */
-    printf("\tINFO: Executing example.\r\n");
-    prussdrv_exec_program (PRU_NUM, "./obj/PRU_industrialEthernetTimer.bin");
-
-
-    /* Wait until PRU0 has finished execution */
-    printf("\tINFO: Waiting for HALT command.\r\n");
-    prussdrv_pru_wait_event (PRU_EVTOUT_0);
-    printf("\tINFO: PRU completed transfer.\r\n");
-    prussdrv_pru_clear_event (PRU_EVTOUT_0, PRU0_ARM_INTERRUPT);
-
-    /* Check if example passed */
-    if ( LOCAL_examplePassed(PRU_NUM) )
-    {
-        printf("INFO: Example executed succesfully.\r\n");
-    }
-    else
-    {
-        printf("INFO: Example failed.\r\n");
-    }
-
-    /* Disable PRU and close memory mapping*/
-    prussdrv_pru_disable (PRU_NUM);
-    prussdrv_exit ();
-
-    return(0);
-
+        printf("\t-> initializing the PRU\n");
+        prussdrv_init();
+        ret = prussdrv_open(PRU_EVTOUT_1); // Open PRU Interrupt
+        if (ret) {
+                printf("\t* prussdrv_open open failed!\n");
+                return (ret);
+        }
+        prussdrv_pruintc_init( &pruss_intc_initdata);
+        write_pru_shared_mem ();
+        prussdrv_exec_program (PRU_NUM, PRU_BINARY); // Load/exec the bin in PRU
+        printf("\t-> waiting PRU event...\n");
+        printf("\t-> This should take nearly %u us...\n", (unsigned int)DELAY_US);
+        prussdrv_pru_wait_event (PRU_EVTOUT_1);
+        printf("\t-> PRU event received.\n");
+        printf("\t-> closing the program...\n");
+        prussdrv_pru_clear_event (PRU_EVTOUT_1, PRU1_ARM_INTERRUPT);
+        prussdrv_pru_disable(PRU_NUM);
+        prussdrv_exit ();
+        return 0;
 }
 
-/*****************************************************************************
-* Local Function Definitions                                                 *
-*****************************************************************************/
-
-static int LOCAL_exampleInit ( unsigned short pruNum )
+// Function to map and store the TICKS in the PRUs shared memory
+static void write_pru_shared_mem ( void)
 {
-    //Initialize pointer to PRU data memory
-    if (pruNum == 0)
-    {
-      prussdrv_map_prumem (PRUSS0_PRU0_DATARAM, &pruDataMem);
-    }
-    else if (pruNum == 1)
-    {
-      prussdrv_map_prumem (PRUSS0_PRU1_DATARAM, &pruDataMem);
-    }
-    pruDataMem_int = (unsigned int*) pruDataMem;
+        void *sharedMem;
+        unsigned int *sharedMem_int;
 
-    // Flush the values in the PRU data memory locations
-    pruDataMem_int[1] = 0x00;
-    pruDataMem_int[2] = 0x00;
-
-    return(0);
-}
-
-static unsigned short LOCAL_examplePassed ( unsigned short pruNum )
-{
-  return ((pruDataMem_int[1] ==  ADDEND1) & (pruDataMem_int[2] ==  ADDEND1 + ADDEND2));
+        prussdrv_map_prumem( 4, &sharedMem); // Map shared PRUs memory
+        sharedMem_int = (unsigned int*) sharedMem;
+        // Writes in the PRUs shared memory in the first addr
+        sharedMem_int[0] = (unsigned int)TICKS;
 }

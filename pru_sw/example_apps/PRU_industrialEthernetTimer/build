@@ -1,0 +1,8 @@
+#!/bin/sh
+
+export CROSS_COMPILE=
+clear
+make clean -C ../
+make -C ../
+cp ../bin/PRU_industrialEthernetTimer.bin obj/PRU_industrialEthernetTimer.bin
+gcc obj/PRU_industrialEthernetTimer.o -L../../../app_loader/lib -lprussdrv -lpthread -o obj/PRU_industrialEthernetTimer.out

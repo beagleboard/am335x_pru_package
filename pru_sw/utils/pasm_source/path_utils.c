@@ -194,15 +194,13 @@ int get_basename( const char * filename, char * base, const size_t sz)
     #endif
     
     size_t f_len = strlen(filename);
-    if ( f_len >= sz )
-        return -1;
 
     #ifdef _UNIX_
     // to allow for basename to change contents of arg
     tmp = (char*) malloc( f_len+1 );
     strcpy( tmp, filename );
     p = basename( tmp );
-    if (p == NULL)
+    if (p == NULL || strlen(p) >= sz)
     {
         free(tmp);
         return -1;

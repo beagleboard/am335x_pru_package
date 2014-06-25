@@ -32,3 +32,10 @@ PRU software (pru_sw):
       PRU_memAcc_DDR_sharedRAM
       PRU_memAccessPRUDataRam
       PRU_PRUtoPRUInterrupt
+      
+      
+------------------------------------------------------------
+
+Community support wiki page is at:
+
+http://elinux.org/Ti_AM33XX_PRUSSv2

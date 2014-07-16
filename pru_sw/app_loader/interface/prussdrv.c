@@ -359,7 +359,7 @@ int prussdrv_pru_write_memory(unsigned int pru_ram_id,
 
 int prussdrv_pruintc_init(const tpruss_intc_initdata *prussintc_init_data)
 {
-    unsigned int *pruintc_io = (unsigned int *) prussdrv.intc_base;
+    volatile unsigned int *pruintc_io = (volatile unsigned int *) prussdrv.intc_base;
     unsigned int i, mask1, mask2;
 
     pruintc_io[PRU_INTC_SIPR1_REG >> 2] = 0xFFFFFFFF;
@@ -464,7 +464,7 @@ short prussdrv_get_event_to_host_map( unsigned int eventnum )
 
 int prussdrv_pru_send_event(unsigned int eventnum)
 {
-    unsigned int *pruintc_io = (unsigned int *) prussdrv.intc_base;
+    volatile unsigned int *pruintc_io = (volatile unsigned int *) prussdrv.intc_base;
     if (eventnum < 32)
         pruintc_io[PRU_INTC_SRSR1_REG >> 2] = 1 << eventnum;
     else
@@ -489,7 +489,7 @@ int prussdrv_pru_event_fd(unsigned int host_interrupt)
 
 int prussdrv_pru_clear_event(unsigned int host_interrupt, unsigned int sysevent)
 {
-    unsigned int *pruintc_io = (unsigned int *) prussdrv.intc_base;
+    volatile unsigned int *pruintc_io = (volatile unsigned int *) prussdrv.intc_base;
     if (sysevent < 32)
         pruintc_io[PRU_INTC_SECR1_REG >> 2] = 1 << sysevent;
     else

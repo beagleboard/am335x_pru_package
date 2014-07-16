@@ -256,8 +256,8 @@ int __pruss_detect_hw_version(unsigned int *pruss_io)
     }
 }
 
-void __prussintc_set_cmr(unsigned int *pruintc_io, unsigned short sysevt,
-                         unsigned short channel)
+void __prussintc_set_cmr(volatile unsigned int *pruintc_io, 
+                         unsigned short sysevt, unsigned short channel)
 {
     pruintc_io[(PRU_INTC_CMR1_REG + (sysevt & ~(0x3))) >> 2] |=
         ((channel & 0xF) << ((sysevt & 0x3) << 3));
@@ -265,8 +265,8 @@ void __prussintc_set_cmr(unsigned int *pruintc_io, unsigned short sysevt,
 }
 
 
-void __prussintc_set_hmr(unsigned int *pruintc_io, unsigned short channel,
-                         unsigned short host)
+void __prussintc_set_hmr(volatile unsigned int *pruintc_io, 
+                         unsigned short channel, unsigned short host)
 {
     pruintc_io[(PRU_INTC_HMR1_REG + (channel & ~(0x3))) >> 2] =
         pruintc_io[(PRU_INTC_HMR1_REG +

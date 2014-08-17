@@ -6,6 +6,7 @@
 #define LOG(FORMAT, ...) fprintf(stderr, FORMAT, ## __VA_ARGS__)
 
 #define SCRATCH_SZ 256
+#define SMALL_SCRATCH_SZ 8
 
 int test_is_definite()
 {
@@ -109,8 +110,10 @@ int test_get_dirname()
 int test_get_basename()
 {
     static const size_t sz = SCRATCH_SZ;
+    static const size_t small_sz = SMALL_SCRATCH_SZ;
     int errors = 0;
     char scratch[SCRATCH_SZ];
+    char small_scratch[SMALL_SCRATCH_SZ];
 
     #ifdef _UNIX_
     scratch[0] = '\0';
@@ -154,6 +157,13 @@ int test_get_basename()
     {
         ++errors;
         LOG("get_basename fail with relative path 'hi/there ['%s']'\n", scratch);
+    }
+
+    small_scratch[0] = '\0';
+    if ( get_basename( "/hi/there", small_scratch, small_sz ) || strcmp("there", small_scratch) )
+    {
+        ++errors;
+        LOG("get_basename fail with long absolute path '/hi/there' ['%s']\n", small_scratch);
     }
     return errors;
 }

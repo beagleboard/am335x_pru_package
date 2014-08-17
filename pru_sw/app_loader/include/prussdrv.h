@@ -123,6 +123,7 @@ extern "C" {
     int prussdrv_pru_disable(unsigned int prunum);
 
     int prussdrv_pru_enable(unsigned int prunum);
+    int prussdrv_pru_enable_at(unsigned int prunum, size_t addr);
 
     int prussdrv_pru_write_memory(unsigned int pru_ram_id,
                                   unsigned int wordoffset,
@@ -189,8 +190,12 @@ extern "C" {
     int prussdrv_exit(void);
 
     int prussdrv_exec_program(int prunum, const char *filename);
+    int prussdrv_exec_program_at(int prunum, const char *filename, size_t addr);
 
     int prussdrv_exec_code(int prunum, const unsigned int *code, int codelen);
+    int prussdrv_exec_code_at(int prunum, const unsigned int *code, int codelen, size_t addr);
+    int prussdrv_load_data(int prunum, const unsigned int *code, int codelen);
+    int prussdrv_load_datafile(int prunum, const char *filename);
 
 #if defined (__cplusplus)
 }

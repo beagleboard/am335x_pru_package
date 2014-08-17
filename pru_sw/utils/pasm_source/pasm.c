@@ -60,6 +60,7 @@
 // Revision:
 //     21-Jun-13: 0.84 - Open source version
 //     03-Mar-15: 0.85 - Modified to build using Visual Studio 2008
+//     07-Jul-14: 0.86 - Fixed -L listing generation and improved listing speed
 ============================================================================*/
 
 #include <stdio.h>
@@ -101,7 +102,7 @@
 /* ---------- Local Macro Definitions ----------- */
 
 #define PROCESSOR_NAME_STRING ("PRU")
-#define VERSION_STRING        ("0.85")
+#define VERSION_STRING        ("0.86")
 
 #define MAXFILE               (256)     /* Max file length for output files */
 #define MAX_PROGRAM           (16384)   /* Max instruction count */
@@ -632,6 +633,7 @@ USAGE:
             {
                 fprintf(Outfile, "Source File %d : '%s' ", i+1, sfArray[i].SourceName);
                 strcpy(FullPath,sfArray[i].SourceBaseDir);
+                strcat(FullPath, "/");
                 strcat(FullPath,sfArray[i].SourceName);
                 sfArray[i].FilePtr=fopen(FullPath,"rb");
                 if( sfArray[i].FilePtr!=0 )
@@ -1282,17 +1284,12 @@ AGAIN:
 */
 static int GetInfoFromAddr( uint address, uint *pIndex, uint *pLineNo, uint *pCodeWord )
 {
-    int i;
-
-    for(i=0; i<(int)CodeOffset; i++)
-    {
-        if( ProgramImage[i].AddrOffset == address )
-        {
-            *pIndex = ProgramImage[i].FileIndex;
-            *pLineNo = ProgramImage[i].Line;
-            *pCodeWord = ProgramImage[i].CodeWord;
-            return 0;
-        }
+    // Return data if within written portion of array and entry has been set
+    if (address < CodeOffset && ProgramImage[address].AddrOffset == address) {
+       *pIndex = ProgramImage[address].FileIndex;
+       *pLineNo = ProgramImage[address].Line;
+       *pCodeWord = ProgramImage[address].CodeWord;
+       return 0;
     }
     return -1;
 }

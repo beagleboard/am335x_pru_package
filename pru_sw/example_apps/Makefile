@@ -5,7 +5,7 @@ LIBDIR_APP_LOADER?=../../app_loader/lib
 INCDIR_APP_LOADER?=../../app_loader/include
 BINDIR_APPLICATIONS?=../bin
 BINDIR_FW?=bin
-PASM?=../utils/pasm_2
+PASM?=../utils/pasm
 
 all: loaders firmware
 

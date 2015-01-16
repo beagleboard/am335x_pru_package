@@ -174,7 +174,7 @@ int main(void)
     printf("\tINFO: PRU0 completed transfer.\r\n");
     prussdrv_pru_clear_event (PRU_EVTOUT_0, PRU0_ARM_INTERRUPT);
 
-    /* Wait until PRU0 has finished execution */
+    /* Wait until PRU1 has finished execution */
     printf("\t\tINFO: Waiting for HALT command.\r\n");
     prussdrv_pru_wait_event (PRU_EVTOUT_1);
     printf("\t\tINFO: PRU1 completed transfer.\r\n");

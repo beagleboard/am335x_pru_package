@@ -1,0 +1,15 @@
+/* @file PRU_industrialEthernetTimer.hp
+ * @brief A am335x PRU main defines
+ *
+ * @author Igor Borges Tavares (igorborgest@gmail.com)
+ * @bug No know bugs.
+ */
+
+// Refer to this mapping in the file - \prussdrv\include\pruss_intc_mapping.h
+#define PRU1_ARM_INTERRUPT   20
+
+#define CONST_IEP            C26
+#define CONST_PRUSHAREDRAM   C28
+
+// Offset
+#define IEP_TIMER_COUNT      0xC

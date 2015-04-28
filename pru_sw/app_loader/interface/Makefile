@@ -21,7 +21,8 @@ SODBGTARGET = $(LIBDIR)/$(TARGET)d.so
 SORELTARGET = $(LIBDIR)/$(TARGET).so
 
 DBGCFLAGS = -g -O0 -D__DEBUG
-RELCFLAGS = -O3 -mtune=cortex-a8 -march=armv7-a
+ARM_COMPILE_FLAGS?= -mtune=cortex-a8 -march=armv7-a
+RELCFLAGS = -O3 $(ARM_COMPILE_FLAGS)
 
 SOURCES = $(wildcard *.c)
 

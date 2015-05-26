@@ -10,3 +10,8 @@ pru_sw/example_apps/*/obj
 pru_sw/example_apps/bin/
 
 *.pdb
+*.so
+*.a
+
+debug
+release

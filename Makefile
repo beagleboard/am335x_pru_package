@@ -2,8 +2,7 @@ include $(BUILD_DIR)/makefile.d/base.mk
 
 ROOTDIR = .
 TARGET = libpru-driver
-CROSS_COMPILE?=arm-linux-gnueabihf-
-PREFIX?=/usr/local
+CROSS_COMPILE ?= arm-linux-gnueabihf-
 
 CC = $(CROSS_COMPILE)gcc
 AR = $(CROSS_COMPILE)ar
@@ -13,8 +12,8 @@ INCLUDEDIR = ./pru_sw/app_loader/include
 C_FLAGS += -I. -Wall -I$(INCLUDEDIR)
 
 COMPILE.c = $(CC) $(C_FLAGS) $(CPP_FLAGS) -c
-AR.c	  = $(AR) rc
-LINK.c	  = $(CC) -shared
+AR.c = $(AR) rc
+LINK.c = $(CC) -shared
 
 DBGTARGET = $(OUTPUT_DIR)/$(TARGET)d.a
 RELTARGET = $(OUTPUT_DIR)/$(TARGET).a
@@ -37,15 +36,15 @@ PIC_RELOBJFILES = $(SOURCES:%.c=$(OUTPUT_DIR)/release/%_PIC.o)
 
 .PHONY: clean debug release sodebug sorelease install
 
-all:	debug release sodebug sorelease
+all: debug release sodebug sorelease
 
-release:	$(RELTARGET)
+release: $(RELTARGET)
 
-sorelease:	$(SORELTARGET)
+sorelease: $(SORELTARGET)
 
-sodebug:	$(SODBGTARGET)
+sodebug: $(SODBGTARGET)
 
-debug:		$(DBGTARGET)
+debug: $(DBGTARGET)
 
 $(OUTPUT_DIR):
 	$(VERBOSE)mkdir -p $(OUTPUT_DIR)/release/pru_sw/app_loader/interface
@@ -55,7 +54,7 @@ $(RELTARGET): $(RELOBJFILES)
 	@mkdir -p $(ROOTDIR)/lib
 	$(AR.c) $@ $(RELOBJFILES)
 
-$(SORELTARGET):	$(PIC_RELOBJFILES)
+$(SORELTARGET): $(PIC_RELOBJFILES)
 	@mkdir -p $(ROOTDIR)/lib
 	$(LINK.c) -o $@ $(PIC_RELOBJFILES)
 
@@ -63,17 +62,17 @@ $(SODBGTARGET):	$(PIC_DBGOBJFILES)
 	@mkdir -p $(ROOTDIR)/lib
 	$(LINK.c) -o $@ $(PIC_DBGOBJFILES)
 
-$(DBGTARGET):	$(DBGOBJFILES)
+$(DBGTARGET): $(DBGOBJFILES)
 	@mkdir -p $(ROOTDIR)/lib
 	$(AR.c) $@ $(DBGOBJFILES)
 
-$(RELOBJFILES):	$(OUTPUT_DIR)/release/%.o: %.c $(HEADERS) | $(OUTPUT_DIR)
+$(RELOBJFILES): $(OUTPUT_DIR)/release/%.o: %.c $(HEADERS) | $(OUTPUT_DIR)
 	$(COMPILE.c) $(RELCFLAGS) -o $@ $<
 
 $(PIC_RELOBJFILES): $(OUTPUT_DIR)/release/%_PIC.o: %.c $(HEADERS) | $(OUTPUT_DIR)
 	$(COMPILE.c) -fPIC $(RELCFLAGS) -o $@ $<
 
-$(DBGOBJFILES):	$(OUTPUT_DIR)/debug/%.o: %.c $(HEADERS) | $(OUTPUT_DIR)
+$(DBGOBJFILES): $(OUTPUT_DIR)/debug/%.o: %.c $(HEADERS) | $(OUTPUT_DIR)
 	$(COMPILE.c) $(DBGCFLAGS) -o $@ $<
 
 $(PIC_DBGOBJFILES): $(OUTPUT_DIR)/debug/%_PIC.o: %.c $(HEADERS) | $(OUTPUT_DIR)

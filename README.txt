@@ -32,7 +32,7 @@ PRU software (pru_sw):
       PRU_memAcc_DDR_sharedRAM
       PRU_memAccessPRUDataRam
       PRU_PRUtoPRUInterrupt
-      
+      PRU_industrialEthernetTimer
       
 ------------------------------------------------------------
 

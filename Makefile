@@ -9,7 +9,7 @@ AR = $(CROSS_COMPILE)ar
 
 INCLUDEDIR = ./pru_sw/app_loader/include
 
-C_FLAGS += -I. -Wall -I$(INCLUDEDIR)
+C_FLAGS += -I. -Wall -I$(INCLUDEDIR) -Wno-unused-result
 
 COMPILE.c = $(CC) $(C_FLAGS) $(CPP_FLAGS) -c
 AR.c = $(AR) rc

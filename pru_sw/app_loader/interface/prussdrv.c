@@ -255,6 +255,9 @@ int prussdrv_open(unsigned int host_interrupt)
     if (!prussdrv.fd[host_interrupt]) {
         sprintf(name, "/dev/uio%d", host_interrupt);
         prussdrv.fd[host_interrupt] = open(name, O_RDWR | O_SYNC);
+        if (prussdrv.fd[host_interrupt] == -1) {
+            return -1;
+        }
         return __prussdrv_memmap_init();
     } else {
         return -1;

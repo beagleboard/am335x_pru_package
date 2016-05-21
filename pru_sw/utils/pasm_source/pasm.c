@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
     if( argc<2 )
     {
 USAGE:
-        printf("Usage: %s [-V#EBbcmLldyz] [-Idir] [-Dname=value] [-Cname] InFile [OutFileBase]\n\n",argv[0]);
+        printf("Usage: %s [-V#EBbcmLldfz] [-Idir] [-Dname=value] [-Cname] InFile [OutFileBase]\n\n",argv[0]);
         printf("    V# - Specify core version (V0,V1,V2,V3). (Default is V1)\n");
         printf("    E  - Assemble for big endian core\n");
         printf("    B  - Create big endian binary output (*.bib)\n");
@@ -197,7 +197,7 @@ USAGE:
         printf("    L  - Create annotated source file style listing (*.txt)\n");
         printf("    l  - Create raw listing file (*.lst)\n");
         printf("    d  - Create pView debug file (*.dbg)\n");
-        printf("    y  - Create 'FreeBasic array' binary output (*.bi)\n");
+        printf("    f  - Create 'FreeBasic array' binary output (*.bi)\n");
         printf("    z  - Enable debug messages\n");
         printf("    I  - Add the directory dir to search path for \n"
                "         #include <filename> type of directives (where \n"
@@ -335,7 +335,7 @@ USAGE:
                     Options |= OPTION_SOURCELISTING;
                 else if( *flags == 'd' )
                     Options |= OPTION_DBGFILE;
-                else if( *flags == 'y' )
+                else if( *flags == 'f' )
                     Options |= OPTION_FBARRAY;
                 else if( *flags == 'z' )
                     Options |= OPTION_DEBUG;

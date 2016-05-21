@@ -56,7 +56,7 @@
 //---------------------------------------------------------------------------
 // Revision:
 //     21-Jun-13: 0.84 - Open source version
-//     21-May-16: 0.87 - Added -y option for 'FreeBasic array' binary output
+//     21-May-16: 0.87 - Added -f option for 'FreeBasic array' binary output
 ============================================================================*/
 typedef unsigned int uint;
 

@@ -61,7 +61,7 @@
 //     21-Jun-13: 0.84 - Open source version
 //     03-Mar-15: 0.85 - Modified to build using Visual Studio 2008
 //     07-Jul-14: 0.86 - Fixed -L listing generation and improved listing speed
-//     21-May-16: 0.87 - Added -y option for 'FreeBasic array' binary output
+//     21-May-16: 0.87 - Added -f option for 'FreeBasic array' binary output
 ============================================================================*/
 
 #include <stdio.h>

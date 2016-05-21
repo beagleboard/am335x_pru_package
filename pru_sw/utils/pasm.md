@@ -3,7 +3,7 @@ pasm(1) -- Assembler for PRU subsystem included in OMAP-L1x8/C674m/AM18xx device
 
 ## SYNOPSIS
 
-`pasm` [-V#EBbcmLldz] [-Idir] [-Dname=value] [-Cname] InFile [OutFileBase]
+`pasm` [-V#EBbcmLldfz] [-Idir] [-Dname=value] [-Cname] InFile [OutFileBase]
 
 ## DESCRIPTION
 
@@ -17,7 +17,7 @@ PASM is available for Windows and Linux.
 
 The command line syntax to `PASM` is:
 
-`pasm` [-bBcmldexz] SourceFile [OutFileBasename] [-Dname=value] [-CArrayName]
+`pasm` [-bBcmldexfz] SourceFile [OutFileBasename] [-Dname=value] [-CArrayName]
 
 Note that only the source file SourceFile is required on the command
 line. The assembler will default to output option "-c" which generates a
@@ -69,6 +69,9 @@ Also filenames and options can be mixed for example:
 
  * `-d`:
     Create pView debug file (*.dbg)
+
+ * `-f`:
+    Create "FreeBasic array" binary output (*.bi)
 
  * `-z`:
     Enable debug messages

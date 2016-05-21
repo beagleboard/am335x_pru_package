@@ -7,7 +7,7 @@
 \fBpasm\fR \- Assembler for PRU subsystem included in OMAP\-L1x8/C674m/AM18xx devices
 .
 .SH "SYNOPSIS"
-\fBpasm\fR [\-V#EBbcmLldz] [\-Idir] [\-Dname=value] [\-Cname] InFile [OutFileBase]
+\fBpasm\fR [\-V#EBbcmLldfz] [\-Idir] [\-Dname=value] [\-Cname] InFile [OutFileBase]
 .
 .SH "DESCRIPTION"
 \fBpasm\fR is a command line driven assembler for the Programmable Real\-time execution unit (PRU) of the Programmable Real\-time Unit Subsystem (PRUSS)\. It is designed to build single executable images using a flexible source code syntax and a variety of output options\. PASM is available for Windows and Linux\.
@@ -16,7 +16,7 @@
 The command line syntax to \fBPASM\fR is:
 .
 .P
-\fBpasm\fR [\-bBcmldexz] SourceFile [OutFileBasename] [\-Dname=value] [\-CArrayName]
+\fBpasm\fR [\-bBcmldexfz] SourceFile [OutFileBasename] [\-Dname=value] [\-CArrayName]
 .
 .P
 Note that only the source file SourceFile is required on the command line\. The assembler will default to output option "\-c" which generates a C array containing the binary opcode data\. The majority of the option flags select a variety of output formats\.
@@ -89,6 +89,10 @@ Create raw listing file (*\.lst)
 .TP
 \fB\-d\fR
 Create pView debug file (*\.dbg)
+.
+.TP
+\fB\-f\fR
+Create "FreeBasic array" binary output (*\.bi)
 .
 .TP
 \fB\-z\fR

@@ -56,6 +56,7 @@
 //---------------------------------------------------------------------------
 // Revision:
 //     21-Jun-13: 0.84 - Open source version
+//     21-May-16: 0.87 - Added -f option for 'FreeBasic array' binary output
 ============================================================================*/
 typedef unsigned int uint;
 
@@ -124,6 +125,7 @@ extern unsigned int Options;
 #define OPTION_BIGENDIAN            (1<<7)
 #define OPTION_RETREGSET            (1<<8)
 #define OPTION_SOURCELISTING        (1<<9)
+#define OPTION_FBARRAY              (1<<10)
 extern unsigned int Core;
 #define CORE_NONE                   0
 #define CORE_V0                     1

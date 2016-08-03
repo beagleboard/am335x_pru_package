@@ -694,6 +694,12 @@ int prussdrv_exec_program_at(int prunum, const char *filename, size_t addr)
         return -1;
     }
 
+    if (fileSize > PRUSS_MAX_IRAM_SIZE) {
+      DEBUG_PRINTF("File too large.. Closing program\n");
+      fclose(fPtr);
+      return -1;
+    }
+
     fseek(fPtr, 0, SEEK_SET);
 
     if (fileSize !=

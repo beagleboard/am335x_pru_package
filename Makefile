@@ -1,3 +1,4 @@
+BUILD_DIR ?= ../xl
 include $(BUILD_DIR)/makefile.d/base.mk
 
 ROOTDIR = .

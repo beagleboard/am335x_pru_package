@@ -187,26 +187,26 @@ int main(int argc, char *argv[])
     if( argc<2 )
     {
 USAGE:
-        printf("Usage: %s [-V#EBbcmLldfz] [-Idir] [-Dname=value] [-Cname] InFile [OutFileBase]\n\n",argv[0]);
-        printf("    V# - Specify core version (V0,V1,V2,V3). (Default is V1)\n");
-        printf("    E  - Assemble for big endian core\n");
-        printf("    B  - Create big endian binary output (*.bib)\n");
-        printf("    b  - Create little endian binary output (*.bin)\n");
-        printf("    c  - Create 'C array' binary output (*_bin.h)\n");
-        printf("    m  - Create 'image' binary output (*.img)\n");
-        printf("    L  - Create annotated source file style listing (*.txt)\n");
-        printf("    l  - Create raw listing file (*.lst)\n");
-        printf("    d  - Create pView debug file (*.dbg)\n");
-        printf("    f  - Create 'FreeBasic array' binary output (*.bi)\n");
-        printf("    z  - Enable debug messages\n");
-        printf("    I  - Add the directory dir to search path for \n"
+        fprintf(stderr,"Usage: %s [-V#EBbcmLldfz] [-Idir] [-Dname=value] [-Cname] InFile [OutFileBase]\n\n",argv[0]);
+        fprintf(stderr,"    V# - Specify core version (V0,V1,V2,V3). (Default is V1)\n");
+        fprintf(stderr,"    E  - Assemble for big endian core\n");
+        fprintf(stderr,"    B  - Create big endian binary output (*.bib)\n");
+        fprintf(stderr,"    b  - Create little endian binary output (*.bin)\n");
+        fprintf(stderr,"    c  - Create 'C array' binary output (*_bin.h)\n");
+        fprintf(stderr,"    m  - Create 'image' binary output (*.img)\n");
+        fprintf(stderr,"    L  - Create annotated source file style listing (*.txt)\n");
+        fprintf(stderr,"    l  - Create raw listing file (*.lst)\n");
+        fprintf(stderr,"    d  - Create pView debug file (*.dbg)\n");
+        fprintf(stderr,"    f  - Create 'FreeBasic array' binary output (*.bi)\n");
+        fprintf(stderr,"    z  - Enable debug messages\n");
+        fprintf(stderr,"    I  - Add the directory dir to search path for \n"
                "         #include <filename> type of directives (where \n"
                "         angled brackets are used instead of quotes).\n");
-        printf("\n    D  - Set equate 'name' to 1 using '-Dname', or to any\n");
-        printf("         value using '-Dname=value'\n");
-        printf("    C  - Name the C array in 'C array' binary output\n");
-        printf("         to 'name' using '-Cname'\n");
-        printf("\n");
+        fprintf(stderr,"\n    D  - Set equate 'name' to 1 using '-Dname', or to any\n");
+        fprintf(stderr,"         value using '-Dname=value'\n");
+        fprintf(stderr,"    C  - Name the C array in 'C array' binary output\n");
+        fprintf(stderr,"         to 'name' using '-Cname'\n");
+        fprintf(stderr,"\n");
         return(RET_ERROR);
     }
 
@@ -243,7 +243,7 @@ USAGE:
                     flags++;
                     if( cmdLineEquates==MAX_CMD_EQUATE )
                     {
-                        printf("\nToo many command line equates\n\n");
+                        fprintf(stderr,"\nToo many command line equates\n\n");
                         goto USAGE;
                     }
                     j=0;
@@ -251,7 +251,7 @@ USAGE:
                         cmdLineName[cmdLineEquates][j++]=*flags++;
                     if( j==EQUATE_NAME_LEN )
                     {
-                        printf("\nCommand line equate name too long\n\n");
+                        fprintf(stderr,"\nCommand line equate name too long\n\n");
                         goto USAGE;
                     }
                     strcpy( cmdLineData[cmdLineEquates], "1" );
@@ -263,7 +263,7 @@ USAGE:
                             cmdLineData[cmdLineEquates][j++]=*flags++;
                         if( j==EQUATE_DATA_LEN )
                         {
-                            printf("\nCommand line equate data too long\n\n");
+                            fprintf(stderr,"\nCommand line equate data too long\n\n");
                             goto USAGE;
                         }
                     }
@@ -280,7 +280,7 @@ USAGE:
                     }
                     if( j==EQUATE_DATA_LEN )
                     {
-                        printf("\nCArray name too long\n\n");
+                        fprintf(stderr,"\nCArray name too long\n\n");
                         goto USAGE;
                     }
                     nameCArraySet = 1;
@@ -291,12 +291,12 @@ USAGE:
                     flags++;
                     if( *flags<'0' || *flags>'3' )
                     {
-                        printf("\nExpected a number (0-3) after option 'V'\n\n");
+                        fprintf(stderr,"\nExpected a number (0-3) after option 'V'\n\n");
                         goto USAGE;
                     }
                     if( Core != CORE_NONE )
                     {
-                        printf("\nDo not specify more than one core version or use -V with -X or -x\n\n");
+                        fprintf(stderr,"\nDo not specify more than one core version or use -V with -X or -x\n\n");
                         goto USAGE;
                     }
                     Core = CORE_V0 + *flags - '0';
@@ -305,7 +305,7 @@ USAGE:
                 {
                     if( Core != CORE_NONE )
                     {
-                        printf("\nDo not use -x with -X or -V\n\n");
+                        fprintf(stderr,"\nDo not use -x with -X or -V\n\n");
                         goto USAGE;
                     }
                     Core = CORE_V0;
@@ -314,7 +314,7 @@ USAGE:
                 {
                     if( Core != CORE_NONE )
                     {
-                        printf("\nDo not use -X with -x or -V\n\n");
+                        fprintf(stderr,"\nDo not use -X with -x or -V\n\n");
                         goto USAGE;
                     }
                     Core = CORE_V2;
@@ -341,7 +341,7 @@ USAGE:
                     Options |= OPTION_DEBUG;
                 else
                 {
-                    printf("\nUnknown flag '%c'\n\n",*flags);
+                    fprintf(stderr,"\nUnknown flag '%c'\n\n",*flags);
                     goto USAGE;
                 }
                 flags++;
@@ -454,7 +454,7 @@ USAGE:
     /* Make sure user didn't do something silly */
     if( CodeOffsetPass1!=CodeOffset )
     {
-        printf("Error: Offset changed between pass 1 and pass 2\n");
+        fprintf(stderr,"Error: Offset changed between pass 1 and pass 2\n");
         Errors++;
     }
 
@@ -763,7 +763,7 @@ int ProcessSourceFile( SOURCEFILE *ps )
     {
         /* Abort on a total disaster */
         if( FatalError || Errors >= 25 )
-            { printf("Aborting...\n"); return(0); }
+            { fprintf(stderr,"Aborting...\n"); return(0); }
 
         /* Get a line of source code */
         i = GetSourceLine( ps, src, MAX_SOURCE_LINE );
@@ -1061,36 +1061,42 @@ void Report( SOURCEFILE *ps, int Level, char *fmt, ... )
     if( Pass==2 && (Level==REP_INFO || Level==REP_WARN1) )
         return;
 
-    /* Log to stdout */
+	FILE* file;
+	if( ( Level == REP_FATAL ) || ( Level == REP_ERROR ) || ( Level==REP_WARN1 || Level==REP_WARN2 ))
+		file = stderr;
+	else
+		file = stdout;
+
+    /* Log to stdout or stderr accordingly*/
     if( ps )
-        printf("%s(%d) ",ps->SourceName,ps->CurrentLine);
+		fprintf(file, "%s(%d) ",ps->SourceName,ps->CurrentLine);
 
     if( Level == REP_FATAL )
     {
-       printf("Fatal Error: ");
+        fprintf(file,"Fatal Error: ");
         FatalError=1;
         Errors++;
     }
     else if( Level == REP_ERROR )
     {
-        printf("Error: ");
+        fprintf(file,"Error: ");
         Errors++;
     }
     else if( Level==REP_WARN1 || Level==REP_WARN2 )
     {
-        printf("Warning: ");
+        fprintf(file,"Warning: ");
         Warnings++;
     }
     else
-        printf("Note: ");
+        fprintf(file, "Note: ");
 
     va_start( arg_ptr, fmt );
-    vprintf( fmt, arg_ptr );
+    vfprintf(file, fmt, arg_ptr );
     va_end( arg_ptr );
 
     if( !ps )
-        printf("\n");
-    printf("\n");
+		fprintf(file,"\n");
+    fprintf(file,"\n");
 }
 
 

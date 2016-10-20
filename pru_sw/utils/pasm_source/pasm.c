@@ -1069,7 +1069,7 @@ void Report( SOURCEFILE *ps, int Level, char *fmt, ... )
 
     /* Log to stdout or stderr accordingly*/
     if( ps )
-		fprintf(file, "%s(%d) ",ps->SourceName,ps->CurrentLine);
+		fprintf(file, "pasm: %s(%d) ",ps->SourceName,ps->CurrentLine);
 
     if( Level == REP_FATAL )
     {

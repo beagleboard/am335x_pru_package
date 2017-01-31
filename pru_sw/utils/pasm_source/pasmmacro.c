@@ -312,7 +312,7 @@ SUBTEXTDONE:
         {
             if( !ProcessSourceLine(ps, i, src, MAX_SOURCE_LINE) )
             {
-                Report(ps,REP_ERROR,"(While expanding code line %d of macro '%s')",(cidx+1),pm->Name);
+                Report(ps,REP_ERROR,"(While expanding code line %d of macro '%s': ``%s'')",(cidx+1),pm->Name,src);
                 pm->InUse=0;
                 return(0);
             }

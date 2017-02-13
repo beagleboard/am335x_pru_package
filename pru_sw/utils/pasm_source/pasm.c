@@ -612,12 +612,14 @@ USAGE:
             for(i=0; i<(int)hdr.FileCount; i++)
             {
                 memset( &file, 0, sizeof(DBGFILE_FILE) );
-                if( !strcmp( sfArray[i].SourceBaseDir,"./") ||
+                if( !strcmp( sfArray[i].SourceBaseDir,".") ||
+		    !strcmp( sfArray[i].SourceBaseDir,"./.") ||
                     ((strlen(sfArray[i].SourceName)+strlen(sfArray[i].SourceBaseDir)) >= DBGFILE_NAMELEN_SHORT) )
                     strcpy(file.SourceName,sfArray[i].SourceName);
                 else
                 {
                     strcpy(file.SourceName,sfArray[i].SourceBaseDir);
+                    strcat(file.SourceName,"/");
                     strcat(file.SourceName,sfArray[i].SourceName);
                 }
                 if( fwrite(&file,1,sizeof(DBGFILE_FILE),Outfile) != sizeof(DBGFILE_FILE) )

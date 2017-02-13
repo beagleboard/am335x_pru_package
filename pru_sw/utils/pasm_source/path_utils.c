@@ -173,10 +173,10 @@ int get_dirname( const char * filename, char * dir, const size_t sz)
     /*------------------------------------------------------------------------
     LJN: POSIX dirname() does not end the path with a / or \
     ------------------------------------------------------------------------*/
-    if( ( dir[ strlen( dir ) - 1 ] == '/'  )
-     || ( dir[ strlen( dir ) - 1 ] == '\\' ) )
+    if( ( dir[ strlen( dir ) ] == '/'  )
+     || ( dir[ strlen( dir ) ] == '\\' ) )
         {
-        dir[ strlen( dir ) - 1 ] = '\0';
+        dir[ strlen( dir ) ] = '\0';
         }
     #endif
 

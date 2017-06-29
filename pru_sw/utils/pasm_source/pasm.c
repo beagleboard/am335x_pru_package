@@ -1063,11 +1063,11 @@ void Report( SOURCEFILE *ps, int Level, char *fmt, ... )
     if( Pass==2 && (Level==REP_INFO || Level==REP_WARN1) )
         return;
 
-	FILE* file;
-	if( ( Level == REP_FATAL ) || ( Level == REP_ERROR ) || ( Level==REP_WARN1 || Level==REP_WARN2 ))
-		file = stderr;
-	else
-		file = stdout;
+    FILE* file;
+    if( ( Level == REP_FATAL ) || ( Level == REP_ERROR ) || ( Level==REP_WARN1 || Level==REP_WARN2 ))
+	    file = stderr;
+    else
+	    file = stdout;
 
     /* Log to stdout or stderr accordingly*/
     if( ps )
@@ -1404,5 +1404,3 @@ static int ListFile( FILE *pfOut, SOURCEFILE *ps )
     }
     return(1);
 }
-
-

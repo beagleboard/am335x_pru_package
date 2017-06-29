@@ -50,6 +50,10 @@
 #include <prussdrv.h>
 #include "__prussdrv.h"
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/select.h>
 
 #ifdef __DEBUG
 #define DEBUG_PRINTF(FORMAT, ...) fprintf(stderr, FORMAT, ## __VA_ARGS__)
@@ -486,6 +490,32 @@ unsigned int prussdrv_pru_wait_event(unsigned int host_interrupt)
 {
     unsigned int event_count;
     read(prussdrv.fd[host_interrupt], &event_count, sizeof(int));
+    return event_count;
+}
+
+unsigned int prussdrv_pru_wait_event_timeout(unsigned int host_interrupt, int time_us)
+{
+    int rv;
+    fd_set set;
+    struct timeval timeout;
+    unsigned int event_count;
+    FD_ZERO(&set);
+    FD_SET(prussdrv.fd[host_interrupt], &set);
+    timeout.tv_sec = 0;
+
+    if (time_us >= 1000000) {
+        timeout.tv_sec = time_us / 1000000;
+    }
+    timeout.tv_usec = time_us % 1000000;;
+
+    rv = select(prussdrv.fd[host_interrupt] + 1, &set, NULL, NULL, &timeout);
+    if (rv == -1)
+        return -1;
+
+    else if(rv == 0)
+        return 0;
+
+    read(prussdrv.fd[host_interrupt], &event_count, sizeof(int));    
     return event_count;
 }
 

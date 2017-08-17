@@ -1069,9 +1069,14 @@ void Report( SOURCEFILE *ps, int Level, char *fmt, ... )
     else
 	    file = stdout;
 
-    /* Log to stdout or stderr accordingly*/
+    /* Log to stdout or stderr accordingly.
+     * We adhere here to the exact same output format that compilers (gcc,
+     * clang) or other source code processing tool is reporting messages:
+     * <filename>:<line-number>: <message>
+     * This standard format is parsed by default by IDEs and editors
+     * such as emacs or vi than then can jump to error messages easily. */
     if( ps )
-		fprintf(file, "pasm: %s(%d) ",ps->SourceName,ps->CurrentLine);
+		fprintf(file, "%s:%d: ",ps->SourceName,ps->CurrentLine);
 
     if( Level == REP_FATAL )
     {

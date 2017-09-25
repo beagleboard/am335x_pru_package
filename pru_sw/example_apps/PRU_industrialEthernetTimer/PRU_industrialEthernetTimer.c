@@ -22,8 +22,6 @@
 
 // PRU number can be 0 or 1
 #define PRU_NUM 1
-// Path to binary that will be load in PRU
-#define PRU_BINARY "./obj/PRU_industrialEthernetTimer.bin"
 
 // Local function
 static void write_pru_shared_mem ( void);
@@ -42,7 +40,12 @@ int main(void)
         }
         prussdrv_pruintc_init( &pruss_intc_initdata);
         write_pru_shared_mem ();
-        prussdrv_exec_program (PRU_NUM, PRU_BINARY); // Load/exec the bin in PRU
+        char path[] = "./PRU_industrialEthernetTimer.bin";
+        if(prussdrv_exec_program (PRU_NUM, path))
+        {
+            fprintf(stderr, "ERROR: Could not open %s\n", path);
+            return 1;
+        }
         printf("\t-> waiting PRU event...\n");
         printf("\t-> This should take nearly %u us...\n", (unsigned int)DELAY_US);
         prussdrv_pru_wait_event (PRU_EVTOUT_1);

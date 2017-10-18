@@ -163,10 +163,20 @@ int main(void)
 
     /* Execute example on PRU */
     printf("\tINFO: Executing example on PRU0.\r\n");
-    prussdrv_exec_program (PRU_NUM0, "./PRU_PRU0toPRU1_Interrupt.bin");
-    printf("\t\tINFO: Executing example on PRU1.\r\n");
-    prussdrv_exec_program (PRU_NUM1, "./PRU_PRU1toPRU0_Interrupt.bin");
+    char path0[] = "./PRU_PRU0toPRU1_Interrupt.bin";
+    if(prussdrv_exec_program (PRU_NUM0, path0))
+    {
+        fprintf(stderr, "ERROR: Could not open %s\n", path0);
+        return 1;
+    }
 
+    printf("\t\tINFO: Executing example on PRU1.\r\n");
+    char path1[] = "./PRU_PRU1toPRU0_Interrupt.bin";
+    if(prussdrv_exec_program (PRU_NUM1, path1))
+    {
+        fprintf(stderr, "ERROR: Could not open %s\n", path0);
+        return 1;
+    }
 
     /* Wait until PRU0 has finished execution */
     printf("\tINFO: Waiting for HALT command.\r\n");

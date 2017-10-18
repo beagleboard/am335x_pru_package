@@ -153,7 +153,12 @@ int main (void)
 
     /* Execute example on PRU */
     printf("\tINFO: Executing example.\r\n");
-    prussdrv_exec_program (PRU_NUM, "./PRU_memAcc_DDR_sharedRAM.bin");
+    char path[] = "./PRU_memAcc_DDR_sharedRAM.bin";
+    if(prussdrv_exec_program (PRU_NUM, path))
+    {
+        fprintf(stderr, "ERROR: Could not open %s\n", path);
+        return 1;
+    }
 
     /* Wait until PRU0 has finished execution */
     printf("\tINFO: Waiting for HALT command.\r\n");

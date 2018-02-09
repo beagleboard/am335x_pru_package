@@ -120,6 +120,7 @@ static ASSIGN *AssignCreate( SOURCEFILE *ps, ASSIGN **pList, char *Name );
 static void AssignDestroy( ASSIGN **pList, ASSIGN *pas );
 static char *StructNameCheck( char *source );
 static int StructValueOperand( char *source, int CmdType, uint *pValue );
+static int RegisterOperand(SOURCEFILE *ps, char *source, int CmdType, uint *pValue );
 #define SVO_SIZEOF  0
 #define SVO_OFFSET  1
 static int GetFinalSize( char *ext, uint Size, uint *pValue );
@@ -612,7 +613,9 @@ int StructParamProcess( SOURCEFILE *ps, int ParamIdx, char *source )
                     { Report(ps,REP_ERROR,"Missing ')' on SIZE/OFFSET"); return(-1); }
                 srcidx++;
 
-                if( StructValueOperand(tmpname, cmd, &value)<0 )
+                if( StructValueOperand(tmpname, cmd, &value) < 0  &&
+                  RegisterOperand(ps, tmpname, cmd, &value) < 0)
+                  
                     { Report(ps,REP_ERROR,"Illegal SIZE/OFFSET operand '%s'",tmpname); return(-1); }
 
                 sprintf(tmpname," %d ",value);
@@ -1067,6 +1070,41 @@ static int StructValueOperand( char *source, int CmdType, uint *pValue )
             *pValue = pst->Offset[i];
         }
         return(0);
+    }
+
+    return -1;
+}
+
+static int RegisterOperand(SOURCEFILE *ps, char *source, int CmdType, uint *pValue )
+{
+    PRU_ARG rs;
+
+    if(GetRegister(ps, 1, source, &rs, 0, 0))
+    {
+        switch(rs.Field)
+        {
+            case FIELDTYPE_7_0:   /* Bits 7:0 */
+            case FIELDTYPE_15_8:  /* Bits 15:8 */
+            case FIELDTYPE_23_16: /* Bits 23:16 */
+            case FIELDTYPE_31_24: /* Bits 31:24 */
+                *pValue = 1;
+                break;
+
+            case FIELDTYPE_15_0:  /* Bits 15:0 */
+            case FIELDTYPE_23_8:  /* Bits 23:8 */
+            case FIELDTYPE_31_16: /* Bits 31:16 */
+                *pValue = 2;
+                break;
+
+            case FIELDTYPE_31_0:  /* Bits 31:0 */
+                *pValue = 4;
+                break;
+        }
+
+        if( Pass==1 && (Options & OPTION_DEBUG) )
+            printf("Register SIZE(%s) = %d\n", source, *pValue);
+
+        return 0;
     }
 
     return -1;

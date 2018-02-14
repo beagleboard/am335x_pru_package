@@ -92,6 +92,8 @@ typedef struct _MACRO {
     char            ArgDefault[MACRO_MAX_ARGS][TOKEN_MAX_LEN];
     char            LableName[MACRO_MAX_LABELS][TOKEN_MAX_LEN];
     char            Code[MACRO_MAX_LINES][MACRO_LINE_LENGTH];
+    int             LineNumbers[MACRO_MAX_LINES];
+    char            SourceName[SOURCE_NAME];
 } MACRO;
 
 
@@ -134,6 +136,9 @@ int MacroEnter( SOURCEFILE *ps, char *Name )
     pm = MacroCreate( ps, Name );
     if( !pm )
         return(-1);
+
+    /* Preserve the name of macro source file for error reporting */
+    strncpy(pm->SourceName, ps->SourceName, SOURCE_NAME);
 
     /* Scan source lines until we see .endm */
     for(;;)
@@ -189,6 +194,7 @@ int MacroEnter( SOURCEFILE *ps, char *Name )
             if( pm->CodeLines == MACRO_MAX_LINES )
                 { Report(ps,REP_ERROR,"Macro line count exceeded"); continue; }
             strcpy(pm->Code[pm->CodeLines],src);
+            pm->LineNumbers[pm->CodeLines] = ps->CurrentLine;
             pm->CodeLines++;
         }
     }
@@ -312,7 +318,17 @@ SUBTEXTDONE:
         {
             if( !ProcessSourceLine(ps, i, src, MAX_SOURCE_LINE) )
             {
-                Report(ps,REP_ERROR,"(While expanding code line %d of macro '%s': ``%s'')",(cidx+1),pm->Name,src);
+                if(strcmp(ps->SourceName, pm->SourceName))
+                {
+                    /* Make sure the struct below provides all fields used by Report() */
+                    SOURCEFILE temp_ps;
+                    strncpy(temp_ps.SourceName, pm->SourceName, SOURCE_NAME);
+                    temp_ps.CurrentLine = pm->LineNumbers[cidx];
+
+                    Report(&temp_ps, REP_ERROR, "(While expanding line %d in macro '%s': ``%s'')", pm->LineNumbers[cidx], pm->Name, src);
+                }
+                else
+                    Report(ps,REP_ERROR,"(While expanding line %d in macro '%s': ``%s'')",pm->LineNumbers[cidx ],pm->Name,src);
                 pm->InUse=0;
                 return(0);
             }

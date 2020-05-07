@@ -259,6 +259,17 @@ int prussdrv_open(unsigned int host_interrupt)
     if (!prussdrv.fd[host_interrupt]) {
         sprintf(name, "/dev/uio%d", host_interrupt);
         prussdrv.fd[host_interrupt] = open(name, O_RDWR | O_SYNC);
+
+        if(prussdrv.fd[host_interrupt] == 0) {
+            // close the file descriptor as, 0 value causes bugs
+            close(prussdrv.fd[host_interrupt]);
+
+            // open the default file descriptor stdin = 0
+            open("dev/null", O_RDONLY);
+            // reopen the /dev/uiox file descriptor, such that it has value > 0 and thus fixes the bug
+            prussdrv.fd[host_interrupt] = open(name, O_RDWR | O_SYNC);
+        }
+
         if (prussdrv.fd[host_interrupt] == -1) {
             return -1;
         }

@@ -438,7 +438,7 @@ USAGE:
         CloseSourceFile( mainsource );
 
         /* Cleanup the PP and DOT modules */
-        ppCleanup(Pass);
+        ppCleanup();
         DotCleanup(Pass);
 
         if( Pass==1 )
